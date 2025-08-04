@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
@@ -14,11 +15,15 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+    Route::prefix('export')->group(function () {
+        Route::get('books', [DashboardController::class, 'exportBooks'])->name('export.books');
+        Route::get('authors', [DashboardController::class, 'exportAuthors'])->name('export.authors');
+        Route::get('publishers', [DashboardController::class, 'exportPublishers'])->name('export.publishers');
 
+    });
+});
 
 Route::resource('books', BookController::class);
 

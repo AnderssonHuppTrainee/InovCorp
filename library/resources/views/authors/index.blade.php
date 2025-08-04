@@ -42,7 +42,7 @@
                 <tbody>
                     @forelse ($authors as $author)
                         <tr>
-                            <td>{{ $author->name }}</td>
+                            <td><a href="{{ route('authors.show', $author) }}">{{ $author->name }}</a></td>
 
                             <td>
                                 @if($author->photo)

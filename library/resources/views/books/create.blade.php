@@ -7,14 +7,19 @@
         <x-form action="{{ route('books.store') }}" method="POST" enctype="multipart/form-data"
             submitText="Cadastrar Livro">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                 <x-input name="isbn" label="ISBN" required placeholder="Ex: 978-8532530783" />
 
+
                 <x-input name="name" label="Título do Livro" required />
+
 
                 <x-input name="publisher_id" label="Editora" type="select" required
                     :options="$publishers->pluck('name', 'id')" />
 
+
                 <x-input name="price" label="Preço (€)" type="number" step="0.01" min="0" required />
+
 
                 <x-input name="cover_image" label="Capa do Livro" type="file"
                     helpText="Formatos: JPG, PNG (Max: 2MB)" />
@@ -22,6 +27,7 @@
                 <div class="md:col-span-2">
                     <x-input name="bibliography" label="Bibliografia" type="textarea" rows="5" />
                 </div>
+
 
                 <div class="md:col-span-2">
                     <label class="label">
@@ -38,13 +44,12 @@
                         @endforeach
                     </div>
                     @error('authors')
-                        <label class="label">
+                        <div class="label">
                             <span class="label-text-alt text-error">{{ $message }}</span>
-                        </label>
+                        </div>
                     @enderror
                 </div>
             </div>
         </x-form>
     </div>
-
 </x-app-layout>

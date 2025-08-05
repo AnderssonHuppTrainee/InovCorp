@@ -19,6 +19,7 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
-        "daisyui": "^5.0.50"
+        "daisyui": "^5.0.50",
+        "swiper": "^11.2.10"
     }
 }

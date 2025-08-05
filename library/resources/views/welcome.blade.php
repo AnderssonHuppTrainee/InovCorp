@@ -1,60 +1,181 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<x-guest-layout>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <style>
+        .multi-card-carousel {
+            width: 100%;
+            padding: 20px 40px;
+            /* Espaço para os botões */
+            position: relative;
+        }
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        /* Botões de navegação */
+        .multi-card-carousel .swiper-button-prev,
+        .multi-card-carousel .swiper-button-next {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            top: 50%;
+            transform: translateY(-50%);
+        }
 
-    <title>Amazing Library</title>
+        .multi-card-carousel .swiper-button-prev {
+            left: 0;
+        }
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        .multi-card-carousel .swiper-button-next {
+            right: 0;
+        }
 
-    <!-- Styles / Scripts -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
+        .multi-card-carousel .swiper-button-prev:after,
+        .multi-card-carousel .swiper-button-next:after {
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
 
-    @endif
-</head>
+    <!-- Hero Section -->
+    <section class="flex items-center justify-center px-6 py-16 bg-base-100">
+        <div class="text-center max-w-2xl">
+            <h1 class="text-4xl font-bold mb-4">Bem-vindo à Amazing Library</h1>
+            <p class="text-lg mb-6 text-gray-600">
+                Descubra, explore e leia os melhores livros com facilidade.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="{{ route('login') }}" class="btn btn-primary">Acessar Conta</a>
+                <a href="#all-books" class="btn btn-outline">Explorar Livros</a>
+            </div>
+        </div>
+    </section>
 
-<body
-    class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-    <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-        @if (Route::has('login'))
-            <nav class="flex items-center justify-end gap-4">
-                @auth
-                    <a href="{{ url('/dashboard') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                        Log in
-                    </a>
+    <!-- Carrossel dos ultimos livros) -->
+    <section class="px-6 py-12 bg-base-200 w-full">
+        <h2 class="text-2xl font-bold mb-8 text-center">Últimos Livros Adicionados</h2>
 
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                            Register
-                        </a>
-                    @endif
-                @endauth
-            </nav>
-        @endif
-    </header>
-    <div
-        class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-        <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
+        <div class="swiper multi-card-carousel">
+            <div class="swiper-wrapper">
+                @foreach ($latestBooks as $book)
+                    <div class="swiper-slide">
+                        <!-- Card usando classes do DaisyUI -->
+                        <div class="card w-64 bg-base-100 shadow-xl mx-2">
+                            <!-- Capa -->
+                            <div class="w-[200px] h-[300px] mx-auto mt-4 overflow-hidden">
+                                <figure>
+                                    <x-image-book class="w-full h-full object-cover transition-transform hover:scale-105"
+                                        alt="Capa de {{ $book->name }}" />
+                                </figure>
+                            </div>
 
-        </main>
-    </div>
+                            <!-- Conteúdo -->
+                            <div class="card-body">
+                                <h3 class="card-title">{{ $book->name }}</h3>
 
-    @if (Route::has('login'))
-        <div class="h-14.5 hidden lg:block"></div>
-    @endif
-</body>
+                                <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm  self-end mt-4">
+                                    Detalhes
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
 
-</html>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </section>
+    <!-- modal para cada livro -->
+    @foreach ($latestBooks as $book)
+        <!-- Input checkbox invisível que controla o modal -->
+        <input type="checkbox" id="modal-{{ $book->id }}" class="modal-toggle" />
+        <div class="modal">
+            <div class="modal-box max-w-2xl relative">
+                <label for="modal-{{ $book->id }}" class="btn btn-sm btn-circle absolute right-2 top-2">
+                    ✕
+                </label>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Capa do livro -->
+                    <figure class="flex-shrink-0">
+                        <x-image-book class="w-48 h-64 object-cover rounded-lg shadow-md" alt="Capa de {{ $book->name }}" />
+                    </figure>
+
+                    <!-- Detalhes -->
+                    <div>
+                        <h3 class="text-2xl font-bold">{{ $book->name }}</h3>
+                        <div class="divider my-2"></div>
+
+                        <div class="space-y-2">
+                            <p><span class="font-semibold">Autor:</span> {{ $book->author }}</p>
+                            <p><span class="font-semibold">ISBN:</span> {{ $book->isbn }}</p>
+                            <p><span class="font-semibold">Preço:</span>
+                                @php
+                                    try {
+                                        $price = Crypt::decryptString($book->price);
+                                        echo '€ ' . number_format($price, 2, ',', '.');
+                                    } catch (Exception $e) {
+                                        echo '-';
+                                    }
+                                @endphp
+                            </p>
+
+                            <div class="divider my-2"></div>
+
+                            <p class="font-semibold">Sinopse:</p>
+                            <p class="text-justify">{{ $book->bibliography }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    <!-- Todos os Livros -->
+    <section id="all-books" class="px-6 py-12 w-full bg-base-100">
+        <h2 class="text-2xl font-bold mb-6 text-center">Todos os Livros</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            @foreach ($allBooks as $book)
+                <div class="card bg-base-100 shadow">
+                    <figure><x-image-book class="h-48 w-full object-cover" /></figure>
+                    <div class="card-body">
+                        <h2 class="card-title">{{ $book->name }}</h2>
+                        <p class="text-sm text-gray-500">{{ Str::limit($book->bibliography, 50) }}</p>
+                        <div class="card-actions justify-end">
+                            <label for="modal-{{ $book->id }}" class="btn btn-sm btn-outline">Detalhes</label>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-8 flex justify-center">
+            {{ $allBooks->links() }}
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const swiper = new Swiper('.multi-card-carousel', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                slidesPerView: 3,
+                spaceBetween: 40,
+                centeredSlides: true,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 15 },
+                    1024: { slidesPerView: 3, spaceBetween: 20 }
+                }
+            });
+
+        });
+    </script>
+</x-guest-layout>

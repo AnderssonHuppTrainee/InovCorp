@@ -41,7 +41,10 @@ class BookController extends Controller
      */
     public function create()
     {
-        return view('books.create');
+        return view('books.create', [
+            'publishers' => Publisher::all(), // Ou Publisher::orderBy('name')->get()
+            'authors' => Author::all() // Certifique-se que esta variável também existe
+        ]);
     }
 
     /**

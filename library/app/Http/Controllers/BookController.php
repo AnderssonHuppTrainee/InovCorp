@@ -42,8 +42,8 @@ class BookController extends Controller
     public function create()
     {
         return view('books.create', [
-            'publishers' => Publisher::all(), // Ou Publisher::orderBy('name')->get()
-            'authors' => Author::all() // Certifique-se que esta variável também existe
+            'publishers' => Publisher::all(),
+            'authors' => Author::all()
         ]);
     }
 
@@ -60,7 +60,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //
+        return view('books.show', compact('book'));
     }
 
     /**

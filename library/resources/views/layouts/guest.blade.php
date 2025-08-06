@@ -19,7 +19,7 @@
     @livewireStyles
 </head>
 
-<body class="bg-base-100 text-base-content min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-base-100 text-base-content min-h-screen flex flex-col">
 
     @include('layouts.partials.navbar')
 

@@ -60,6 +60,9 @@
                                 {{ $author->books->pluck('name')->join(', ') ?: 'Nenhum livro' }}
                             </td>
                             <td class="flex space-x-2">
+                                <a href="{{ route('authors.show', $author) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('authors.edit', $author) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>

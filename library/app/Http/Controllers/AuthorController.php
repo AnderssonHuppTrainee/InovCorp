@@ -131,7 +131,7 @@ class AuthorController extends Controller
                 Storage::disk('public')->delete($author->photo);
             }
 
-            // Exclui o autor
+            // exclui o autor
             $author->delete();
         });
 

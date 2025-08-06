@@ -1,6 +1,6 @@
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-6">
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('export.books') }}" class="btn btn-outline gap-2">

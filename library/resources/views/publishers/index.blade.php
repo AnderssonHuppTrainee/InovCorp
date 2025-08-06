@@ -57,6 +57,9 @@
                             </td>
 
                             <td class="flex space-x-2">
+                                <a href="{{ route('publishers.show', $publisher) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('publishers.edit', $publisher) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>

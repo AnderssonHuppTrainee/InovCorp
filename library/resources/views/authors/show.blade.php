@@ -1,6 +1,11 @@
 <x-app-layout>
+    <div class="mb-6">
+        <a href="{{ route('authors.index') }}" class="btn btn-ghost">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
+        </a>
+    </div>
     <div class="container mx-auto px-4 py-8">
-        <!-- Cabeçalho do Autor -->
+
         <div class="flex flex-col md:flex-row items-center gap-6 mb-8">
             @if($author->photo)
                 <div class="flex-shrink-0">
@@ -18,9 +23,9 @@
             <div class="text-center md:text-left">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $author->name }}</h1>
                 <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">
-                    {{ $author->books->count() }} {{ Str::plural('livro', $author->books->count()) }} publicados
+                    {{ $author->books->count() }} {{ Str::plural('livro', $author->books->count()) }}
                 </p>
-                <p>botao</p>
+
                 <!-- edicao -->
 
                 <div class="mt-4">
@@ -32,7 +37,7 @@
             </div>
         </div>
 
-        <!-- Lista de Livros -->
+        <!-- lista de Livros -->
         <div class="mb-8">
             <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 border-b pb-2">
                 Livros do Autor

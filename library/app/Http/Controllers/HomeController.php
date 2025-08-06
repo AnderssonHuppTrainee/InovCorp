@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function index()
     {
         $allBooks = Book::paginate(8); // todos 
-        $latestBooks = Book::latest()->take(5)->get(); //os utlimos 5 
+        $latestBooks = Book::latest()->take(10)->get(); //os utlimos 5 
 
         return view('welcome', compact('latestBooks', 'allBooks'));
 

@@ -1,5 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Livros</h1>
             <a href="{{ route('books.create') }}" class="btn btn-primary">
@@ -7,7 +8,7 @@
             </a>
         </div>
 
-        <!-- Filtros -->
+        <!-- filtros -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
 
             <form method="GET" class="flex flex-wrap gap-4 items-end">
@@ -87,6 +88,9 @@
                             </td>
 
                             <td class="flex space-x-2">
+                                <a href="{{ route('books.show', $book) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('books.edit', $book) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -98,6 +102,7 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+
                             </td>
                         </tr>
                     @empty
@@ -114,4 +119,6 @@
             {{ $books->withQueryString()->links() }}
         </div>
     </div>
+    </div>
+
 </x-app-layout>

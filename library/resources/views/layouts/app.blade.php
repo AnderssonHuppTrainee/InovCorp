@@ -20,10 +20,10 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased text-base-content min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
     <x-banner />
 
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen flex flex-col">
         @livewire('navigation-menu')
 
         <!-- Page Heading 
@@ -36,14 +36,23 @@
         @endif-->
 
         <!-- Page Content -->
-        <main>
-            {{ $slot }}
+        <main class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
+                {{ $slot }}
+            </div>
         </main>
     </div>
 
     @stack('modals')
 
+    <!-- Footer -->
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-auto">
+        <aside>
+            <p>© {{ date('Y') }} Amazing Library. Todos os direitos reservados.</p>
+        </aside>
+    </footer>
     @livewireScripts
 </body>
+
 
 </html>

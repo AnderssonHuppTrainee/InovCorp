@@ -58,7 +58,14 @@ class PublisherController extends Controller
      */
     public function show(Publisher $publisher)
     {
-        //
+        // carrega os livros da editora 
+        $publisher->load('books');
+
+        return view('publishers.show', [
+            'publisher' => $publisher,
+            'books' => $publisher->books()->with('publisher')->paginate(5)
+        ]);
+
     }
 
     /**

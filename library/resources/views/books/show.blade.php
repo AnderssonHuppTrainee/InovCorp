@@ -10,8 +10,8 @@
         <div class="md:flex">
 
             <div class="md:w-1/3 p-6 flex justify-center">
-                <div class="w-full max-w-xs">
-                    <x-image-book class="w-full h-auto rounded-lg shadow-md" alt="Capa de {{ $book->name }}" />
+                <div class="w-full max-w-xs aspect-[2/3] overflow-hidden rounded-lg shadow-md">
+                    <x-image-book class="w-full h-full" alt="Capa de {{ $book->name }}" />
                 </div>
             </div>
 

@@ -9,7 +9,7 @@
         </div>
 
         <!-- filtros -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
 
             <form method="GET" class="flex flex-wrap gap-4 items-end">
                 <div class="form-control w-full max-w-xs">
@@ -55,15 +55,75 @@
         </div>
 
         <!-- Tabela -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>
-                        <th>ISBN</th>
-                        <th>Nome</th>
-                        <th>Editora</th>
-                        <th>Autores</th>
-                        <th>Preço</th>
+                        <th>
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'isbn',
+    'direction' => request('sort') === 'isbn' && request('direction') === 'asc' ? 'desc' : 'asc'
+]) }}" class="flex items-center">
+                                ISBN
+                                @if(request('sort') === 'isbn')
+                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'name',
+    'direction' => request('sort') === 'name' && request('direction') === 'desc' ? 'asc' : 'desc'
+]) }}" class="flex items-center">
+                                Nome
+                                @if(request('sort') === 'name')
+                                    <i class="fas fa-sort-{{ request('direction') === 'desc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'publisher',
+    'direction' => request('sort') === 'publisher' && request('direction') === 'asc' ? 'desc' : 'asc'
+]) }}" class="flex items-center">
+                                Editora
+                                @if(request('sort') === 'publisher')
+                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'author',
+    'direction' => request('sort') === 'author' && request('direction') === 'asc' ? 'desc' : 'asc'
+]) }}" class="flex items-center">
+                                Autores
+                                @if(request('sort') === 'author')
+                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'price',
+    'direction' => request('sort') === 'price' && request('direction') === 'asc' ? 'desc' : 'asc'
+]) }}" class="flex items-center">
+                                Preço
+                                @if(request('sort') === 'price')
+                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -98,7 +158,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-error"
-                                        onclick="return confirm('Tem certeza?')">
+                                        onclick="return confirm('Tem certeza que deseja excluir o livro?')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -114,11 +174,11 @@
             </table>
         </div>
 
-        <!-- Paginação -->
+        <!-- pagination -->
         <div class="mt-4">
             {{ $books->withQueryString()->links() }}
         </div>
     </div>
-    </div>
+
 
 </x-app-layout>

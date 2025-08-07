@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Publisher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PublisherController extends Controller
 {
@@ -17,20 +19,21 @@ class PublisherController extends Controller
         // busca por nome
         $query->when($request->search, function ($q) use ($request) {
             $q->where('name', 'like', '%' . $request->search . '%');
-        });
+        })->when(
+                $request->sort,
+                function ($q) use ($request) {
 
-        // ordenacao
-        $query->when(
-            $request->sort,
-            function ($q) use ($request) {
-                $direction = $request->direction === 'desc' ? 'desc' : 'asc';
-                $q->orderBy($request->sort, $direction);
-            },
-            function ($q) {
+                    $direction = $request->has('direction')
+                        ? $request->direction
+                        : 'desc';
 
-                $q->orderBy('name', 'asc');
-            }
-        );
+                    $q->orderBy($request->sort, $direction);
+                },
+                function ($q) {
+                    $q->orderBy('name', 'asc');
+                }
+            );
+
 
         $publishers = $query->paginate(10)->withQueryString();
 
@@ -50,7 +53,19 @@ class PublisherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //validacao
+        $validated = $request->validate([
+            'name' => ['required', 'string'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        ]);
+        // upload da foto se existir
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('publishers', 'public');
+        }
+        //cria  e salva 
+        Publisher::create($validated);
+
+        return redirect()->route('publishers.index')->with('sucess', 'Editora cadastrada com sucesso!');
     }
 
     /**
@@ -73,7 +88,7 @@ class PublisherController extends Controller
      */
     public function edit(Publisher $publisher)
     {
-        //
+        return view('publishers.edit', compact('publisher'));
     }
 
     /**
@@ -81,7 +96,27 @@ class PublisherController extends Controller
      */
     public function update(Request $request, Publisher $publisher)
     {
-        //
+        //validacao
+        $validated = $request->validate([
+            'name' => ['required'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        ]);
+
+        // upload da nova foto 
+        if ($request->hasFile('logo')) {
+            // remove a foto antiga se existir
+            if ($publisher->logo) {
+                Storage::disk('public')->delete($publisher->logo);
+            }
+            $validated['logo'] = $request->file('logo')->store('publishers', 'public');
+        } else {
+            // mante, a foto existente se nenhuma nova for enviada
+            unset($validated['logo']);
+        }
+        //persist
+        $publisher->update($validated);
+
+        return redirect()->route('publishers.index')->with('sucess', 'Editora atualizada com sucesso!');
     }
 
     /**
@@ -89,6 +124,18 @@ class PublisherController extends Controller
      */
     public function destroy(Publisher $publisher)
     {
-        //
+        DB::transaction(function () use ($publisher) {
+
+            // remove a foto se existir
+            if ($publisher->logo) {
+                Storage::disk('public')->delete($publisher->logo);
+            }
+
+            // exclui a editora
+            $publisher->delete();
+        });
+
+        return redirect()->route('publishers.index')
+            ->with('success', 'Editora removida com sucesso!');
     }
 }

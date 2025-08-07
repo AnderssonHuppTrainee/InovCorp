@@ -12,7 +12,7 @@ class Author extends Model
         'name',
         'photo'
     ];
-    
+
     public function books()
     {
         return $this->belongsToMany(Book::class);

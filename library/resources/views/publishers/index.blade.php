@@ -33,7 +33,19 @@
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>
-                        <th class="whitespace-nowrap">Nome</th>
+                        <th class="whitespace-nowrap">
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'name',
+    'direction' => request('sort') === 'name' && request('direction') === 'desc' ? 'asc' : 'desc'
+]) }}" class="flex items-center">
+                                Nome
+                                @if(request('sort') === 'name')
+                                    <i class="fas fa-sort-{{ request('direction') === 'desc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th class="whitespace-nowrap">Logo</th>
                         <th class="whitespace-nowrap">Ações</th>
                     </tr>

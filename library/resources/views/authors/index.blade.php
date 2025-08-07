@@ -33,10 +33,34 @@
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Foto</th>
-                        <th>Livros</th>
-                        <th>Ações</th>
+                        <th class="whitespace-nowrap">
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'name',
+    'direction' => request('sort') === 'name' && request('direction') === 'desc' ? 'asc' : 'desc'
+]) }}" class="flex items-center">
+                                Nome
+                                @if(request('sort') === 'name')
+                                    <i class="fas fa-sort-{{ request('direction') === 'desc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="whitespace-nowrap">Foto</th>
+                        <th class="whitespace-nowrap">
+                            <a href="{{ request()->fullUrlWithQuery([
+    'sort' => 'book',
+    'direction' => request('sort') === 'book' && request('direction') === 'asc' ? 'desc' : 'asc'
+]) }}" class="flex items-center">
+                                Livros
+                                @if(request('sort') === 'isbn')
+                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else
+                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="whitespace-nowrap">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

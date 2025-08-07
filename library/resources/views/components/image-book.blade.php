@@ -1,6 +1,8 @@
 @props([
-    'width' => 200,
-    'height' => 300,
+    'width' => null,  // Remova os valores padrão
+    'height' => null, // para tornar mais flexível
 ])
 
-<img src="https://picsum.photos/seed/{{ rand(0, 1000000) }}/{{ $width }}/{{ $height }}" alt="Imagem de teste" class="">
+<img {{ $attributes->merge(['class' => 'object-cover w-full h-full']) }} 
+     src="https://picsum.photos/seed/{{ rand(0, 1000000) }}/200/300" 
+     alt="{{ $attributes->get('alt', 'Capa do livro') }}">

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Http\Request;
-use App\Models\Book;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -15,27 +14,33 @@ class AuthorController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Author::query();
-        // busca por nome
-        $query->when($request->search, function ($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->search . '%');
-        });
+        $query = Author::query()
+            ->withCount('books')
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->sort, function ($q) use ($request) {
+                switch ($request->sort) {
+                    case 'books_count':
+                        $q->orderBy('books_count', $request->direction ?? 'asc');
+                        break;
 
-        // ordenacao
-        $query->when(
-            $request->sort,
-            function ($q) use ($request) {
-                $direction = $request->direction === 'desc' ? 'desc' : 'asc';
-                $q->orderBy($request->sort, $direction);
-            },
-            function ($q) {
+                    case 'book':
+                        $q->select('authors.*')
+                            ->join('author_book', 'authors.id', '=', 'author_book.author_id')
+                            ->join('books', 'author_book.book_id', '=', 'books.id')
+                            ->groupBy('authors.id')
+                            ->orderByRaw('MIN(books.name) ' . ($request->direction ?? 'asc'));
+                        break;
 
+                    default:
+                        $q->orderBy($request->sort, $request->direction ?? 'asc');
+                }
+            }, function ($q) {
                 $q->orderBy('name', 'asc');
-            }
-        );
+            });
 
         $authors = $query->paginate(10)->withQueryString();
-
         return view('authors.index', compact('authors'));
     }
 

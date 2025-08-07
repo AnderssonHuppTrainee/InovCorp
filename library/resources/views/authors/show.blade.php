@@ -13,10 +13,14 @@
                         class="w-32 h-32 rounded-full object-cover shadow-md">
                 </div>
             @else
-                <div class="flex-shrink-0 avatar placeholder">
-                    <div class="bg-neutral-focus text-neutral-content rounded-full w-32 h-32">
-                        <span class="text-4xl">{{ strtoupper(substr($author->name, 0, 1)) }}</span>
-                    </div>
+                <!--<div class="flex-shrink-0 avatar placeholder">
+                                            <div class="bg-neutral-focus text-neutral-content rounded-full w-32 h-32">
+                                                <span class="text-4xl">{{ strtoupper(substr($author->name, 0, 1)) }}</span>
+                                            </div>
+                                        </div>-->
+                <div class="flex-shrink-0">
+                    <img src="https://picsum.photos/seed/{{ substr($author->name, 0, 100) }}/128/128"
+                        alt="{{ $author->name }}" class="rounded-full w-32 h-32 object-cover">
                 </div>
             @endif
 
@@ -47,12 +51,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach($books as $book)
                         <div class="card bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                            @if($book->cover_image)
-                                <figure class="px-4 pt-4">
-                                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Capa de {{ $book->name }}"
-                                        class="rounded-xl h-48 w-full object-cover">
-                                </figure>
-                            @endif
+                            <figure class="px-4 pt-4">
+                                <x-image-book class="rounded-xl h-48 w-full object-cover" />
+                            </figure>
+                            <!--@if($book->cover_image)
+                                                                                        <figure class="px-4 pt-4">
+                                                                                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Capa de {{ $book->name }}"
+                                                                                                class="rounded-xl h-48 w-full object-cover">
+                                                                                        </figure>
+                                                                                    @endif-->
                             <div class="card-body">
                                 <h3 class="card-title text-gray-900 dark:text-white">
                                     <a href="{{ route('books.show', $book) }}"

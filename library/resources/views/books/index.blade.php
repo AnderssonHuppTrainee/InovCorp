@@ -1,58 +1,45 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
 
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Livros</h1>
-            <a href="{{ route('books.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i> Novo Livro
-            </a>
-        </div>
+        <x-resources.header title="Livros" createRoute="{{ route('books.create') }}" />
 
         <!-- filtros -->
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
+        <x-resources.filters action="{{ route('books.index') }}" clearUrl="{{ route('books.index') }}">
+            <div class="form-control w-full max-w-xs">
+                <label class="label">
+                    <span class="label-text">Pesquisar</span>
+                </label>
+                <input type="text" name="search" placeholder="Nome ou ISBN" value="{{ request('search') }}"
+                    class="input input-bordered w-full">
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Autor</span>
+                </label>
+                <select name="author" class="select select-bordered">
+                    <option value="">Todos os autores</option>
+                    @foreach ($authors as $author)
+                        <option value="{{ $author->id }}" @selected(request('author') == $author->id)>
+                            {{ $author->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Editora</span>
+                </label>
+                <select name="publisher" class="select select-bordered">
+                    <option value="">Todas as editoras</option>
+                    @foreach ($publishers as $publisher)
+                        <option value="{{ $publisher->id }}" @selected(request('publisher') == $publisher->id)>
+                            {{ $publisher->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </x-resources.filters>
 
-            <form method="GET" class="flex flex-wrap gap-4 items-end">
-                <div class="form-control w-full max-w-xs">
-                    <label class="label">
-                        <span class="label-text">Pesquisar</span>
-                    </label>
-                    <input type="text" name="search" placeholder="Nome ou ISBN" value="{{ request('search') }}"
-                        class="input input-bordered w-full">
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Autor</span>
-                    </label>
-                    <select name="author" class="select select-bordered">
-                        <option value="">Todos os autores</option>
-                        @foreach ($authors as $author)
-                            <option value="{{ $author->id }}" @selected(request('author') == $author->id)>
-                                {{ $author->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Editora</span>
-                    </label>
-                    <select name="publisher" class="select select-bordered">
-                        <option value="">Todas as editoras</option>
-                        @foreach ($publishers as $publisher)
-                            <option value="{{ $publisher->id }}" @selected(request('publisher') == $publisher->id)>
-                                {{ $publisher->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-control">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                </div>
-                <div class="form-control">
-                    <a href="{{ route('books.index') }}" class="btn btn-outline">Limpar</a>
-                </div>
-            </form>
-        </div>
 
         <!-- Tabela -->
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
@@ -137,14 +124,7 @@
                                 {{ $book->authors->pluck('name')->join(', ') }}
                             </td>
                             <td>
-                                @php
-                                    try {
-                                        $price = Crypt::decryptString($book->price);
-                                        echo '€ ' . number_format($price, 2, ',', '.');
-                                    } catch (Exception $e) {
-                                        echo '-';
-                                    }
-                                @endphp
+                                {{ $book->price = '€ ' . number_format($book->price, 2, ',', '.')}}
                             </td>
 
                             <td class="flex space-x-2">

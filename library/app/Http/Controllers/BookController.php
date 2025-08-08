@@ -51,6 +51,15 @@ class BookController extends Controller
             }, fn($q) => $q->orderBy('name'));
 
         $books = $query->paginate(10)->withQueryString();
+
+        //ajax pro live search 
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('books.partials.table_rows', compact('books'))->render(),
+                'pagination' => $books->links()->toHtml()
+            ]);
+        }
+
         $authors = Author::orderBy('name')->get();
         $publishers = Publisher::orderBy('name')->get();
 
@@ -84,7 +93,6 @@ class BookController extends Controller
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'price' => ['required', 'numeric', 'min:0']
         ]);
-        $validated['price'] = Crypt::encryptString($validated['price']);
 
         // upload da foto se existir
         if ($request->hasFile('cover_image')) {
@@ -139,7 +147,6 @@ class BookController extends Controller
             'price' => ['required', 'numeric', 'min:0']
         ]);
 
-        $validated['price'] = Crypt::encryptString($validated['price']);
 
         // atualiza  se foi enviada
         if ($request->hasFile('cover_image')) {

@@ -18,27 +18,22 @@ class AuthorController extends Controller
             ->withCount('books')
             ->when($request->search, function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%');
-            })
-            ->when($request->sort, function ($q) use ($request) {
-                switch ($request->sort) {
-                    case 'books_count':
-                        $q->orderBy('books_count', $request->direction ?? 'asc');
-                        break;
-
-                    case 'book':
-                        $q->select('authors.*')
-                            ->join('author_book', 'authors.id', '=', 'author_book.author_id')
-                            ->join('books', 'author_book.book_id', '=', 'books.id')
-                            ->groupBy('authors.id')
-                            ->orderByRaw('MIN(books.name) ' . ($request->direction ?? 'asc'));
-                        break;
-
-                    default:
-                        $q->orderBy($request->sort, $request->direction ?? 'asc');
-                }
-            }, function ($q) {
-                $q->orderBy('name', 'asc');
             });
+
+
+        $sortField = $request->sort ?? 'name';
+        $direction = $request->direction ?? 'asc';
+
+        switch ($sortField) {
+            case 'books_count':
+                $query->orderBy('books_count', $direction);
+                break;
+            case 'name':
+                $query->orderBy('name', $direction);
+                break;
+            default:
+                $query->orderBy('name', 'asc');
+        }
 
         $authors = $query->paginate(10)->withQueryString();
         return view('authors.index', compact('authors'));

@@ -19,7 +19,6 @@ class Book extends Model
     //cryptografy
     protected $casts = [
         'bibliography' => 'encrypted',
-        'price' => 'encrypted:decimal:2',
     ];
 
     public function publisher()

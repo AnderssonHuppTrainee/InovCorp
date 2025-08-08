@@ -25,7 +25,7 @@ class BookFactory extends Factory
             'publisher_id' => Publisher::factory(),
             'bibliography' => $this->faker->paragraph(),
             'cover_image' => $this->faker->imageUrl(640, 480, 'book'),
-            'price' => Crypt::encryptString($this->faker->randomFloat(2, 10, 100)),
+            'price' => $this->faker->randomFloat(2, 10, 50),
         ];
     }
 

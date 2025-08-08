@@ -1,32 +1,20 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Editoras</h1>
-            <a href="{{ route('publishers.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i> Nova Editora
-            </a>
-        </div>
+        <x-resources.header title="Editora" createRoute="{{ route('publishers.create') }}" />
 
         <!-- Filtros -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
 
-            <form method="GET" class="flex flex-wrap gap-4 items-end">
-                <div class="form-control w-full max-w-xs">
-                    <label class="label">
-                        <span class="label-text">Pesquisar</span>
-                    </label>
-                    <input type="text" name="search" placeholder="Nome da editora" value="{{ request('search') }}"
-                        class="input input-bordered w-full">
-                </div>
 
-                <div class="form-control">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                </div>
-                <div class="form-control">
-                    <a href="{{ route('publishers.index') }}" class="btn btn-outline">Limpar</a>
-                </div>
-            </form>
-        </div>
+        <x-resources.filters action="{{ route('publishers.index') }}" clearUrl="{{ route('publishers.index') }}">
+            <div class="form-control w-full max-w-xs">
+                <label class="label">
+                    <span class="label-text">Pesquisar</span>
+                </label>
+                <input type="text" name="search" placeholder="Nome da editora" value="{{ request('search') }}"
+                    class="input input-bordered w-full">
+            </div>
+        </x-resources.filters>
+
 
         <!-- Tabela -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">

@@ -129,14 +129,7 @@
                             <p><span class="font-semibold">Autor:</span>{{ $book->authors->pluck('name')->join(', ') }}</p>
                             <p><span class="font-semibold">ISBN:</span> {{ $book->isbn }}</p>
                             <p><span class="font-semibold">Preço:</span>
-                                @php
-                                    try {
-                                        $price = Crypt::decryptString($book->price);
-                                        echo '€ ' . number_format($price, 2, ',', '.');
-                                    } catch (Exception $e) {
-                                        echo '-';
-                                    }
-                                @endphp
+                                {{ $book->price = '€ ' . number_format($book->price, 2, ',', '.')}}
                             </p>
 
                             <div class="divider my-2"></div>
@@ -172,7 +165,7 @@
                 @endforeach
             </div>
 
-            <div class="card-actions justify-end mt-2">
+            <div class="card-actions justify-end mt-8">
                 {{ $allBooks->links() }}
             </div>
         </div>

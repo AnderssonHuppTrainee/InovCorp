@@ -1,32 +1,17 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Autores</h1>
-            <a href="{{ route('authors.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i> Novo Autor
-            </a>
-        </div>
+        <x-resources.header title="Autores" createRoute="{{ route('authors.create') }}" />
 
         <!-- filtros -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
-
-            <form method="GET" class="flex flex-wrap gap-4 items-end">
-                <div class="form-control w-full max-w-xs">
-                    <label class="label">
-                        <span class="label-text">Pesquisar</span>
-                    </label>
-                    <input type="text" name="search" placeholder="Nome do autor" value="{{ request('search') }}"
-                        class="input input-bordered w-full">
-                </div>
-
-                <div class="form-control">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                </div>
-                <div class="form-control">
-                    <a href="{{ route('authors.index') }}" class="btn btn-outline">Limpar</a>
-                </div>
-            </form>
-        </div>
+        <x-resources.filters action="{{ route('authors.index') }}" clearUrl="{{ route('authors.index') }}">
+            <div class="form-control w-full max-w-xs">
+                <label class="label">
+                    <span class="label-text">Pesquisar</span>
+                </label>
+                <input type="text" name="search" placeholder="Nome do autor" value="{{ request('search') }}"
+                    class="input input-bordered w-full">
+            </div>
+        </x-resources.filters>
 
         <!-- table -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
@@ -110,8 +95,6 @@
         </div>
 
         <!-- pagination -->
-        <div class="mt-4">
-            {{ $authors->withQueryString()->links() }}
-        </div>
+        <x-resources.pagination :items="$authors" />
     </div>
 </x-app-layout>

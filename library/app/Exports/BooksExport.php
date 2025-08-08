@@ -30,7 +30,6 @@ class BooksExport implements FromCollection, WithHeadings, WithMapping
 
     public function map($book): array
     {
-        $price = Crypt::decryptString($book->price);
 
         return [
             $book->id,
@@ -38,7 +37,7 @@ class BooksExport implements FromCollection, WithHeadings, WithMapping
             $book->isbn,
             $book->publisher->name ?? 'N/A',
             $book->authors->pluck('name')->join(', '),
-            '€' . number_format($price, 2, ',', '.'),
+            $book->price,
             $book->created_at->format('d/m/Y H:i')
         ];
     }

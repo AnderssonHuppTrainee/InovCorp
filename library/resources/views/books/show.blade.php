@@ -34,14 +34,7 @@
                     <div>
                         <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">Preço</h3>
                         <p class="text-lg">
-                            @php
-                                try {
-                                    $price = Crypt::decryptString($book->price);
-                                    echo '€ ' . number_format($price, 2, ',', '.');
-                                } catch (Exception $e) {
-                                    echo '-';
-                                }
-                            @endphp
+                            {{ $book->price = '€ ' . number_format($book->price, 2, ',', '.')}}
                         </p>
                     </div>
 

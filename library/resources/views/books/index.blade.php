@@ -129,17 +129,17 @@
 
                             <td class="flex space-x-2">
                                 <a href="{{ route('books.show', $book) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-eye " style="color:white;"></i>
                                 </a>
                                 <a href="{{ route('books.edit', $book) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit" style="color:white;"></i>
                                 </a>
                                 <form action="{{ route('books.destroy', $book) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-error"
                                         onclick="return confirm('Tem certeza que deseja excluir o livro?')">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash" style="color:white;"></i>
                                     </button>
                                 </form>
 

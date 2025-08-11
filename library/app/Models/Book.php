@@ -19,6 +19,7 @@ class Book extends Model
     //cryptografy
     protected $casts = [
         'bibliography' => 'encrypted',
+
     ];
 
     public function publisher()
@@ -29,5 +30,14 @@ class Book extends Model
     public function authors()
     {
         return $this->belongsToMany(Author::class, 'author_book');
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(BookRequest::class);
+    }
+    public function isAvailable()
+    {
+        return !$this->requests()->whereIn('status', ['pending', 'approved'])->exists();
     }
 }

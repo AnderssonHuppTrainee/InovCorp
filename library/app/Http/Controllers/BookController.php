@@ -6,7 +6,6 @@ use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use App\Models\Publisher;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -51,14 +50,6 @@ class BookController extends Controller
             }, fn($q) => $q->orderBy('name'));
 
         $books = $query->paginate(10)->withQueryString();
-
-        //ajax pro live search 
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => view('books.partials.table_rows', compact('books'))->render(),
-                'pagination' => $books->links()->toHtml()
-            ]);
-        }
 
         $authors = Author::orderBy('name')->get();
         $publishers = Publisher::orderBy('name')->get();

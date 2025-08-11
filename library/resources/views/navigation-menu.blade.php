@@ -15,18 +15,26 @@
             <div>
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex md:space-x-2 lg:space-x-4 md:ms-10">
-                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('books.index') }}" :active="request()->routeIs('books.index')">
-                        {{ __('Livros') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('publishers.index') }}" :active="request()->routeIs('publishers.index')">
-                        {{ __('Editoras') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('authors.index') }}" :active="request()->routeIs('authors.index')">
-                        {{ __('Autores') }}
-                    </x-nav-link>
+                    @auth
+                        <x-nav-link href="{{ route('requests.index') }}">Requisições</x-nav-link>
+                        @if(auth()->user()->isAdmin())
+                            <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                                {{ __('Usuários') }}
+                            </x-nav-link>
+                            <x-nav-link href="{{ route('books.index') }}" :active="request()->routeIs('books.index')">
+                                {{ __('Livros') }}
+                            </x-nav-link>
+                            <x-nav-link href="{{ route('publishers.index') }}" :active="request()->routeIs('publishers.index')">
+                                {{ __('Editoras') }}
+                            </x-nav-link>
+                            <x-nav-link href="{{ route('authors.index') }}" :active="request()->routeIs('authors.index')">
+                                {{ __('Autores') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 

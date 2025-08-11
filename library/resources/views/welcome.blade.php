@@ -136,7 +136,23 @@
 
                             <p class="font-semibold">Sinopse:</p>
                             <p class="text-justify">{{ $book->bibliography }}</p>
+                            <div class="divider my-2"></div>
+                            <div class="flex justify-end">
+                                @auth
+                                    <a href="{{ route('requests.create', $book->id) }}" class="btn btn-primary btn-sm mt-4">
+                                        Requisitar
+                                    </a>
+                                @endauth
+
+                                @guest
+                                    <a href="{{ route('login') }}" class="btn btn-primary btn-sm mt-4 ">
+                                        Requisitar
+                                    </a>
+                                @endguest
+                            </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -165,8 +181,10 @@
                 @endforeach
             </div>
 
-            <div class="card-actions justify-end mt-8">
-                {{ $allBooks->links() }}
+            <div class="flex justify-center mt-8">
+                <a href="{{ route('books.index') }}" class="btn btn-outline">
+                    Ver Todos os Livros
+                </a>
             </div>
         </div>
     </section>

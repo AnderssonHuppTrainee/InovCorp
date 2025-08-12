@@ -60,7 +60,7 @@
             </p>
             <div class="flex justify-center gap-4">
                 <a href="{{ route('login') }}" class="btn btn-primary">Acessar Conta</a>
-                <a href="#all-books" class="btn btn-outline">Explorar Livros</a>
+                <a href="{{ route('public.books.index')}}" class="btn btn-outline">Explorar Livros</a>
             </div>
         </div>
     </section>
@@ -182,7 +182,7 @@
             </div>
 
             <div class="flex justify-center mt-8">
-                <a href="{{ route('books.index') }}" class="btn btn-outline">
+                <a href="{{ route('public.books.index') }}" class="btn btn-outline">
                     Ver Todos os Livros
                 </a>
             </div>

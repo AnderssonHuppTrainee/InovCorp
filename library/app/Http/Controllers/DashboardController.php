@@ -5,27 +5,59 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Book;
+use App\Models\BookRequest;
 use App\Models\Publisher;
 use App\Exports\BooksExport;
 use App\Exports\AuthorsExport;
 use App\Exports\PublishersExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $stats = [
-            'books' => Book::count(),
-            'authors' => Author::count(),
-            'publishers' => Publisher::count(),
-            'latestBooks' => Book::with('authors', 'publisher')
-                ->latest()
-                ->take(5)
-                ->get()
-        ];
+        if (auth()->user()->isAdmin()) {
+            $stats = [
+                'books' => Book::count(),
+                'authors' => Author::count(),
+                'publishers' => Publisher::count(),
+                'latestBooks' => Book::with('authors', 'publisher')
+                    ->latest()
+                    ->take(5)
+                    ->get()
+            ];
+            $activeRequestsCount = BookRequest::whereIn('status', ['pending', 'approved'])->count();
+            $recentRequestsCount = BookRequest::where('created_at', '>=', now()->subDays(30))->count();
+            $returnedTodayCount = BookRequest::whereDate('returned_at', today())->count();
 
-        return view('dashboard', compact('stats'));
+            $requests = BookRequest::with(['user', 'book'])->latest()->paginate(10);
+
+            return view('dashboard.dashboard', compact(
+                'stats',
+                'requests',
+                'activeRequestsCount',
+                'recentRequestsCount',
+                'returnedTodayCount',
+
+            ));
+        } else {
+            $stats = [
+                'total_requests' => auth()->user()->requests()->count(),
+                'active_requests' => auth()->user()->requests()
+                    ->whereIn('status', ['pending', 'approved'])->count(),
+                'overdue_requests' => auth()->user()->requests()
+                    ->where('status', 'approved')
+                    ->where('expected_return_date', '<', now())
+                    ->count()
+            ];
+
+            $requests = auth()->user()->requests()->with('book')->orderBy('request_date', 'desc')
+                ->paginate(10);
+
+            return view('dashboard.citizen', compact('stats', 'requests'));
+
+        }
     }
 
     public function exportBooks()

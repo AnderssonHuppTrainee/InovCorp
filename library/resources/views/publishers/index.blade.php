@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <x-resources.header title="Editora" createRoute="{{ route('publishers.create') }}" />
+        <x-resources.header title="Editoras" createRoute="{{ route('publishers.create') }}" />
 
         <!-- Filtros -->
 
@@ -55,7 +55,6 @@
                                     </div>
                                 @endif
                             </td>
-
                             <td class="flex space-x-2">
                                 <a href="{{ route('publishers.show', $publisher) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i>

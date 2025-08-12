@@ -54,7 +54,7 @@ class BookController extends Controller
         $authors = Author::orderBy('name')->get();
         $publishers = Publisher::orderBy('name')->get();
 
-        return view('books.index', compact('books', 'authors', 'publishers'));
+        return view('admin.books.index', compact('books', 'authors', 'publishers'));
     }
 
     /**
@@ -65,7 +65,7 @@ class BookController extends Controller
         $publishers = Publisher::orderBy('name')->get();
         $authors = Author::orderBy('name')->get();
 
-        return view('books.create', compact('publishers', 'authors'));
+        return view('admin.books.create', compact('publishers', 'authors'));
     }
 
     /**
@@ -93,7 +93,7 @@ class BookController extends Controller
         $book = Book::create($validated);
         $book->authors()->sync($request->authors);
 
-        return redirect()->route('book.index')->with('sucess', 'Livro cadastrado com sucesso|');
+        return redirect()->route('admin.book.index')->with('sucess', 'Livro cadastrado com sucesso|');
     }
 
     /**
@@ -101,7 +101,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return view('books.show', compact('book'));
+        return view('admin.books.show', compact('book'));
     }
 
     /**
@@ -174,7 +174,7 @@ class BookController extends Controller
             $book->delete();
         });
 
-        return redirect()->route('books.index')
+        return redirect()->route('admin.books.index')
             ->with('success', 'Livro removido com sucesso!');
     }
 }

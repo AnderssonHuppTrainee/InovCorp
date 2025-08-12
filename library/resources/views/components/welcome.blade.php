@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4 py-6">
-
+    <!-- Cabeçalho e botões de exportação -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
         <div class="flex flex-wrap gap-2">
@@ -18,9 +18,10 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- livros -->
-        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+    <!-- Primeira linha de estatísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
+        <!-- Livros -->
+        <div class="card bg-white dark:bg-gray-800 shadow-lg md:col-span-2">
             <div class="card-body">
                 <div class="flex items-center gap-4">
                     <div class="rounded-full bg-primary/10 dark:bg-primary/20 p-4">
@@ -34,8 +35,8 @@
             </div>
         </div>
 
-        <!-- autores -->
-        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+        <!-- Autores -->
+        <div class="card bg-white dark:bg-gray-800 shadow-lg md:col-span-2">
             <div class="card-body">
                 <div class="flex items-center gap-4">
                     <div class="rounded-full bg-secondary/10 dark:bg-secondary/20 p-4">
@@ -49,8 +50,8 @@
             </div>
         </div>
 
-        <!-- card editoras -->
-        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+        <!-- Editoras -->
+        <div class="card bg-white dark:bg-gray-800 shadow-lg md:col-span-2">
             <div class="card-body">
                 <div class="flex items-center gap-4">
                     <div class="rounded-full bg-accent/10 dark:bg-accent/20 p-4">
@@ -65,11 +66,32 @@
         </div>
     </div>
 
-    <!-- ultimos livros adicionados -->
-    <div class="card bg-white dark:bg-gray-800 shadow-lg">
+    <!-- Segunda linha de estatísticas (Requisições) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold">Requisições Ativas</h2>
+                <p class="text-3xl font-bold">{{ $activeRequestsCount ?? 0 }}</p>
+            </div>
+        </div>
+        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold">Últimos 30 dias</h2>
+                <p class="text-3xl font-bold">{{ $recentRequestsCount ?? 0}}</p>
+            </div>
+        </div>
+        <div class="card bg-white dark:bg-gray-800 shadow-lg">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold">Entregues Hoje</h2>
+                <p class="text-3xl font-bold">{{ $returnedTodayCount ?? 0}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos livros adicionados -->
+    <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
         <div class="card-body">
             <h2 class="text-xl font-semibold mb-4">Últimos Livros Adicionados</h2>
-
             @if($stats['latestBooks']->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="table w-full">
@@ -86,9 +108,7 @@
                             @foreach($stats['latestBooks'] as $book)
                                 <tr>
                                     <td>{{ $book->name }}</td>
-                                    <td>
-                                        {{ $book->authors->pluck('name')->join(', ') }}
-                                    </td>
+                                    <td>{{ $book->authors->pluck('name')->join(', ') }}</td>
                                     <td>{{ $book->publisher->name ?? '-' }}</td>
                                     <td>{{ $book->isbn }}</td>
                                     <td>{{ $book->created_at->format('d/m/Y') }}</td>
@@ -103,6 +123,70 @@
                         <i class="fas fa-info-circle"></i>
                         <span>Nenhum livro cadastrado ainda.</span>
                     </div>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Lista de requisições -->
+    <div class="card bg-white dark:bg-gray-800 shadow-lg">
+        <div class="card-body">
+            <h2 class="text-xl font-semibold mb-4">Últimas Requisições</h2>
+            @if($requests->isEmpty())
+                <div class="alert alert-info shadow-lg">
+                    <div>
+                        <i class="fas fa-info-circle"></i>
+                        <span>Nenhuma requisição encontrada.</span>
+                    </div>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Livro</th>
+                                <th>Data Requisição</th>
+                                <th>Devolução Prevista</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($requests as $request)
+                                            <tr>
+                                                <td>{{ $request->number }}</td>
+                                                <td>{{ $request->book->title }}</td>
+                                                <td>{{ $request->request_date->format('d/m/Y') }}</td>
+                                                <td>{{ $request->expected_return_date->format('d/m/Y') }}</td>
+                                                <td>
+                                                    <span
+                                                        class="badge 
+                                                                                                            {{ $request->status === 'approved' ? 'bg-green-100 text-green-800' :
+                                ($request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800') }}">
+                                                        {{ ucfirst($request->status) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
+                                                        Ver
+                                                    </a>
+                                                    @if(auth()->user()->isAdmin() && $request->status === 'pending')
+                                                        <form class="inline" action="{{ route('requests.approve', $request) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                                Aprovar
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4">
+                    {{ $requests->links() }}
                 </div>
             @endif
         </div>

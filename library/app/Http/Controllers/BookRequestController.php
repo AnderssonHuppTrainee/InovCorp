@@ -95,19 +95,25 @@ class BookRequestController extends Controller
         return view('requests.show', compact('request'));
     }
 
-    public function approve(BookRequest $requestModel)
+    public function approve(BookRequest $request)
     {
+
+        // verifica se o admin
         if (!auth()->user()->isAdmin()) {
-            abort(403);
+            abort(403, 'Acesso negado');
         }
 
-        $requestModel->update([
+
+        if ($request->status !== 'pending') {
+            return redirect()->back()->with('error', 'Apenas requisições pendentes podem ser aprovadas');
+        }
+        $request->update([
             'status' => 'approved',
             'actual_receipt_date' => now(),
-            'actual_days' => now()->diffInDays($requestModel->request_date),
+            'actual_days' => now()->diffInDays($request->request_date),
         ]);
 
-        return back()->with('success', 'Requisição aprovada com sucesso.');
+        return redirect()->back()->with('success', 'Requisição aprovada com sucesso.');
     }
 
 }

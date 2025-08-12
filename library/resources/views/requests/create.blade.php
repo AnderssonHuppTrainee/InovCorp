@@ -24,8 +24,10 @@
                             <div class="flex-1">
                                 <h3 class="text-xl font-semibold mb-2">{{ $book->name }}</h3>
                                 <p><span class="font-semibold">ISBN:</span> {{ $book->isbn }}</p>
-                                <p class="mt-2 text-gray-700"><span class="font-semibold">Sinopse:</span></p>
-                                <p class="text-justify">{{ $book->bibliography }}</p>
+                                <p><span class="font-semibold">Autor(es):</span>
+                                    {{ $book->authors->pluck('name')->join(', ')  }}</p>
+                                <p class="mt-2"><span class="font-semibold">Sinopse:</span></p>
+                                <p class="text-justify text-gray-700">{{ $book->bibliography }}</p>
                             </div>
                         </div>
 

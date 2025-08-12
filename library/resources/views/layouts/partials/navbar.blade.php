@@ -10,6 +10,13 @@
                         <x-application-logo class="h-8 w-auto" />
                     </a>
                 </div>
+                <div>
+                    @auth
+                        <x-nav-link href="{{ route('public.books.index') }}" :active="request()->routeIs('public.books.index')">
+                            {{ __('Livros') }}
+                        </x-nav-link>
+                    @endauth
+                </div>
                 <div class="flex flex-col md:flex-row items-center">
                     @auth
                         <a href="{{ url('/dashboard') }}" class="btn btn-outline btn-sm md:btn-md">Dashboard</a>

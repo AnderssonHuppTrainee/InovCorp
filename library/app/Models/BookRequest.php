@@ -44,4 +44,12 @@ class BookRequest extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    public function isOverdue()
+    {
+        return $this->status === 'approved' &&
+            $this->expected_return_date < now() &&
+            $this->returned_at === null;
+    }
+
 }

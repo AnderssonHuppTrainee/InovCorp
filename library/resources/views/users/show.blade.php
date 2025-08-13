@@ -52,10 +52,10 @@
                                     <td>{{ $req->expected_return_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td>
                                         <span class="badge
-                                                                            @if($req->status === 'approved') badge-success
-                                                                            @elseif($req->status === 'returned') badge-info
-                                                                            @elseif($req->status === 'rejected') badge-error
-                                                                            @else badge-warning @endif">
+                                                                                    @if($req->status === 'approved') badge-success
+                                                                                    @elseif($req->status === 'returned') badge-info
+                                                                                    @elseif($req->status === 'rejected') badge-error
+                                                                                    @else badge-warning @endif">
                                             {{ ucfirst($req->status) }}
                                         </span>
                                     </td>

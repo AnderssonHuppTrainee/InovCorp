@@ -16,14 +16,16 @@ return new class extends Migration {
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
             //num unico
             $table->string('number')->unique();
-
             $table->date('request_date');
             $table->date('expected_return_date');
             $table->date('actual_receipt_date')->nullable();
-
             $table->integer('actual_days')->nullable();
             $table->string('photo_path')->nullable();
-            $table->enum('status', ['pending', 'approved', 'returned', 'rejected'])->default('pending');
+            $table->date('returned_date')->nullable();
+            $table->date('admin_confirmed_return_date')->nullable();
+            $table->string('book_condition')->nullable();
+            $table->string('return_photo_path')->nullable();
+            $table->enum('status', ['pending', 'approved', 'pending_returned', 'returned', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

@@ -4,20 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+
+
+
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Apenas admin pode ver a lista de usuários
-        if (!auth()->user()->isAdmin()) {
-            abort(403);
+
+        $query = User::query()
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+
+        $sortField = $request->sort ?? 'name';
+        $direction = $request->direction ?? 'asc';
+
+        switch ($sortField) {
+            case 'name':
+                $query->orderBy('name', $direction);
+                break;
+            default:
+                $query->orderBy('name', 'asc');
         }
 
-        $users = User::where('role', 'citizen')->get();
+        $users = $query->paginate(10)->withQueryString();
         return view('users.index', compact('users'));
     }
 
@@ -26,7 +45,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
@@ -34,38 +53,101 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'photo' => 'nullable|image|max:2048',
+        ]);
+
+        // gerar senha aleatoria com letras, numeros e simbolos
+        $randomPassword = Str::password(8, true, true, true);
+
+        $user = new User();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->password = Hash::make($randomPassword);
+        $user->role = 'admin';
+
+        if ($request->hasFile('photo')) {
+            $user->photo_path = $request->file('photo')->store('profile-photos', 'public');
+        }
+
+        $user->save();
+
+        // Mail::to($user->email)->send(new SendAdminPasswordMail($randomPassword));
+
+        return redirect()->route('users.index')
+            ->with('success', "Administrador criado com sucesso");
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $requests = $user->requests()
+            ->with('book')
+            ->latest()
+            ->paginate(10);
+
+        return view('users.show', compact('user', 'requests'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+        return view('users.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'role' => ['required', 'in:citizen,admin'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        ]);
+
+        // upload da nova foto 
+        if ($request->hasFile('photo')) {
+            // remove a foto antiga se existir
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            $validated['profile_photo'] = $request->file('photo')->store('users', 'public');
+        } else {
+            // mante, a foto existente se nenhuma nova for enviada
+            unset($validated['profile_photo']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('users.index')->with('success', 'Utilizador atualizado com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        DB::transaction(function () use ($user) {
+            //  remove todas as associacoes com requests
+            $user->requests()->delete();
+
+            // remove a foto se existir
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $user->delete();
+        });
+
+        return redirect()->route('users.index')
+            ->with('success', 'Utilizador removido com sucesso!');
     }
 }

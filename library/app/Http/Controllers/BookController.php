@@ -101,7 +101,11 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return view('admin.books.show', compact('book'));
+        $requests = $book->requests()
+            ->with('user')
+            ->latest()
+            ->paginate(10);
+        return view('admin.books.show', compact('book', 'requests'));
     }
 
     /**

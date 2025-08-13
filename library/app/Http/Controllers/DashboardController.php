@@ -24,14 +24,21 @@ class DashboardController extends Controller
                 'publishers' => Publisher::count(),
                 'latestBooks' => Book::with('authors', 'publisher')
                     ->latest()
-                    ->take(5)
+                    ->take(3)
                     ->get()
             ];
             $activeRequestsCount = BookRequest::whereIn('status', ['pending', 'approved'])->count();
             $recentRequestsCount = BookRequest::where('created_at', '>=', now()->subDays(30))->count();
-            $returnedTodayCount = BookRequest::whereDate('returned_at', today())->count();
+            $returnedTodayCount = BookRequest::whereDate('admin_confirmed_return_date', today())->count();
 
-            $requests = BookRequest::with(['user', 'book'])->latest()->paginate(10);
+            $requests = BookRequest::with(['user', 'book'])
+                ->whereIn('status', ['pending', 'approved', 'pending_returned'])
+                ->latest()->paginate(10);
+
+            $returnedBooks = BookRequest::with(['user', 'book'])
+                ->where('status', 'pending_returned')
+                ->latest('returned_date')
+                ->paginate(10, ['*'], 'returned_page');
 
             return view('dashboard.dashboard', compact(
                 'stats',
@@ -39,6 +46,7 @@ class DashboardController extends Controller
                 'activeRequestsCount',
                 'recentRequestsCount',
                 'returnedTodayCount',
+                'returnedBooks'
 
             ));
         } else {

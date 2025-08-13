@@ -11,9 +11,7 @@
                 <x-input name="name" label="Nome do Autor" required />
 
                 <x-input name="photo" label="Profile Photo" type="file" helpText="Formatos: JPG, PNG (Max: 2MB)" />
-
             </div>
-
         </x-form>
     </div>
 </x-app-layout>

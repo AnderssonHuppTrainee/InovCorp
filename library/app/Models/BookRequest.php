@@ -15,12 +15,18 @@ class BookRequest extends Model
         'actual_receipt_date',
         'actual_days',
         'status',
-        'photo_path'
+        'photo_path',
+        'returned_date',
+        'admin_confirmed_return_date',
+        'book_condition',
+        'return_photo_path',
     ];
     protected $casts = [
         'request_date' => 'datetime',
         'expected_return_date' => 'datetime',
         'actual_receipt_date' => 'datetime',
+        'returned_date' => 'datetime',
+        'admin_confirmed_return_date' => 'datetime',
     ];
     protected static function boot()
     {

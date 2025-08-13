@@ -69,16 +69,16 @@
                                 {{ $author->books->pluck('name')->join(', ') ?: 'Nenhum livro' }}
                             </td>
                             <td class="flex space-x-2">
-                                <a href="{{ route('authors.show', $author) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('authors.show', $author) }}" class="btn btn-sm btn-info  text-white">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('authors.edit', $author) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('authors.edit', $author) }}" class="btn btn-sm btn-info  text-white">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('authors.destroy', $author) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-error"
+                                    <button type="submit" class="btn btn-sm btn-error  text-white"
                                         onclick="return confirm('Tem certeza que deseja excluir este autor?')">
                                         <i class="fas fa-trash"></i>
                                     </button>

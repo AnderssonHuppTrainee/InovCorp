@@ -2,7 +2,7 @@
 
     <div class="mb-6">
         <a href="{{ route('books.index') }}" class="btn btn-ghost">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
+            <i class="fas fa-arrow-left mr-2"></i> Voltar
         </a>
     </div>
 
@@ -80,28 +80,53 @@
         </div>
     </div>
 
-    <!-- Seção Adicional (opcional) 
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Detalhes Adicionais</h2>
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2">Informações Técnicas</h3>
-                        <ul class="space-y-2">
-                            <li><strong>Páginas:</strong> {{ $book->pages ?? '-' }}</li>
-                            <li><strong>Idioma:</strong> {{ $book->language ?? '-' }}</li>
-                            <li><strong>Edição:</strong> {{ $book->edition ?? '-' }}</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2">Estatísticas</h3>
-                        <ul class="space-y-2">
-                            <li><strong>Cadastrado em:</strong> {{ $book->created_at->format('d/m/Y H:i') }}</li>
-                            <li><strong>Última atualização:</strong> {{ $book->updated_at->format('d/m/Y H:i') }}</li>
-                        </ul>
-                    </div>
-                </div>
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Histórico de Requisições</h2>
+
+        @if($requests->count())
+            <div class="overflow-x-auto">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Data da Solicitação</th>
+                            <th>Data Esperada Devolução</th>
+                            <th>Status</th>
+                            <th>Condição (Devolução)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($requests as $req)
+                            <tr>
+                                <td>{{ $req->user->name }}</td>
+                                <td>{{ $req->request_date->format('d/m/Y') }}</td>
+                                <td>{{ $req->expected_return_date?->format('d/m/Y') ?? '-' }}</td>
+                                <td>
+                                    @php
+                                        $badgeClass = match ($req->status) {
+                                            'approved' => 'badge-success',
+                                            'returned' => 'badge-info',
+                                            'rejected' => 'badge-error',
+                                            default => 'badge-warning'
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">
+                                        {{ ucfirst($req->status) }}
+                                    </span>
+                                </td>
+                                <td>{{ $req->book_condition ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>-->
+
+            <div class="mt-4">
+                {{ $requests->links() }}
+            </div>
+        @else
+            <p class="text-gray-500 dark:text-gray-400">Nenhuma requisição encontrada para este livro.</p>
+        @endif
+    </div>
 
 </x-app-layout>

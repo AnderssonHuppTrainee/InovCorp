@@ -31,12 +31,19 @@ Route::middleware([
         ->name('dashboard');
 
     Route::resource('requests', BookRequestController::class)->except(['create']);
-    Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])->name('requests.create');
+    Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])
+        ->name('requests.create');
+
+    //  registrar devolução
+    Route::get('/requests/{bookRequest}/return', [BookRequestController::class, 'returnForm'])
+        ->name('requests.returnForm');
+
+    Route::post('/requests/{bookRequest}/return', [BookRequestController::class, 'submitReturn'])
+        ->name('requests.submitReturn');
 
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 });
-
 
 // Rotas protegidas apenas para admin
 Route::middleware([
@@ -48,6 +55,15 @@ Route::middleware([
     //gestao requisicoes
     Route::post('/requests/{request}/approve', [BookRequestController::class, 'approve'])
         ->name('requests.approve');
+
+    Route::get('/requests/{bookRequest}/review-return', [BookRequestController::class, 'reviewReturn'])
+        ->name('requests.reviewReturn');
+
+    Route::post('/requests/{bookRequest}/approve-return', [BookRequestController::class, 'approveReturn'])
+        ->name('requests.approveReturn');
+
+    Route::post('/requests/{bookRequest}/reject-return', [BookRequestController::class, 'rejectReturn'])
+        ->name('requests.rejectReturn');
 
     //exportacoes
     Route::prefix('export')->middleware('admin')->group(function () {
@@ -61,9 +77,9 @@ Route::middleware([
     Route::resource('authors', AuthorController::class);
     Route::resource('publishers', PublisherController::class);
 
-    // getao de usuários
-    Route::resource('users', UserController::class);
-    //Route::get('/users/create-admin', [UserController::class, 'createAdmin'])->name('users.create-admin');
-    //Route::post('/users/admin', [UserController::class, 'storeAdmin'])->name('users.store-admin');
+    // getao de users
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::resource('users', UserController::class)->except(['create']);
 });
 

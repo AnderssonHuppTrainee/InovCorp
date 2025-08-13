@@ -110,21 +110,22 @@
                                                         </td>
                                                         <td>
                                                             <span class="badge 
-                                                                                                                                                                                {{ $request->status === 'approved' ? 'badge-success' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status === 'approved' ? 'badge-success' :
                                     ($request->status === 'pending' ? 'badge-warning' : 'badge-info') }}">
                                                                 {{ ucfirst($request->status) }}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             @if($request->status === 'approved')
-                                                                <form action="{{ route('requests.return', $request) }}" method="POST">
-                                                                    @csrf
-                                                                    <button type="submit" class="btn btn-sm btn-primary">
-                                                                        <i class="fas fa-undo mr-1"></i> Devolver
-                                                                    </button>
-                                                                </form>
+                                                                <a href="{{ route('requests.returnForm', $request)}}"
+                                                                    class="btn btn-sm btn-primary">
+                                                                    <i class="fas fa-undo mr-1"></i> Devolver
+                                                                </a>
                                                             @else
-                                                                <button class="btn btn-sm btn-dan">Cancelar</button>
+                                                                @if($request->status === 'returned')
+                                                                @else
+                                                                    <button class="btn btn-sm btn-dan">Cancelar</button>
+                                                                @endif
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -140,13 +141,7 @@
         </div>
 
         <!-- Botão para nova requisição -->
-        @if(auth()->user()->canRequestMoreBooks())
-            <div class="flex justify-end">
-                <a href="{{ route('books.index') }}" class="btn btn-primary gap-2">
-                    <i class="fas fa-plus"></i> Nova Requisição
-                </a>
-            </div>
-        @else
+        @if(!auth()->user()->canRequestMoreBooks())
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle mr-2"></i>
                 Você atingiu o limite máximo de 3 livros requisitados simultaneamente.

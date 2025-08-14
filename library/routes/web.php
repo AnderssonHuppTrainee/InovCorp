@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReturnsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
@@ -40,6 +41,8 @@ Route::middleware([
 
     Route::post('/requests/{bookRequest}/return', [BookRequestController::class, 'submitReturn'])
         ->name('requests.submitReturn');
+    Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
+        ->name('requests.cancel');
 
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
@@ -53,8 +56,11 @@ Route::middleware([
     'admin'
 ])->group(function () {
     //gestao requisicoes
+    Route::get('/requests/{request}', [BookRequestController::class, 'show'])->name('requests.show');
     Route::post('/requests/{request}/approve', [BookRequestController::class, 'approve'])
         ->name('requests.approve');
+    Route::post('/requests/{bookRequest}/reject', [BookRequestController::class, 'reject'])
+        ->name('requests.reject');
 
     Route::get('/requests/{bookRequest}/review-return', [BookRequestController::class, 'reviewReturn'])
         ->name('requests.reviewReturn');
@@ -64,6 +70,8 @@ Route::middleware([
 
     Route::post('/requests/{bookRequest}/reject-return', [BookRequestController::class, 'rejectReturn'])
         ->name('requests.rejectReturn');
+
+    Route::resource('/returns', ReturnsController::class);
 
     //exportacoes
     Route::prefix('export')->middleware('admin')->group(function () {

@@ -1,90 +1,118 @@
 <x-app-layout>
+    @php
+        $statusLabels = [
+            'approved' => 'Aprovada',
+            'pending' => 'Pendente',
+            'pending_returned' => 'Devolução pendente',
+            'returned' => 'Devolvida',
+            'rejected' => 'Rejeitada',
+        ];
+    @endphp
+    <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+            <div class="card-title mb-6">
+                <h1 class="text-3xl font-bold text-base-content">Todas as Requisições</h1>
+            </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            <div class="p-6">
-                @if($requests->isEmpty())
-                    <p>Nenhuma requisição encontrada.</p>
-                @else
-                    <!-- Indicadores -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-lg font-medium">Requisições Ativas</h3>
-                            <p class="text-2xl">{{ $activeRequestsCount }}</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-lg font-medium">Últimos 30 dias</h3>
-                            <p class="text-2xl">{{ $recentRequestsCount }}</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-lg font-medium">Entregues Hoje</h3>
-                            <p class="text-2xl">{{ $returnedTodayCount }}</p>
-                        </div>
-                    </div>
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6 bg-white border-b border-gray-200">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Número</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Livro</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Data Requisição</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Devolução Prevista</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Status</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach ($requests as $request)
-                                                                    <tr>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->book->title }}</td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                                            {{ $request->request_date->format('d/m/Y') }}</td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                                            {{ $request->expected_return_date->format('d/m/Y') }}</td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                                            <span
-                                                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                {{ $request->status === 'approved' ? 'bg-green-100 text-green-800' :
-                                            ($request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800') }}">
-                                                                                {{ ucfirst($request->status) }}
-                                                                            </span>
-                                                                        </td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                                            <a href="{{ route('requests.show', $request) }}"
-                                                                                class="text-indigo-600 hover:text-indigo-900">Ver</a>
-                                                                            @if(auth()->user()->isAdmin() && $request->status === 'pending')
-                                                                                <form class="inline" action="{{ route('requests.store', $request) }}"
-                                                                                    method="POST">
-                                                                                    @csrf
-                                                                                    <button type="submit"
-                                                                                        class="text-green-600 hover:text-green-900 ml-2">Aprovar</button>
-                                                                                </form>
-                                                                            @endif
-                                                                        </td>
-                                                                    </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                @endif
-                    </div>
+            <x-resources.filters action="{{ route('requests.index') }}" clearUrl="{{ route('requests.index') }}">
+                <div class="form-control w-full max-w-xs">
+                    <label class="label">
+                        <span class="label-text">Pesquisar</span>
+                    </label>
+                    <input type="text" name="search" placeholder="Número" value="{{ request('search') }}"
+                        class="input input-bordered w-full">
                 </div>
+            </x-resources.filters>
+
+            @if($requests->isEmpty())
+                p>Nenhuma requisição encontrada.</p>
+            @else
+
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Número</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data Requisição</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Devolução Prevista</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach ($requests as $request)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $request->number }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $request->book->title }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $request->request_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge badge-lg ml-2 gap-1
+                                                        @if($request->status === 'approved') badge-primary
+                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                        @elseif($request->status === 'returned') badge-success
+                                                        @elseif($request->status === 'rejected') badge-error
+                                                        @else badge-neutral 
+                                                        @endif">
+
+                                                @if($request->status === 'approved')
+                                                    <i class="fas fa-check-circle"></i>
+                                                @elseif(in_array($request->status, ['pending', 'pending_returned']))
+                                                    <i class="fas fa-clock"></i>
+                                                @elseif($request->status === 'returned')
+                                                    <i class="fas fa-undo"></i>
+                                                @elseif($request->status === 'rejected')
+                                                    <i class="fas fa-times-circle"></i>
+                                                @endif
+
+                                                {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
+                                                Ver
+                                            </a>
+                                            @if(auth()->user()->isAdmin() && $request->status === 'pending')
+                                                <form class="inline" action="{{ route('requests.approve', $request) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                        Aprovar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+            @endif
             </div>
         </div>
+    </div>
+
 </x-app-layout>

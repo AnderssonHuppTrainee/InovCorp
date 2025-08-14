@@ -1,8 +1,9 @@
 <x-app-layout>
 
     <div class="mb-6">
-        <a href="{{ route('books.index') }}" class="btn btn-ghost">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar
+        <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
         </a>
     </div>
 
@@ -62,70 +63,97 @@
                     </p>
                 </div>
 
-                <!-- Ações -->
-                <div class="flex flex-wrap gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <a href="{{ route('books.edit', $book) }}" class="btn btn-info">
-                        <i class="fas fa-edit mr-2"></i> Editar
-                    </a>
-                    <form action="{{ route('books.destroy', $book) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-error"
-                            onclick="return confirm('Tem certeza que deseja excluir este livro?')">
-                            <i class="fas fa-trash mr-2"></i> Excluir
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                @if(auth()->user()->isAdmin())
+                            <!-- Ações -->
+                            <div class="flex flex-wrap gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <a href="{{ route('books.edit', $book) }}" class="btn btn-info  text-white">
+                                    <i class="fas fa-edit mr-2"></i> Editar
+                                </a>
+                                <form action="{{ route('books.destroy', $book) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-error text-white"
+                                        onclick="return confirm('Tem certeza que deseja excluir este livro?')">
+                                        <i class="fas fa-trash mr-2"></i> Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
 
-    <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Histórico de Requisições</h2>
+                    <div class="px-6">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Histórico de Requisições</h2>
 
-        @if($requests->count())
-            <div class="overflow-x-auto">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Data da Solicitação</th>
-                            <th>Data Esperada Devolução</th>
-                            <th>Status</th>
-                            <th>Condição (Devolução)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($requests as $req)
-                            <tr>
-                                <td>{{ $req->user->name }}</td>
-                                <td>{{ $req->request_date->format('d/m/Y') }}</td>
-                                <td>{{ $req->expected_return_date?->format('d/m/Y') ?? '-' }}</td>
-                                <td>
-                                    @php
-                                        $badgeClass = match ($req->status) {
-                                            'approved' => 'badge-success',
-                                            'returned' => 'badge-info',
-                                            'rejected' => 'badge-error',
-                                            default => 'badge-warning'
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $badgeClass }}">
-                                        {{ ucfirst($req->status) }}
-                                    </span>
-                                </td>
-                                <td>{{ $req->book_condition ?? '-' }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        @if($requests->count())
+                            <div class="overflow-x-auto">
+                                <table class="table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>Usuário</th>
+                                            <th>Data da Solicitação</th>
+                                            <th>Data Esperada Devolução</th>
+                                            <th>Status</th>
+                                            <th>Condição (Devolução)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($requests as $req)
+                                            <tr>
+                                                <td>{{ $req->user->name }}</td>
+                                                <td>{{ $req->request_date->format('d/m/Y') }}</td>
+                                                <td>{{ $req->expected_return_date?->format('d/m/Y') ?? '-' }}</td>
+                                                <td>
+                                                    @php
+                                                        $badgeClass = match ($req->status) {
+                                                            'approved' => 'badge-success',
+                                                            'returned' => 'badge-info',
+                                                            'rejected' => 'badge-error',
+                                                            default => 'badge-warning'
+                                                        };
+                                                    @endphp
+                                                    <span class="badge {{ $badgeClass }}">
+                                                        {{ ucfirst($req->status) }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $req->book_condition ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
 
-            <div class="mt-4">
-                {{ $requests->links() }}
+                            <div class="mt-4">
+                                {{ $requests->links() }}
+                            </div>
+                        @else
+                            <p class="text-gray-500 dark:text-gray-400 mb-4">Nenhuma requisição encontrada para este livro.</p>
+                        @endif
+                    </div>
+                @else
+
+                @auth
+                    @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
+                        <a href="{{ route('requests.create', $book) }}" class="btn btn-lg btn-outline">
+                            Requisitar
+                        </a>
+                    @elseif(!$book->isAvailable())
+                        <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
+                            Alugado
+                        </span>
+                    @endif
+                @else
+                    @if($book->isAvailable())
+                        <a href="{{ route('login') }}" class="btn btn-lg btn-outline">
+                            Requisitar
+                        </a>
+                    @else
+                        <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
+                            Alugado
+                        </span>
+                    @endif
+                @endauth
             </div>
-        @else
-            <p class="text-gray-500 dark:text-gray-400">Nenhuma requisição encontrada para este livro.</p>
         @endif
     </div>
 

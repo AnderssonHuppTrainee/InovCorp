@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Registrar middleware alias
+        // Remminder de devolucoes
         $this->app['router']->aliasMiddleware('admin', \App\Http\Middleware\AdminMiddleware::class);
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
+            $schedule->command('reminders:send')
+                ->dailyAt('09:00')
+                ->timezone('Europe/Lisbon');
+        });
     }
 }

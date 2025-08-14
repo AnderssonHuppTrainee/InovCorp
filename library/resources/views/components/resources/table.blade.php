@@ -1,86 +1,70 @@
 @props([
-    'columns' => [],
-    'items' => [],
-    'emptyMessage' => 'Nenhum registro encontrado',
-    'actions' => ['show', 'edit', 'delete'],
-    'routePrefix' => ''
+    'columns' => [],      // Array de colunas ['Título' => 'book.title', 'Data' => 'return_date', ...]
+    'rows' => [],         // Array de objetos/arrays com os dados
+    'actions' => null     // Callback para renderizar ações
 ])
 
-<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-    <table class="table table-zebra w-full">
-        <thead>
-            <tr>
-                @foreach($columns as $column)
-                    <th>
-                        @if($column['sortable'] ?? false)
-                            <a href="{{ request()->fullUrlWithQuery([
-                                'sort' => $column['sortKey'] ?? $column['key'],
-                                'direction' => request('sort') === ($column['sortKey'] ?? $column['key']) 
-                                    ? (request('direction') === 'asc' ? 'desc' : 'asc')
-                                    : 'asc'
-                            ]) }}" class="flex items-center">
-                                {{ $column['label'] }}
-                                @if(request('sort') === ($column['sortKey'] ?? $column['key']))
-                                    <i class="fas fa-sort-{{ request('direction') === 'asc' ? 'up' : 'down' }} ml-1"></i>
-                                @else
-                                    <i class="fas fa-sort ml-1 text-gray-400"></i>
-                                @endif
-                            </a>
-                        @else
-                            {{ $column['label'] }}
-                        @endif
-                    </th>
-                @endforeach
-                
-                @if(!empty($actions))
-                    <th>Ações</th>
-                @endif
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($items as $item)
+<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+            <thead class="bg-gray-50">
                 <tr>
-                    @foreach($columns as $column)
-                        <td>
-                            @if(isset($column['format']) && is_callable($column['format']))
-                                {!! $column['format']($item) !!}
-                            @else
-                                {{ $item->{$column['key']} }}
-                            @endif
-                        </td>
+                    @foreach($columns as $header => $key)
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ is_numeric($header) ? $key : $header }}
+                        </th>
                     @endforeach
-                    
-                    @if(!empty($actions))
-                        <td class="flex space-x-2">
-                            @if(in_array('show', $actions))
-                                <a href="{{ route("{$routePrefix}.show", $item) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            @endif
-                            @if(in_array('edit', $actions))
-                                <a href="{{ route("{$routePrefix}.edit", $item) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            @endif
-                            @if(in_array('delete', $actions))
-                                <form action="{{ route("{$routePrefix}.destroy", $item) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-error" onclick="return confirm('Tem certeza?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
+                    @if($actions)
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Ações
+                        </th>
                     @endif
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="{{ count($columns) + (!empty($actions) ? 1 : 0) }}" class="text-center py-4">
-                        {{ $emptyMessage }}
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($rows as $row)
+                    <tr>
+                        @foreach($columns as $key)
+                            @php
+                                $value = is_numeric($key) ? data_get($row, $key) : (is_callable($key) ? $key($row) : data_get($row, $key));
+
+                                // Formata datas automaticamente
+                                if($value instanceof \Illuminate\Support\Carbon) {
+                                    $value = $value->format('d/m/Y');
+                                }
+
+                                // Badge para status
+                                if(data_get($row, 'status') && $key === 'status') {
+                                    $statusClass = match(data_get($row, 'status')) {
+                                        'approved' => 'badge-success',
+                                        'pending' => 'badge-warning',
+                                        'pending_returned' => 'badge-warning',
+                                        'returned' => 'badge-info',
+                                        'rejected' => 'badge-error',
+                                        default => 'badge-secondary',
+                                    };
+                                    $value = '<span class="badge ' . $statusClass . '">' . ucfirst(data_get($row, 'status')) . '</span>';
+                                }
+                            @endphp
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {!! $value !!}
+                            </td>
+                        @endforeach
+
+                        @if($actions)
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {!! $actions($row) !!}
+                            </td>
+                        @endif
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="{{ count($columns) + ($actions ? 1 : 0) }}" class="px-6 py-4 text-center">
+                            Nenhum registro encontrado.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>

@@ -1,7 +1,8 @@
 <x-app-layout>
     <div class="mb-6">
-        <a href="{{ route('authors.index') }}" class="btn btn-ghost">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
+        <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
         </a>
     </div>
     <div class="container mx-auto px-4 py-8">
@@ -14,10 +15,10 @@
                 </div>
             @else
                 <!--<div class="flex-shrink-0 avatar placeholder">
-                                            <div class="bg-neutral-focus text-neutral-content rounded-full w-32 h-32">
-                                                <span class="text-4xl">{{ strtoupper(substr($author->name, 0, 1)) }}</span>
-                                            </div>
-                                        </div>-->
+                                                <div class="bg-neutral-focus text-neutral-content rounded-full w-32 h-32">
+                                                    <span class="text-4xl">{{ strtoupper(substr($author->name, 0, 1)) }}</span>
+                                                </div>
+                                            </div>-->
                 <div class="flex-shrink-0">
                     <img src="https://picsum.photos/seed/{{ substr($author->name, 0, 100) }}/128/128"
                         alt="{{ $author->name }}" class="rounded-full w-32 h-32 object-cover">
@@ -55,11 +56,11 @@
                                 <x-image-book class="rounded-xl h-48 w-full object-cover" />
                             </figure>
                             <!--@if($book->cover_image)
-                                                                                        <figure class="px-4 pt-4">
-                                                                                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Capa de {{ $book->name }}"
-                                                                                                class="rounded-xl h-48 w-full object-cover">
-                                                                                        </figure>
-                                                                                    @endif-->
+                                                                                                <figure class="px-4 pt-4">
+                                                                                                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Capa de {{ $book->name }}"
+                                                                                                        class="rounded-xl h-48 w-full object-cover">
+                                                                                                </figure>
+                                                                                            @endif-->
                             <div class="card-body">
                                 <h3 class="card-title text-gray-900 dark:text-white">
                                     <a href="{{ route('books.show', $book) }}"

@@ -83,7 +83,7 @@ class User extends Authenticatable
     public function canRequestMoreBooks()
     {
         $activeRequests = $this->requests()
-            ->whereIn('status', ['pending', 'approved'])
+            ->whereIn('status', ['pending', 'approved', 'pending_returned'])
             ->count();
 
         return $activeRequests < 3;

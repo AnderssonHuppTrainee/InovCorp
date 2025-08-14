@@ -38,6 +38,6 @@ class Book extends Model
     }
     public function isAvailable()
     {
-        return !$this->requests()->whereIn('status', ['pending', 'approved'])->exists();
+        return $this->available;
     }
 }

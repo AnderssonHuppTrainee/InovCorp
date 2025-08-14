@@ -1,24 +1,41 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
-        <div class="card bg-base-100 shadow-lg max-w-2xl mx-auto">
-            <div class="card-body">
-                <h2 class="card-title">Registrar Devolução</h2>
 
-                <div class="mb-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        @if($bookRequest->book->cover_image)
-                            <img src="{{ asset('storage/' . $bookRequest->book->cover_image) }}"
-                                alt="{{ $bookRequest->book->name }}" class="w-32 h-48 object-cover rounded-lg">
-                        @endif
-                        <div>
-                            <h3 class="font-bold">{{ $bookRequest->book->name }}</h3>
-                            <p class="text-sm text-gray-600">
-                                {{ $bookRequest->book->authors->pluck('name')->join(', ') }}
-                            </p>
+
+    <!-- Botão voltar -->
+    <div class="mb-6">
+        <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- Card principal -->
+    <div class="card bg-base-100 shadow-xl ">
+        <div class="card-body">
+
+            <!-- Cabeçalho -->
+            <h2 class="card-title text-2xl mb-6">
+                <i class="fas fa-undo-alt mr-2"></i> Registrar Devolução
+            </h2>
+
+            <!-- Livro -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
+                <div
+                    class="bg-base-200 rounded-lg shadow-md overflow-hidden w-40 h-60 flex items-center justify-center">
+                    @if($bookRequest->book->cover_image)
+                        <x-image-book class="w-full h-full object-cover" />
+                    @else
+                        <div class="text-center p-4">
+                            <i class="fas fa-book text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-500">Sem capa</p>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+                    @endif
+                </div>
+                <div class="flex-1 space-y-2">
+                    <h3 class="text-xl font-bold">{{ $bookRequest->book->name }}</h3>
+                    <p class="text-sm text-gray-600">
+                        {{ $bookRequest->book->authors->pluck('name')->join(', ') }}
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                             <p class="font-semibold">Data de requisição:</p>
                             <p>{{ $bookRequest->request_date->format('d/m/Y') }}</p>
@@ -29,37 +46,48 @@
                         </div>
                     </div>
                 </div>
-
-                <form action="{{ route('requests.submitReturn', $bookRequest) }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-control mb-4">
-                        <label class="label" for="return_photo">
-                            <span class="label-text">Foto do estado atual do livro*</span>
-                        </label>
-                        <input type="file" name="return_photo" id="return_photo"
-                            class="file-input file-input-bordered w-full" required>
-                        <label class="label">
-                            <span class="label-text-alt">Envie uma foto clara mostrando o estado do livro</span>
-                        </label>
-                    </div>
-
-                    <div class="form-control mb-4">
-                        <label class="label" for="notes">
-                            <span class="label-text">Observações</span>
-                        </label>
-                        <textarea name="notes" id="notes" rows="3" class="textarea textarea-bordered"
-                            placeholder="Algum dano ou observação importante..."></textarea>
-                    </div>
-
-                    <div class="flex justify-end gap-4">
-                        <a href="{{ route('dashboard') }}" class="btn btn-ghost">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-check mr-2"></i> Registrar Devolução
-                        </button>
-                    </div>
-                </form>
             </div>
+
+
+            <form action="{{ route('requests.submitReturn', $bookRequest) }}" method="POST"
+                enctype="multipart/form-data" class="space-y-6">
+                @csrf
+
+
+                <div class="form-control">
+                    <label class="label" for="return_photo">
+                        <span class="label-text font-semibold">Foto do estado atual do livro*</span>
+                    </label>
+                    <input type="file" name="return_photo" id="return_photo"
+                        class="file-input file-input-bordered w-full" required>
+                    <label class="label">
+                        <span class="label-text-alt">Envie uma foto clara mostrando o estado do livro</span>
+                    </label>
+                </div>
+
+
+                <div class="form-control ">
+                    <label class="label" for="notes">
+                        <span class="label-text font-semibold">Observações:</span>
+                    </label>
+
+                    <textarea name="notes" id="notes" rows="3" class="textarea textarea-bordered w-full"
+                        placeholder="Algum dano ou observação importante...">
+                        </textarea>
+                </div>
+
+
+                <div class="flex flex-col sm:flex-row justify-end gap-4">
+                    <a href="{{ route('dashboard') }}" class="btn btn-ghost">
+                        <i class="fas fa-times mr-2"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check mr-2"></i> Registrar Devolução
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
+
 </x-app-layout>

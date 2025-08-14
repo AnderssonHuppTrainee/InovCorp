@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->date('admin_confirmed_return_date')->nullable();
             $table->string('book_condition')->nullable();
             $table->string('return_photo_path')->nullable();
-            $table->enum('status', ['pending', 'approved', 'pending_returned', 'returned', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'pending_returned', 'returned', 'rejected', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }

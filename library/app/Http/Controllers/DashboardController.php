@@ -32,7 +32,7 @@ class DashboardController extends Controller
             $returnedTodayCount = BookRequest::whereDate('admin_confirmed_return_date', today())->count();
 
             $requests = BookRequest::with(['user', 'book'])
-                ->whereIn('status', ['pending', 'approved', 'pending_returned'])
+                ->whereIn('status', ['pending', 'approved'])
                 ->latest()->paginate(10);
 
             $returnedBooks = BookRequest::with(['user', 'book'])

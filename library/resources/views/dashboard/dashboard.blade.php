@@ -131,33 +131,61 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="table w-full">
-                            <thead>
+                        <!--<table class="table w-full">-->
+                        <table class="table table-zebra w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th>Número</th>
-                                    <th>Livro</th>
-                                    <th>Data Requisição</th>
-                                    <th>Devolução Prevista</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Número</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data Requisição</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Devolução Prevista</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações</th>
+                                </tr>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($requests as $request)
                                                     <tr>
-                                                        <td>{{ $request->number }}</td>
-                                                        <td>{{ $request->book->title }}</td>
-                                                        <td>{{ $request->request_date->format('d/m/Y') }}</td>
-                                                        <td>{{ $request->expected_return_date->format('d/m/Y') }}</td>
-                                                        <td>
-                                                            <span
-                                                                class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $request->status === 'approved' ? 'bg-green-100 text-green-800' :
-                                    ($request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800') }}">
+                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="flex items-center gap-3">
+                                                                @if($request->book->cover_image)
+                                                                    <div class="avatar">
+                                                                        <div class="mask mask-squircle w-12 h-12">
+                                                                            <img src="{{ asset('storage/' . $request->book->cover_image) }}"
+                                                                                alt="{{ $request->book->name }}" />
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                                {{ $request->book->name }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <span class="badge 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status == 'approved' ? 'badge-success' :
+                                    ($request->status == 'pending' ? 'badge-warning' :
+                                        ($request->status == 'returned' ? 'badge-info' : 'badge-error')) }}">
                                                                 {{ ucfirst($request->status) }}
                                                             </span>
                                                         </td>
-                                                        <td>
+                                                        <td class="px-6 py-4">
                                                             <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
                                                                 Ver
                                                             </a>
@@ -176,7 +204,10 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-4">
+                    <div class="flex justify-end m-4">
+                        <a href="{{ route('requests.index') }}" class="link-info">Ver todos as requisições...</a>
+                    </div>
+                    <div class="mt-2">
                         {{ $requests->links() }}
                     </div>
                 @endif
@@ -194,16 +225,28 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="table table-zebra">
-                            <thead>
+                        <table class="table table-zebra w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+
                                 <tr>
-                                    <th>Número</th>
-                                    <th>Livro</th>
-                                    <th>Utilizador</th>
-                                    <th>Data Devolução</th>
-                                    <th>Estado</th>
-                                    <th>Dias</th>
-                                    <th>Ações</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Número</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Utilizador</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data Devolução</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Dias</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -235,22 +278,7 @@
                                                 <span class="badge badge-error ml-2">Atrasado</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            <span class="badge gap-1" @class([
-                                                'badge-success' => $request->book_condition === 'excellent',
-                                                'badge-info' => $request->book_condition === 'good',
-                                                'badge-warning' => $request->book_condition === 'damaged',
-                                                'badge-error' => $request->book_condition === 'lost',
-                                            ])>
-                                                <i @class([
-                                                    'fas fa-grin-stars' => $request->book_condition === 'excellent',
-                                                    'fas fa-thumbs-up' => $request->book_condition === 'good',
-                                                    'fas fa-exclamation-triangle' => $request->book_condition === 'damaged',
-                                                    'fas fa-times-circle' => $request->book_condition === 'lost',
-                                                ])></i>
-                                                {{ ucfirst($request->book_condition) }}
-                                            </span>
-                                        </td>
+
                                         <td>
                                             {{ $request->actual_days }} dias
                                         </td>
@@ -259,20 +287,23 @@
                                                 class="btn btn-sm btn-outline">
                                                 Ver
                                             </a>
-                                            @if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
-                                                <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                        Aprovar
-                                                    </button>
-                                                </form>
-                                            @endif
+                                            <!--@if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
+                                                        <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                                Aprovar
+                                                            </button>
+                                                        </form>
+                                                    @endif-->
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="flex justify-end m-4">
+                        <a href="{{ route('returns.index') }}" class="link-info">Ver todas as devoluções...</a>
                     </div>
                     <div class="px-4 pb-4 sm:px-6">
                         {{ $returnedBooks->links() }}
@@ -288,17 +319,27 @@
                 <h2 class="text-xl font-semibold mb-4">Últimos Livros Adicionados</h2>
                 @if($stats['latestBooks']->count() > 0)
                     <div class="overflow-x-auto">
-                        <table class="table w-full">
-                            <thead>
+                        <table class="table table-zebra w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th>Título</th>
-                                    <th>Autor(es)</th>
-                                    <th>Editora</th>
-                                    <th>ISBN</th>
-                                    <th>Data</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Título</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Autor(es)</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Editora</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ISBN</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($stats['latestBooks'] as $book)
                                     <tr>
                                         <td>{{ $book->name }}</td>
@@ -311,6 +352,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="flex justify-end m-4">
+                            <a href="{{ route('books.index') }}" class="link-info">Ver todos os livros...</a>
+                        </div>
                     </div>
                 @else
                     <div class="alert alert-info m-4 sm:m-6">
@@ -321,6 +365,7 @@
                     </div>
                 @endif
             </div>
+
         </div>
     </div>
 </x-app-layout>

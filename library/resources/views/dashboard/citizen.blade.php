@@ -9,7 +9,7 @@
 
             @auth
                 @if(auth()->user()->canRequestMoreBooks())
-                    <a href="{{ route('books.index') }}" class="btn btn-primary gap-2">
+                    <a href="{{ route('public.books.index') }}" class="btn btn-primary gap-2">
                         <i class="fas fa-plus"></i>
                         Nova Requisição
                     </a>
@@ -87,48 +87,68 @@
                             </thead>
                             <tbody>
                                 @foreach($requests as $request)
-                                                    <tr>
-                                                        <td>
-                                                            <div class="flex items-center">
-                                                                @if($request->book->cover_image)
-                                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                                        alt="{{ $request->book->title }}"
-                                                                        class="w-10 h-10 rounded mr-3 object-cover">
-                                                                @endif
-                                                                <div>
-                                                                    <div class="font-medium">{{ $request->book->title }}</div>
-                                                                    <div class="text-sm text-gray-500">{{ $request->book->author }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ $request->request_date->format('d/m/Y') }}</td>
-                                                        <td class="{{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
-                                                            {{ $request->expected_return_date->format('d/m/Y') }}
-                                                            @if($request->isOverdue())
-                                                                <span class="badge badge-error ml-2">Atrasado</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status === 'approved' ? 'badge-success' :
-                                    ($request->status === 'pending' ? 'badge-warning' : 'badge-info') }}">
-                                                                {{ ucfirst($request->status) }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            @if($request->status === 'approved')
-                                                                <a href="{{ route('requests.returnForm', $request)}}"
-                                                                    class="btn btn-sm btn-primary">
-                                                                    <i class="fas fa-undo mr-1"></i> Devolver
-                                                                </a>
-                                                            @else
-                                                                @if($request->status === 'returned')
-                                                                @else
-                                                                    <button class="btn btn-sm btn-dan">Cancelar</button>
-                                                                @endif
-                                                            @endif
-                                                        </td>
-                                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center">
+                                                @if($request->book->cover_image)
+                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
+                                                        alt="{{ $request->book->title }}"
+                                                        class="w-10 h-10 rounded mr-3 object-cover">
+                                                @endif
+                                                <div>
+                                                    <div class="font-medium">{{ $request->book->title }}</div>
+                                                    <div class="text-sm text-gray-500">{{ $request->book->author }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $request->request_date->format('d/m/Y') }}</td>
+                                        <td class="{{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
+                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                            @if($request->isOverdue())
+                                                <span class="badge badge-error ml-2">Atrasado</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-lg ml-2 gap-1
+                                                                        @if($request->status === 'approved') badge-primary
+                                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                        @elseif($request->status === 'returned') badge-success
+                                                                        @elseif($request->status === 'rejected') badge-error
+                                                                        @else badge-neutral 
+                                                                        @endif">
+
+                                                @if($request->status === 'approved')
+                                                    <i class="fas fa-check-circle"></i>
+                                                @elseif(in_array($request->status, ['pending', 'pending_returned']))
+                                                    <i class="fas fa-clock"></i>
+                                                @elseif($request->status === 'returned')
+                                                    <i class="fas fa-undo"></i>
+                                                @elseif($request->status === 'rejected')
+                                                    <i class="fas fa-times-circle"></i>
+                                                @endif
+
+                                                {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if($request->status === 'approved')
+                                                <a href="{{ route('requests.returnForm', $request) }}"
+                                                    class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-undo mr-1"></i> Devolver
+                                                </a>
+                                            @elseif($request->status === 'pending' && auth()->id() === $request->user_id)
+                                                <form action="{{ route('requests.cancel', $request) }}" method="POST"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-sm btn-danger ml-2"
+                                                        onclick="return confirm('Tem certeza que deseja cancelar esta requisição?')">
+                                                        Cancelar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>

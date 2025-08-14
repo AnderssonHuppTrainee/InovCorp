@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->text('bibliography')->nullable();
             $table->string('cover_image')->nullable();
             $table->decimal('price', 8, 2);
-            $table->boolean('is_avalible')->default(true);
+            $table->boolean('available')->default(true);
             $table->timestamps();
         });
     }

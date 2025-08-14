@@ -2,50 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreReturnBookRequest;
+
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookRequestRequest;
-use App\Mail\BookRequested;
-use App\Mail\ReturnReminder;
+use App\Mail\BookRequestConfirmation;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Book;
+use App\Models\User;
 use App\Models\BookRequest;
+use App\Notifications\BookRequestNotification;
 use Illuminate\Support\Facades\Auth;
 
 class BookRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user();
 
-        // Contagem de requisições ativas
-        $activeRequestsCount = $user->isAdmin()
-            ? BookRequest::whereIn('status', ['pending', 'approved'])->count()
-            : $user->requests()->whereIn('status', ['pending', 'approved'])->count();
+        $query = BookRequest::with(['user', 'book']);
 
-        // Contagem dos últimos 30 dias
-        $recentRequestsCount = $user->isAdmin()
-            ? BookRequest::where('request_date', '>=', now()->subDays(30))->count()
-            : $user->requests()->where('request_date', '>=', now()->subDays(30))->count();
+        if ($request->search) {
+            $search = $request->search;
+            $query->whereHas('book', function ($q) use ($search) {
+                $q->where('numero', 'like', "%{$search}%");
+            })->orWhereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+        $requests = $query->orderBy('request_date', 'desc')->get();
 
-        // Contagem de entregues hoje
-        $returnedTodayCount = $user->isAdmin()
-            ? BookRequest::whereDate('actual_receipt_date', today())->count()
-            : $user->requests()->whereDate('actual_receipt_date', today())->count();
-
-        // Lista de requisições com relacionamento do livro
-        $requests = $user->isAdmin()
-            ? BookRequest::with('book')->latest()->get()
-            : $user->requests()->with('book')->latest()->get();
-
-        return view('requests.index', compact(
-            'requests',
-            'activeRequestsCount',
-            'recentRequestsCount',
-            'returnedTodayCount'
-        ));
+        return view('requests.index', compact('requests'));
     }
 
     public function create(Book $book)
@@ -63,13 +50,13 @@ class BookRequestController extends Controller
 
         $book = Book::findOrFail($request->book_id);
 
-        // Armazenar a foto
+
         $photoPath = null;
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('request-photos', 'public');
         }
 
-        // Criar a requisição
+
         $bookRequest = BookRequest::create([
             'user_id' => auth()->id(),
             'book_id' => $book->id,
@@ -78,11 +65,26 @@ class BookRequestController extends Controller
             'photo_path' => $photoPath,
         ]);
 
-        // Enviar emails de notificação
-        //Mail::to(auth()->user()->email)->send(new BookRequested($bookRequest));
-        //Mail::to(config('mail.admin_address'))->send(new BookRequested($bookRequest, true));
 
-        return redirect()->route('requests.index')
+        // Enviar emails de notificação
+        try {
+
+            Mail::to($bookRequest->user->email)
+                ->send(new BookRequestConfirmation($bookRequest));
+
+            User::where('role', 'admin')->each(function ($admin) use ($bookRequest) {
+                $admin->notify(new BookRequestNotification($bookRequest));
+            });
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao enviar emails: ' . $e->getMessage());
+
+        }
+        $request->book->update([
+            'avaliable' => false,
+        ]);
+
+        return redirect()->route('dashboard')
             ->with('success', 'Requisição realizada com sucesso. Você receberá um email de confirmação.');
     }
 
@@ -114,8 +116,28 @@ class BookRequestController extends Controller
             'actual_receipt_date' => now(),
             'actual_days' => now()->diffInDays($request->request_date),
         ]);
+        $request->book->update([
+            'avaliable' => false,
+        ]);
 
         return redirect()->back()->with('success', 'Requisição aprovada com sucesso.');
+    }
+
+    public function reject(BookRequest $bookRequest)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Acesso não autorizado.');
+        }
+
+        $bookRequest->update([
+            'status' => 'rejected', // rejeitado
+        ]);
+        $bookRequest->book->update([
+            'avaliable' => true,
+        ]);
+
+        return redirect()->route('requests.index')
+            ->with('error', 'Requisição rejeitada. Multas em atraso');
     }
 
     public function returnForm(BookRequest $bookRequest)
@@ -142,7 +164,7 @@ class BookRequestController extends Controller
             'return_photo_path' => $photoPath,
             'status' => 'pending_returned',
         ]);
-        return redirect()->route('requests.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Solicitação de devolução enviada. Aguarde a avaliação do administrador.');
     }
 
@@ -176,6 +198,9 @@ class BookRequestController extends Controller
             'actual_days' => $bookRequest->request_date->diffInDays(now()),
             'book_condition' => $request->book_condition,
         ]);
+        $bookRequest->book->update([
+            'avaliable' => true,
+        ]);
 
         return redirect()->route('requests.index')
             ->with('success', 'Devolução aprovada com sucesso.');
@@ -191,9 +216,26 @@ class BookRequestController extends Controller
             'status' => 'approved', // volta para aprovado, pois n aceitou a devolucao
         ]);
 
+
         return redirect()->route('requests.index')
             ->with('error', 'Devolução rejeitada. O livro deve ser reapresentado.');
     }
+
+    public function cancel(BookRequest $bookRequest)
+    {
+
+        if (auth()->id() !== $bookRequest->user_id) {
+            abort(403, 'Ação não autorizada.');
+        }
+
+        $bookRequest->update([
+            'status' => 'cancelled',
+        ]);
+
+
+        return redirect()->route('dashboard.citizen')->with('success', 'Requisição cancelada com sucesso.');
+    }
+
 
 }
 

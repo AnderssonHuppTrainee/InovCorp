@@ -1,6 +1,6 @@
 @props([
     'action' => '',
-    'method' => '',
+    'method' => 'GET',
     'clearUrl' => '',
     ])
 

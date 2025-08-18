@@ -1,6 +1,13 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <x-resources.header title="Autores" createRoute="{{ route('authors.create') }}" />
+
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+        <x-resources.header title="Gestão de Autores" createRoute="{{ route('authors.create') }}" />
 
         <!-- filtros -->
         <x-resources.filters action="{{ route('authors.index') }}" clearUrl="{{ route('authors.index') }}">

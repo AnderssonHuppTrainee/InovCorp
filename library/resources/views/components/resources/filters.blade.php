@@ -1,20 +1,14 @@
 @props([
     'action' => '',
     'method' => 'GET',
-    'clearUrl' => '',
-    ])
+    'clearUrl' => null,
+])
 
-<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
-        <form method="{{ $method }}" action="{{ $action }}" class="flex flex-wrap gap-4 items-end">
-                {{ $slot }}
+<div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-6">
+    <form method="{{ $method }}" action="{{ $action }}" class="flex flex-wrap gap-4 items-end">
+        {{ $slot }}
 
-                <div class="form-control">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                </div>
-                @if($clearUrl)
-                    <div class="form-control">
-                        <a href="{{ $clearUrl}}" class="btn btn-outline">Limpar</a>
-                    </div>
-                @endif
-        </form>
+     
+        <x-resources.button-search :clear-url="$clearUrl"><i class="fas fa-search mr-2"></i>Pesquisar</x-resources.button-search>
+    </form>
 </div>

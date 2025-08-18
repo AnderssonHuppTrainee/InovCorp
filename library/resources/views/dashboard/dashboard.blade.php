@@ -8,6 +8,10 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
+                <a href="{{ route('books.import') }}" class="btn btn-info btn-sm gap-2">
+                    <i class="fas fa-file"></i>
+                    Importar Livros
+                </a>
                 <a href="{{ route('export.books') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i>
                     Exportar Livros
@@ -179,13 +183,13 @@
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                             <span class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status == 'approved' ? 'badge-success' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $request->status == 'approved' ? 'badge-success' :
                                     ($request->status == 'pending' ? 'badge-warning' :
                                         ($request->status == 'returned' ? 'badge-info' : 'badge-error')) }}">
                                                                 {{ ucfirst($request->status) }}
                                                             </span>
                                                         </td>
-                                                        <td class="px-6 py-4">
+                                                        <td class="px-6 py-4 whitespace-nowrap">
                                                             <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
                                                                 Ver
                                                             </a>
@@ -288,14 +292,14 @@
                                                 Ver
                                             </a>
                                             <!--@if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
-                                                        <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                                Aprovar
-                                                            </button>
-                                                        </form>
-                                                    @endif-->
+                                                                                                                <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
+                                                                                                                    method="POST">
+                                                                                                                    @csrf
+                                                                                                                    <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                                                                                        Aprovar
+                                                                                                                    </button>
+                                                                                                                </form>
+                                                                                                            @endif-->
                                         </td>
                                     </tr>
                                 @endforeach

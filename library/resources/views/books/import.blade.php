@@ -1,0 +1,134 @@
+<x-app-layout>
+    <div class="container mx-auto px-4 py-6">
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><i class="fa fa-book mr-2"
+                    aria-hidden="true"></i>Importar Livros
+                do Google Books</h1>
+
+
+            <x-resources.filters action="{{ route('books.import') }}" :clear-url="route('books.import')">
+                <div class="form-control w-full max-w-xs">
+                    <label for="title" class="label">Título</label>
+                    <input type="text" name="title" id="title" value="{{ request('title') }}"
+                        class="input input-bordered w-full" placeholder="Laravel">
+                </div>
+                <div class="form-control w-full max-w-xs">
+                    <label for="author" class="label">Autor</label>
+                    <input type="text" name="author" id="author" value="{{ request('author') }}"
+                        class="input input-bordered w-full" placeholder="Taylor Otwell">
+                </div>
+                <div class="form-control w-full max-w-xs">
+                    <label for="isbn" class="label">ISBN</label>
+                    <input type="text" name="isbn" id="isbn" value="{{ request('isbn') }}"
+                        class="input input-bordered w-full" placeholder="9781234567890">
+                </div>
+
+            </x-resources.filters>
+
+
+            @if(!empty($books) && count($books) > 0)
+                <h2 class="text-2xl font-semibold mb-4">Resultados</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach($books as $index => $book)
+                        @php
+                            $info = $book['volumeInfo'] ?? [];
+                        @endphp
+
+                        <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
+                            @if(isset($info['imageLinks']['thumbnail']))
+                                <figure class="aspect-[2/3]">
+                                    <img src="{{ $info['imageLinks']['thumbnail'] }}" alt="Capa do livro"
+                                        class="h-64 w-full object-cover">
+                                </figure>
+                            @endif
+                            <div class="card-body p-4">
+                                <h2 class="card-title line-clamp-2 text-sm sm:text-base">
+                                    {{ Str::limit($info['title'] ?? 'Sem título', 50) }}
+                                </h2>
+                                <p class="text-sm text-gray-600 mb-2">por {{ $info['authors'][0] ?? 'Autor desconhecido' }}</p>
+                                <div class="card-actions justify-end">
+                                    <label for="bookModal{{ $index }}" class="btn btn-sm btn-info">Detalhes</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal  -->
+                        <input type="checkbox" id="bookModal{{ $index }}" class="modal-toggle" />
+                        <div class="modal">
+                            <div class="modal-box max-w-3xl">
+                                <label for="bookModal{{ $index }}" class="btn btn-sm btn-circle absolute right-2 top-2">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </label>
+                                <div class="flex flex-col md:flex-row gap-6">
+
+                                    <figure class="flex-shrink-0">
+                                        <img src="{{ $info['imageLinks']['thumbnail'] }}" alt="Capa do livro"
+                                            class="w-48 h-64 object-cover rounded-lg shadow-md">
+                                    </figure>
+                                    <div>
+                                        <h3 class="font-bold text-2xl ">{{ $info['title'] ?? 'Sem título' }}</h3>
+                                        <div class="divider my-2"></div>
+                                        <div class="space-y-2 text-sm">
+                                            <p>
+                                                <strong>ISBN:</strong>
+                                                {{ $info['industryIdentifiers'][0]['identifier'] ?? '---' }}
+                                            </p>
+                                            <p>
+                                                <strong>Autor(es):</strong>
+                                                {{ implode(', ', $info['authors'] ?? ['Desconhecido']) }}
+                                            </p>
+                                            <p>
+                                                <strong>Publicado:</strong> {{ $info['publishedDate'] ?? '---' }}
+                                            </p>
+                                            <p>
+                                                <strong>Editora:</strong> {{ $info['publisher'] ?? '---' }}
+                                            </p>
+                                            <div class="divider my-2"></div>
+                                            <p>
+                                                <strong>Sinopse:</strong>
+                                                {!! $info['description'] ?? 'Sem descrição disponível' !!}
+                                            </p>
+                                        </div>
+                                        <div class="divider my-2"></div>
+                                        <div class="modal-action">
+                                            <form action="{{ route('books.storeGoogle') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="books[]" value='@json($info)'>
+                                                <button type="submit" class="btn btn-success text-white">Importar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Paginação --}}
+                <div class="mt-6 flex justify-center space-x-2">
+                    @php $startIndex = request()->get('startIndex', 0); @endphp
+                    @if($startIndex > 0)
+                        <a href="{{ route('books.import', array_merge(request()->all(), ['startIndex' => $startIndex - 12])) }}"
+                            class="btn btn-outline">⬅️ Anterior</a>
+                    @endif
+                    @if(count($books) == 12)
+                        <a href="{{ route('books.import', array_merge(request()->all(), ['startIndex' => $startIndex + 12])) }}"
+                            class="btn btn-outline">Próximo ➡️</a>
+                    @endif
+                </div>
+            @elseif(request()->all())
+
+                <div class="text-center py-12">
+                    <p class="text-lg text-gray-600">Nenhum livro encontrado para a pesquisa.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+</x-app-layout>

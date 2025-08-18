@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto px-4 py-6">
 
         <div class="mt-8">
             <h1 class="text-3xl font-bold text-gray-900 mb-4">Catálogo de Livros</h1>
@@ -72,14 +72,14 @@
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
 
                         <!--@if($book->cover_image)
-                                                                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}"
-                                                                                        class="h-full w-full object-cover">
-                                                                                        @else
-                                                                                    <div class="text-gray-500 text-center p-4">
-                                                                                    <i class="fas fa-book-open fa-3x mb-2"></i>
-                                                                                        <p>Sem imagem</p>
-                                                                                    /div>
-                                                                            @endif-->
+                                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}"
+                                class="h-full w-full object-cover">
+                                @else
+                                <div class="text-gray-500 text-center p-4">
+                                <i class="fas fa-book-open fa-3x mb-2"></i>
+                                <p>Sem imagem</p>
+                                </div>
+                                @endif-->
                         <figure class="aspect-[2/3]">
                             <x-image-book class="h-48 w-full object-cover" />
                         </figure>

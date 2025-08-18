@@ -1,11 +1,12 @@
 <x-app-layout>
-    <div class="mb-6">
-        <a href="{{ route('authors.index') }}" class="btn btn-ghost">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
-        </a>
-    </div>
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-6">
+        <div class="mb-3">
+            <a href="{{ route('authors.index') }}" class="btn btn-ghost">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
+            </a>
+        </div>
 
+<div class="container mx-auto px-4 py-4">
         <div class="flex flex-col md:flex-row items-center gap-6 mb-8">
             @if($user->photo)
                 <div class="flex-shrink-0">
@@ -28,8 +29,9 @@
                 </div>
             </div>
         </div>
+        <div class="divider"></div>
         <!--lista de REQUESTS-->
-        <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class=" bg-white dark:bg-gray-800  p-6">
             <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Histórico de Requisições</h2>
 
             @if($requests->count())
@@ -52,10 +54,10 @@
                                     <td>{{ $req->expected_return_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td>
                                         <span class="badge
-                                                                                    @if($req->status === 'approved') badge-success
-                                                                                    @elseif($req->status === 'returned') badge-info
-                                                                                    @elseif($req->status === 'rejected') badge-error
-                                                                                    @else badge-warning @endif">
+                                                    @if($req->status === 'approved') badge-success
+                                                    @elseif($req->status === 'returned') badge-info
+                                                    @elseif($req->status === 'rejected') badge-error
+                                                    @else badge-warning @endif">
                                             {{ ucfirst($req->status) }}
                                         </span>
                                     </td>
@@ -73,4 +75,7 @@
                 <p class="text-gray-500 dark:text-gray-400">Nenhuma requisição encontrada para este usuário.</p>
             @endif
         </div>
+    </div>
+</div>
+
 </x-app-layout>

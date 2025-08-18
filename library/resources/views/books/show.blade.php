@@ -1,24 +1,24 @@
 <x-app-layout>
+    <div class="container mx-auto px-4 py-6">
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
 
-    <div class="mb-6">
-        <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
-            <i class="fas fa-arrow-left"></i>
-            Voltar
-        </a>
-    </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div class="md:flex">
 
-            <div class="md:w-1/3 p-6 flex justify-center">
+            <div class="md:w-1/3 p-4 flex justify-center">
                 <div class="w-full max-w-xs aspect-[2/3] overflow-hidden rounded-lg shadow-md">
                     <x-image-book class="w-full h-full" alt="Capa de {{ $book->name }}" />
                 </div>
             </div>
 
 
-            <div class="md:w-2/3 p-6">
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">{{ $book->name }}</h1>
+            <div class="md:w-2/3 p-4">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">{{ $book->name }}</h1>
 
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -45,8 +45,8 @@
                     </div>
                 </div>
 
-                <!-- Autores -->
                 <div class="mb-6">
+                    <!-- Autores -->
                     <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">Autores</h3>
                     <div class="flex flex-wrap gap-2 mt-2">
                         @foreach($book->authors as $author)
@@ -54,14 +54,14 @@
                         @endforeach
                     </div>
                 </div>
-
                 <!-- Sinopse -->
                 <div class="mb-6">
                     <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">Sinopse</h3>
-                    <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                    <p class=" text-gray-700 dark:text-gray-300 whitespace-pre-line">
                         {{ $book->bibliography ?? 'Nenhuma sinopse disponível.' }}
                     </p>
                 </div>
+
 
                 @if(auth()->user()->isAdmin())
                             <!-- Ações -->
@@ -82,7 +82,7 @@
                     </div>
                     <div class="divider"></div>
 
-                    <div class="px-6">
+                    <div class="p-4">
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Histórico de Requisições</h2>
 
                         @if($requests->count())
@@ -155,6 +155,6 @@
                 @endauth
             </div>
         @endif
-    </div>
 
+    </div>
 </x-app-layout>

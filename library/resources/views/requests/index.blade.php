@@ -8,10 +8,17 @@
             'rejected' => 'Rejeitada',
         ];
     @endphp
-    <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
+    <div class="container mx-auto px-4 py-6">
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+
+        <div class="container mx-auto px-4 py-4">
             <div class="card-title mb-6">
-                <h1 class="text-3xl font-bold text-base-content">Todas as Requisições</h1>
+                <h1 class="text-3xl font-bold text-base-content">Gestão de Requisições</h1>
             </div>
 
             <x-resources.filters action="{{ route('requests.index') }}" clearUrl="{{ route('requests.index') }}">
@@ -25,7 +32,12 @@
             </x-resources.filters>
 
             @if($requests->isEmpty())
-                p>Nenhuma requisição encontrada.</p>
+                <div class="alert alert-info m-4 sm:m-6">
+                    <div>
+                        <i class="fas fa-info-circle"></i>
+                        <span>Nenhuma requisição encontrada.</span>
+                    </div>
+                </div>
             @else
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -70,12 +82,12 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="badge badge-lg ml-2 gap-1
-                                                        @if($request->status === 'approved') badge-primary
-                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                        @elseif($request->status === 'returned') badge-success
-                                                        @elseif($request->status === 'rejected') badge-error
-                                                        @else badge-neutral 
-                                                        @endif">
+                                                                    @if($request->status === 'approved') badge-primary
+                                                                    @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                    @elseif($request->status === 'returned') badge-success
+                                                                    @elseif($request->status === 'rejected') badge-error
+                                                                    @else badge-neutral 
+                                                                    @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i>
@@ -113,6 +125,6 @@
             @endif
             </div>
         </div>
-    </div>
 
+    </div>
 </x-app-layout>

@@ -1,7 +1,13 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
 
-        <x-resources.header title="Livros" createRoute="{{ route('books.create') }}" />
+        <x-resources.header title="Gestão de Livros" createRoute="{{ route('books.create') }}" />
 
         <!-- filtros -->
         <x-resources.filters action="{{ route('books.index') }}" clearUrl="{{ route('books.index') }}">
@@ -42,7 +48,7 @@
 
 
         <!-- Tabela -->
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-x-auto">
             <table class="table table-zebra w-full">
                 <thead>
                     <tr>

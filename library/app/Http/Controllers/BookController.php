@@ -8,6 +8,7 @@ use App\Models\Author;
 use App\Models\Publisher;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class BookController extends Controller
 {
@@ -54,7 +55,7 @@ class BookController extends Controller
         $authors = Author::orderBy('name')->get();
         $publishers = Publisher::orderBy('name')->get();
 
-        return view('admin.books.index', compact('books', 'authors', 'publishers'));
+        return view('books.index', compact('books', 'authors', 'publishers'));
     }
 
     /**
@@ -65,7 +66,7 @@ class BookController extends Controller
         $publishers = Publisher::orderBy('name')->get();
         $authors = Author::orderBy('name')->get();
 
-        return view('admin.books.create', compact('publishers', 'authors'));
+        return view('books.create', compact('publishers', 'authors'));
     }
 
     /**
@@ -93,7 +94,7 @@ class BookController extends Controller
         $book = Book::create($validated);
         $book->authors()->sync($request->authors);
 
-        return redirect()->route('admin.book.index')->with('sucess', 'Livro cadastrado com sucesso|');
+        return redirect()->route('book.index')->with('sucess', 'Livro cadastrado com sucesso|');
     }
 
     /**
@@ -105,7 +106,7 @@ class BookController extends Controller
             ->with('user')
             ->latest()
             ->paginate(10);
-        return view('admin.books.show', compact('book', 'requests'));
+        return view('books.show', compact('book', 'requests'));
     }
 
     /**
@@ -178,7 +179,96 @@ class BookController extends Controller
             $book->delete();
         });
 
-        return redirect()->route('admin.books.index')
+        return redirect()->route('books.index')
             ->with('success', 'Livro removido com sucesso!');
     }
+
+    public function import(Request $request)
+    {
+        $books = [];
+
+        if ($request->filled('title') || $request->filled('author') || $request->filled('isbn')) {
+            $query = '';
+            if ($request->filled('title'))
+                $query .= 'intitle:' . $request->title . ' ';
+            if ($request->filled('author'))
+                $query .= 'inauthor:' . $request->author . ' ';
+            if ($request->filled('isbn'))
+                $query .= 'isbn:' . $request->isbn . ' ';
+
+            $startIndex = $request->get('startIndex', 0);
+
+            $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
+                'q' => trim($query),
+                'key' => config('services.google_books.key'),
+                'maxResults' => 12,
+                'startIndex' => $startIndex,
+            ]);
+
+            $books = $response->json()['items'] ?? [];
+
+
+        }
+
+        return view('books.import', compact('books'));
+    }
+
+    public function searchGoogle(Request $request)
+    {
+        $query = $request->get('q');
+
+        if (!$query) {
+            return redirect()->route('books.import')->with('error', 'Digite um termo para pesquisar.');
+        }
+
+        $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
+            'q' => $query,
+            'maxResults' => 10, // máximo 40
+        ]);
+
+        $books = $response->json()['items'] ?? [];
+
+        return view('books.results', compact('books'));
+    }
+    public function storeGoogle(Request $request)
+    {
+        $selectedBooks = $request->input('books', []);
+
+        foreach ($selectedBooks as $bookData) {
+            $info = json_decode($bookData, true);
+
+
+            $publisherName = $info['publisher'] ?? 'Desconhecido';
+            $publisher = Publisher::firstOrCreate(
+                ['name' => $publisherName]
+            );
+            logger($info);
+            $book = Book::create([
+                'isbn' => $info['industryIdentifiers'][0]['identifier'] ?? 'NOISBN-' . uniqid(),
+                'name' => $info['title'] ?? 'Sem título',
+                'publisher_id' => $publisher->id,
+                'bibliografy' => $info['description'] ?? 'Descrição não disponível',
+                'cover_image' => $info['imageLinks']['thumbnail'] ?? null,
+                'price' => rand(0, 50),
+                'available' => true,
+            ]);
+
+
+            $authors = $info['authors'] ?? ['Desconhecido'];
+
+            foreach ($authors as $authorName) {
+                $author = Author::firstOrCreate([
+                    'name' => $authorName
+                ]);
+
+                // vincula autor ao livro via pivot
+                $book->authors()->syncWithoutDetaching($author->id);
+            }
+        }
+
+        return redirect()->route('books.index')
+            ->with('success', 'Livros importados com sucesso!');
+    }
+
+
 }

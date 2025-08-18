@@ -1,9 +1,13 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <x-resources.header title="Editoras" createRoute="{{ route('publishers.create') }}" />
+        <div class="mb-3">
+            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
 
-        <!-- Filtros -->
-
+        <x-resources.header title="Gestão de Editoras" createRoute="{{ route('publishers.create') }}" />
 
         <x-resources.filters action="{{ route('publishers.index') }}" clearUrl="{{ route('publishers.index') }}">
             <div class="form-control w-full max-w-xs">

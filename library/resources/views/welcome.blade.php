@@ -111,7 +111,7 @@
         <div class="modal">
             <div class="modal-box max-w-2xl relative">
                 <label for="modal-{{ $book->id }}" class="btn btn-sm btn-circle absolute right-2 top-2">
-                    ✕
+                    <i class="fa fa-times" aria-hidden="true"></i>
                 </label>
 
                 <div class="flex flex-col md:flex-row gap-6">
@@ -125,10 +125,18 @@
                         <h3 class="text-2xl font-bold">{{ $book->name }}</h3>
                         <div class="divider my-2"></div>
 
-                        <div class="space-y-2">
-                            <p><span class="font-semibold">Autor:</span>{{ $book->authors->pluck('name')->join(', ') }}</p>
-                            <p><span class="font-semibold">ISBN:</span> {{ $book->isbn }}</p>
-                            <p><span class="font-semibold">Preço:</span>
+                        <div class="space-y-2 text-sm">
+                            <p>
+                                <span class="font-semibold">ISBN:</span> {{ $book->isbn }}
+                            </p>
+                            <p>
+                                <span class="font-semibold">Autor(es):</span>{{ $book->authors->pluck('name')->join(', ') }}
+                            </p>
+                            <p>
+                                <span class="font-semibold">Editora:</span> {{ $book->publisher->name }}
+                            </p>
+                            <p>
+                                <span class="font-semibold">Preço:</span>
                                 {{ $book->price = '€ ' . number_format($book->price, 2, ',', '.')}}
                             </p>
 

@@ -44,8 +44,6 @@ Route::middleware([
     Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
         ->name('requests.cancel');
 
-    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
-
 });
 
 // Rotas protegidas apenas para admin
@@ -71,7 +69,7 @@ Route::middleware([
     Route::post('/requests/{bookRequest}/reject-return', [BookRequestController::class, 'rejectReturn'])
         ->name('requests.rejectReturn');
 
-    Route::resource('/returns', ReturnsController::class);
+    Route::resource('returns', ReturnsController::class);
 
     //exportacoes
     Route::prefix('export')->middleware('admin')->group(function () {
@@ -81,7 +79,12 @@ Route::middleware([
 
     });
 
-    Route::resource('books', BookController::class)->except(['show']);
+    Route::get('books/import', [BookController::class, 'import'])->name('books.import');
+    Route::get('books/search-google', [BookController::class, 'searchGoogle'])->name('books.searchGoogle');
+    Route::post('books/store-google', [BookController::class, 'storeGoogle'])->name('books.storeGoogle');
+
+
+    Route::resource('books', BookController::class)->except(['import']);
     Route::resource('authors', AuthorController::class);
     Route::resource('publishers', PublisherController::class);
 

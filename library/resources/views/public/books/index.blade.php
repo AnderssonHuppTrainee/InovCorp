@@ -1,65 +1,64 @@
 <x-guest-layout>
     <div class="container mx-auto px-4 py-6">
 
-        <div class="mt-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Catálogo de Livros</h1>
 
-            <div class="bg-base-100 rounded-lg shadow p-6 mb-6">
-                <form action="{{ route('public.books.index') }}" method="GET"
-                    class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Catálogo de Livros</h1>
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Pesquisar</span>
-                        </label>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Título, autor ou ISBN" class="input input-bordered w-full" />
-                    </div>
+        <div class="bg-base-100 rounded-lg shadow p-6 mb-6">
+            <form action="{{ route('public.books.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Preço mínimo</span>
-                        </label>
-                        <input type="number" step="0.01" name="min_price" value="{{ request('min_price') }}"
-                            placeholder="€ 0,00" class="input input-bordered w-full" />
-                    </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Pesquisar</span>
+                    </label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Título, autor ou ISBN"
+                        class="input input-bordered w-full" />
+                </div>
 
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Preço máximo</span>
-                        </label>
-                        <input type="number" step="0.01" name="max_price" value="{{ request('max_price') }}"
-                            placeholder="€100,00" class="input input-bordered w-full" />
-                    </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Preço mínimo</span>
+                    </label>
+                    <input type="number" step="0.01" name="min_price" value="{{ request('min_price') }}"
+                        placeholder="€ 0,00" class="input input-bordered w-full" />
+                </div>
 
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Ordenar por</span>
-                        </label>
-                        <select name="sort" class="select select-bordered w-full">
-                            <option value="title_asc" {{ request('sort') == 'title_asc' ? 'selected' : '' }}>Título (A-Z)
-                            </option>
-                            <option value="title_desc" {{ request('sort') == 'title_desc' ? 'selected' : '' }}>Título
-                                (Z-A)</option>
-                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Preço (menor
-                                primeiro)</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Preço
-                                (maior primeiro)</option>
-                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Mais recentes
-                            </option>
-                        </select>
-                    </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Preço máximo</span>
+                    </label>
+                    <input type="number" step="0.01" name="max_price" value="{{ request('max_price') }}"
+                        placeholder="€100,00" class="input input-bordered w-full" />
+                </div>
 
-                    <div class="md:col-span-4 flex justify-end space-x-2 mt-2">
-                        <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-                        <a href="{{ route('public.books.index') }}" class="btn btn-outline">Limpar</a>
-                    </div>
-                </form>
-            </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Ordenar por</span>
+                    </label>
+                    <select name="sort" class="select select-bordered w-full">
+                        <option value="title_asc" {{ request('sort') == 'title_asc' ? 'selected' : '' }}>Título (A-Z)
+                        </option>
+                        <option value="title_desc" {{ request('sort') == 'title_desc' ? 'selected' : '' }}>Título
+                            (Z-A)</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Preço (menor
+                            primeiro)</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Preço
+                            (maior primeiro)</option>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Mais recentes
+                        </option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-4 flex justify-end space-x-2 mt-2">
+                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                    <a href="{{ route('public.books.index') }}" class="btn btn-outline">Limpar</a>
+                </div>
+            </form>
         </div>
+
 
 
         @if($books->isEmpty())
@@ -72,14 +71,14 @@
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
 
                         <!--@if($book->cover_image)
-                                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}"
-                                class="h-full w-full object-cover">
-                                @else
-                                <div class="text-gray-500 text-center p-4">
-                                <i class="fas fa-book-open fa-3x mb-2"></i>
-                                <p>Sem imagem</p>
-                                </div>
-                                @endif-->
+                                                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}"
+                                                class="h-full w-full object-cover">
+                                                @else
+                                                <div class="text-gray-500 text-center p-4">
+                                                <i class="fas fa-book-open fa-3x mb-2"></i>
+                                                <p>Sem imagem</p>
+                                                </div>
+                                                @endif-->
                         <figure class="aspect-[2/3]">
                             <x-image-book class="h-48 w-full object-cover" />
                         </figure>

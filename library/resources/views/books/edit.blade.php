@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-6">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Editar Livro</h1>
+            <h1 class="text-2xl font-bold">Editar </h1>
         </div>
 
         <x-form action="{{ route('books.update', $book) }}" method="PUT" enctype="multipart/form-data">
@@ -39,21 +39,27 @@
                         <span class="label-text">Autores</span>
                         <span class="label-text-alt text-error">*</span>
                     </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                        @foreach($authors as $author)
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="authors[]" value="{{ $author->id }}"
-                                    class="checkbox checkbox-primary" {{ in_array($author->id, old('authors', $book->authors->pluck('id')->toArray())) ? 'checked' : '' }}>
-                                <span>{{ $author->name }}</span>
+                    <div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 border rounded-md 
+                        scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 
+                    dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+                            @foreach($authors as $author)
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" name="authors[]" value="{{ $author->id }}"
+                                        class="checkbox checkbox-primary" {{ in_array($author->id, old('authors', $book->authors->pluck('id')->toArray())) ? 'checked' : '' }}>
+                                    <span>{{ $author->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        @error('authors')
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>
-                        @endforeach
+                        @enderror
                     </div>
-                    @error('authors')
-                        <label class="label">
-                            <span class="label-text-alt text-error">{{ $message }}</span>
-                        </label>
-                    @enderror
                 </div>
+
             </div>
         </x-form>
     </div>

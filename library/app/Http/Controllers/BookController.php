@@ -208,6 +208,7 @@ class BookController extends Controller
             $books = $response->json()['items'] ?? [];
 
 
+
         }
 
         return view('books.import', compact('books'));
@@ -228,6 +229,8 @@ class BookController extends Controller
 
         $books = $response->json()['items'] ?? [];
 
+
+
         return view('books.results', compact('books'));
     }
     public function storeGoogle(Request $request)
@@ -247,7 +250,7 @@ class BookController extends Controller
                 'isbn' => $info['industryIdentifiers'][0]['identifier'] ?? 'NOISBN-' . uniqid(),
                 'name' => $info['title'] ?? 'Sem título',
                 'publisher_id' => $publisher->id,
-                'bibliografy' => $info['description'] ?? 'Descrição não disponível',
+                'bibliography' => $info['description'] ?? 'Descrição não disponível',
                 'cover_image' => $info['imageLinks']['thumbnail'] ?? null,
                 'price' => rand(0, 50),
                 'available' => true,

@@ -2,7 +2,7 @@
     <div class="container mx-auto px-4 py-6">
         <div class="mb-3">
             <a href="{{ route('authors.index') }}" class="btn btn-ghost">
-                <i class="fas fa-arrow-left mr-2"></i> Voltar para lista
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
             </a>
         </div>
 

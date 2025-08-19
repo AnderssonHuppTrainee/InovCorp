@@ -21,7 +21,7 @@
 
 <body class="font-sans antialiased bg-base-100 text-base-content min-h-screen flex flex-col">
 
-    @include('layouts.partials.navbar')
+    @livewire('navigation-menu')
 
     <main class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6">
 

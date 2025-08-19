@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <!-- Cabeçalho -->
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-base-content">Minha Área</h1>
@@ -17,7 +17,7 @@
             @endauth
         </div>
 
-        <!-- Cards de Estatísticas -->
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <!-- Total de Requisições -->
             <div class="card bg-base-100 shadow">
@@ -64,58 +64,77 @@
                 </div>
             </div>
         </div>
-        <div class="card bg-base-100 shadow-lg mb-8">
+        <div class="card  bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
                 <h2 class="text-xl font-semibold mb-4">Meus Livros Requisitados</h2>
 
                 @if($requests->isEmpty())
-                    <div class="alert alert-info">
+                    <div class="alert alert-info m-4 sm:m-6">
                         <i class="fas fa-info-circle mr-2"></i>
                         Você ainda não fez nenhuma requisição.
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="table w-full">
-                            <thead>
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th>Livro</th>
-                                    <th>Data Requisição</th>
-                                    <th>Devolução Prevista</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data Requisição
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Devolução Prevista
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($requests as $request)
                                     <tr>
-                                        <td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 @if($request->book->cover_image)
                                                     <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                        alt="{{ $request->book->title }}"
-                                                        class="w-10 h-10 rounded mr-3 object-cover">
+                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
                                                 @endif
                                                 <div>
-                                                    <div class="font-medium">{{ $request->book->title }}</div>
-                                                    <div class="text-sm text-gray-500">{{ $request->book->author }}</div>
+                                                    <div class="font-medium">{{ $request->book->name }}</div>
+                                                    <div class="text-sm text-gray-500">
+                                                        {{ $request->book->authors->pluck('name')->join(', ') }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $request->request_date->format('d/m/Y') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
+                                        </td>
                                         <td class="{{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
                                             {{ $request->expected_return_date->format('d/m/Y') }}
                                             @if($request->isOverdue())
                                                 <span class="badge badge-error ml-2">Atrasado</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            <span class="badge badge-lg ml-2 gap-1
-                                                                        @if($request->status === 'approved') badge-primary
-                                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                        @elseif($request->status === 'returned') badge-success
-                                                                        @elseif($request->status === 'rejected') badge-error
-                                                                        @else badge-neutral 
-                                                                        @endif">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="badge badge-lg ml-2 gap-1 text-white
+                                                                                                                                                                                                                                                @if($request->status === 'approved') badge-success
+                                                                                                                                                                                                                                                @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                                                                                                                                                                @elseif($request->status === 'returned') badge-success
+                                                                                                                                                                                                                                                @elseif($request->status === 'rejected') badge-error
+                                                                                                                                                                                                                                                @else badge-neutral 
+                                                                                                                                                                                                                                                @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i>
@@ -130,7 +149,7 @@
                                                 {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             @if($request->status === 'approved')
                                                 <a href="{{ route('requests.returnForm', $request) }}"
                                                     class="btn btn-sm btn-primary">
@@ -160,7 +179,6 @@
             </div>
         </div>
 
-        <!-- Botão para nova requisição -->
         @if(!auth()->user()->canRequestMoreBooks())
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle mr-2"></i>

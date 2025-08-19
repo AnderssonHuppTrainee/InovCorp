@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
-        <!-- Cabeçalho -->
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-base-content">Dashboard Administrativo</h1>
@@ -28,7 +28,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            <!-- Total de Livros -->
+
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- Total de Autores -->
+
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -58,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- Total de Editoras -->
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -74,9 +73,9 @@
             </div>
         </div>
 
-        <!-- Segunda Linha de Estatísticas -->
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            <!-- Requisições Ativas -->
+
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -91,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Últimos 30 Dias -->
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -106,7 +104,7 @@
                 </div>
             </div>
 
-            <!-- Entregues Hoje -->
+
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -122,20 +120,20 @@
             </div>
         </div>
 
-        <!-- Lista de requisições -->
+
         <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
                 <h2 class="text-xl font-semibold mb-4">Últimas Requisições</h2>
                 @if($requests->isEmpty())
                     <div class="alert alert-info m-4 sm:m-6">
                         <div>
-                            <i class="fas fa-info-circle"></i>
+                            <i class="fas fa-info-circle mr-2"></i>
                             <span>Nenhuma requisição encontrada.</span>
                         </div>
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <!--<table class="table w-full">-->
+
                         <table class="table table-zebra w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -165,16 +163,20 @@
                                                     <tr>
                                                         <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap">
-                                                            <div class="flex items-center gap-3">
+                                                            <div class="flex items-center">
                                                                 @if($request->book->cover_image)
-                                                                    <div class="avatar">
-                                                                        <div class="mask mask-squircle w-12 h-12">
-                                                                            <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                                                alt="{{ $request->book->name }}" />
-                                                                        </div>
-                                                                    </div>
+                                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
+                                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                                @else
+                                                                    <img src="https://placehold.co/48x72" class="mr-3" />
                                                                 @endif
-                                                                {{ $request->book->name }}
+                                                                <div>
+                                                                    <div class="font-medium">{{ $request->book->name }}</div>
+                                                                    <div class="text-sm text-gray-500">
+                                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                                    </div>
+                                                                </div>
+
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
                                                         </td>
@@ -183,7 +185,7 @@
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                             <span class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $request->status == 'approved' ? 'badge-success' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status == 'approved' ? 'badge-success' :
                                     ($request->status == 'pending' ? 'badge-warning' :
                                         ($request->status == 'returned' ? 'badge-info' : 'badge-error')) }}">
                                                                 {{ ucfirst($request->status) }}
@@ -292,14 +294,14 @@
                                                 Ver
                                             </a>
                                             <!--@if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
-                                                                                                                <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
-                                                                                                                    method="POST">
-                                                                                                                    @csrf
-                                                                                                                    <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                                                                                        Aprovar
-                                                                                                                    </button>
-                                                                                                                </form>
-                                                                                                            @endif-->
+                                                                                                                                                        <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
+                                                                                                                                                            method="POST">
+                                                                                                                                                            @csrf
+                                                                                                                                                            <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                                                                                                                                Aprovar
+                                                                                                                                                            </button>
+                                                                                                                                                        </form>
+                                                                                                                                                    @endif-->
                                         </td>
                                     </tr>
                                 @endforeach

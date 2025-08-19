@@ -13,14 +13,7 @@
             /* Permite que os slides se ajustem ao conteúdo */
         }
 
-        /* Ajuste o tamanho dos cards para se adaptarem melhor */
-        .card {
-            min-width: 200px;
-            /* Largura mínima para manter a legibilidade */
-            max-width: 260px;
-            /* Largura máxima para não ficar muito grande */
-            width: 100%;
-        }
+
 
         /* botões de navegacao */
         .multi-card-carousel .swiper-button-prev,
@@ -75,23 +68,30 @@
                     @foreach ($latestBooks as $book)
                         <div class="swiper-slide">
 
-                            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow mx-2">
+                            <div class="card bg-base-100 shadow hover:shadow-md transition-shadow mx-2">
                                 <!-- capa -->
-                                <div class="w-[200px] h-[300px] mx-auto mt-4 overflow-hidden">
-                                    <figure>
-                                        <x-image-book
-                                            class="w-full h-full object-cover transition-transform hover:scale-105"
-                                            alt="Capa de {{ $book->name }}" />
-                                    </figure>
+                                <div class="w-[200px] h-[300px] mx-auto overflow-hidden">
+                                    @if ($book->cover_image)
+                                        <figure class="aspect-[2/3]">
+                                            <img src="{{ $book->cover_image }}" class="h-72 w-full object-cover">
+                                        </figure>
+                                    @else
+                                        <figure class="aspect-[2/3]">
+                                            <x-image-book class="h-72 w-full object-cover" />
+                                        </figure>
+                                    @endif
                                 </div>
 
                                 <!-- conteudo -->
-                                <div class="card-body">
-                                    <h3 class="card-title">{{ Str::limit($book->name, 20) }}</h3>
-
-                                    <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm  self-end mt-4">
-                                        Detalhes
-                                    </label>
+                                <div class="card-body p-4">
+                                    <h2 class="card-title text-sm sm:text-base line-clamp-2">
+                                        {{ Str::limit($book->name, 20) }}
+                                    </h2>
+                                    <div class="card-actions justify-end">
+                                        <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm">
+                                            Detalhes
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -116,9 +116,18 @@
 
                 <div class="flex flex-col md:flex-row gap-6">
                     <!-- capa -->
-                    <figure class="flex-shrink-0">
-                        <x-image-book class="w-48 h-64 object-cover rounded-lg shadow-md" alt="Capa de {{ $book->name }}" />
-                    </figure>
+                    <div class="flex-shrink-0">
+                        @if ($book->cover_image)
+                            <figure class="w-48 h-72 overflow-hidden rounded-lg shadow-md">
+                                <img src="{{ $book->cover_image }}" class="w-full h-full object-cover"
+                                    alt="Capa de {{ $book->name }}">
+                            </figure>
+                        @else
+                            <figure class="w-48 h-72 overflow-hidden rounded-lg shadow-md">
+                                <x-image-book class="w-full h-full object-cover" alt="Capa de {{ $book->name }}" />
+                            </figure>
+                        @endif
+                    </div>
 
                     <!-- detalhes -->
                     <div>
@@ -167,17 +176,24 @@
         </div>
     @endforeach
 
-    <!-- Todos os Livros -->
+
     <section id="all-books" class="py-12 bg-base-100">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
 
-            <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Todos os Livros</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Principais Livros</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                 @foreach ($allBooks as $book)
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
-                        <figure class="aspect-[2/3]">
-                            <x-image-book class="h-48 w-full object-cover" />
-                        </figure>
+                        @if ($book->cover_image)
+                            <figure class="aspect-[2/3]">
+                                <img src="{{ $book->cover_image }}" class="h-72 w-full object-cover">
+                            </figure>
+                        @else
+                            <figure class="aspect-[2/3]">
+                                <x-image-book class="h-72 w-full object-cover" />
+                            </figure>
+                        @endif
+
                         <div class="card-body p-4">
                             <h2 class="card-title text-sm sm:text-base line-clamp-2">{{ $book->name }}</h2>
                             <p class="text-sm text-gray-500">{{ Str::limit($book->bibliography, 50) }}</p>

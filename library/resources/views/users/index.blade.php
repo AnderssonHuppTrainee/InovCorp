@@ -21,7 +21,7 @@
             </x-resources.filters>
 
             <!-- table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg">
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead class="bg-gray-50">
@@ -65,7 +65,8 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->role === 'admin' ? 'Administrador' : 'Cidadão' }}</td>
                                     <td class="flex space-x-2">
-                                        <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-info text-white">
+                                        <a href="{{ route('users.show', $user) }}"
+                                            class="btn btn-sm btn-neutral text-white">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-info text-white">
@@ -91,7 +92,7 @@
                 </div>
 
                 <!-- pagination -->
-                <x-resources.pagination :items="$users" />
             </div>
+            <x-resources.pagination :items="$users" />
         </div>
 </x-app-layout>

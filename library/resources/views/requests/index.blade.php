@@ -1,13 +1,5 @@
 <x-app-layout>
-    @php
-        $statusLabels = [
-            'approved' => 'Aprovada',
-            'pending' => 'Pendente',
-            'pending_returned' => 'Devolução pendente',
-            'returned' => 'Devolvida',
-            'rejected' => 'Rejeitada',
-        ];
-    @endphp
+
     <div class="container mx-auto px-4 py-6">
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
@@ -72,7 +64,21 @@
                                             {{ $request->number }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ $request->book->title }}
+                                            <div class="flex items-center">
+                                                @if($request->book->cover_image)
+                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
+                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
+                                                @endif
+                                                <div>
+                                                    <div class="font-medium">{{ $request->book->name }}</div>
+                                                    <div class="text-sm text-gray-500">
+                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $request->request_date->format('d/m/Y') }}
@@ -82,12 +88,12 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="badge badge-lg ml-2 gap-1
-                                                                    @if($request->status === 'approved') badge-primary
-                                                                    @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                    @elseif($request->status === 'returned') badge-success
-                                                                    @elseif($request->status === 'rejected') badge-error
-                                                                    @else badge-neutral 
-                                                                    @endif">
+                                                                                                            @if($request->status === 'approved') badge-primary
+                                                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                            @elseif($request->status === 'returned') badge-success
+                                                                                                            @elseif($request->status === 'rejected') badge-error
+                                                                                                            @else badge-neutral 
+                                                                                                            @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i>

@@ -39,27 +39,32 @@
                     @foreach($books as $index => $book)
                         @php
                             $info = $book['volumeInfo'] ?? [];
+                            $thumbnail = data_get($info, 'imageLinks.thumbnail'); // Acesso seguro
                         @endphp
 
                         <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
-                            @if(isset($info['imageLinks']['thumbnail']))
-                                <figure class="aspect-[2/3]">
-                                    <img src="{{ $info['imageLinks']['thumbnail'] }}" alt="Capa do livro"
-                                        class="h-64 w-full object-cover">
-                                </figure>
-                            @endif
+                            <figure class="aspect-[2/3]">
+                                @if($thumbnail)
+                                    <img src="{{ $thumbnail }}" alt="Capa do livro" class="h-full w-full object-cover">
+                                @else
+                                    <img src="https://placehold.co/200x300" alt="Capa padrão" class="h-full w-full object-cover">
+                                @endif
+                            </figure>
+
                             <div class="card-body p-4">
                                 <h2 class="card-title line-clamp-2 text-sm sm:text-base">
                                     {{ Str::limit($info['title'] ?? 'Sem título', 50) }}
                                 </h2>
-                                <p class="text-sm text-gray-600 mb-2">por {{ $info['authors'][0] ?? 'Autor desconhecido' }}</p>
+                                <p class="text-sm text-gray-600 mb-2">
+                                    por {{ $info['authors'][0] ?? 'Autor desconhecido' }}
+                                </p>
                                 <div class="card-actions justify-end">
                                     <label for="bookModal{{ $index }}" class="btn btn-sm btn-info">Detalhes</label>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Modal  -->
+                        <!-- Modal -->
                         <input type="checkbox" id="bookModal{{ $index }}" class="modal-toggle" />
                         <div class="modal">
                             <div class="modal-box max-w-3xl">
@@ -67,34 +72,29 @@
                                     <i class="fa fa-times" aria-hidden="true"></i>
                                 </label>
                                 <div class="flex flex-col md:flex-row gap-6">
-
                                     <figure class="flex-shrink-0">
-                                        <img src="{{ $info['imageLinks']['thumbnail'] }}" alt="Capa do livro"
-                                            class="w-48 h-64 object-cover rounded-lg shadow-md">
+                                        @if($thumbnail)
+                                            <img src="{{ $thumbnail }}" alt="Capa do livro"
+                                                class="w-48 h-64 object-cover rounded-lg shadow-md">
+                                        @else
+                                            <img src="https://placehold.co/200x300" alt="Capa padrão"
+                                                class="w-48 h-64 object-cover rounded-lg shadow-md">
+                                        @endif
                                     </figure>
+
                                     <div>
-                                        <h3 class="font-bold text-2xl ">{{ $info['title'] ?? 'Sem título' }}</h3>
+                                        <h3 class="font-bold text-2xl">{{ $info['title'] ?? 'Sem título' }}</h3>
                                         <div class="divider my-2"></div>
                                         <div class="space-y-2 text-sm">
-                                            <p>
-                                                <strong>ISBN:</strong>
-                                                {{ $info['industryIdentifiers'][0]['identifier'] ?? '---' }}
-                                            </p>
-                                            <p>
-                                                <strong>Autor(es):</strong>
-                                                {{ implode(', ', $info['authors'] ?? ['Desconhecido']) }}
-                                            </p>
-                                            <p>
-                                                <strong>Publicado:</strong> {{ $info['publishedDate'] ?? '---' }}
-                                            </p>
-                                            <p>
-                                                <strong>Editora:</strong> {{ $info['publisher'] ?? '---' }}
-                                            </p>
+                                            <p><strong>ISBN:</strong>
+                                                {{ $info['industryIdentifiers'][0]['identifier'] ?? '---' }}</p>
+                                            <p><strong>Autor(es):</strong>
+                                                {{ implode(', ', $info['authors'] ?? ['Desconhecido']) }}</p>
+                                            <p><strong>Publicado:</strong> {{ $info['publishedDate'] ?? '---' }}</p>
+                                            <p><strong>Editora:</strong> {{ $info['publisher'] ?? '---' }}</p>
                                             <div class="divider my-2"></div>
-                                            <p>
-                                                <strong>Sinopse:</strong>
-                                                {!! $info['description'] ?? 'Sem descrição disponível' !!}
-                                            </p>
+                                            <p><strong>Sinopse:</strong>
+                                                {!! $info['description'] ?? 'Sem descrição disponível' !!}</p>
                                         </div>
                                         <div class="divider my-2"></div>
                                         <div class="modal-action">
@@ -109,9 +109,10 @@
                             </div>
                         </div>
                     @endforeach
+
                 </div>
 
-                {{-- Paginação --}}
+
                 <div class="mt-6 flex justify-center space-x-2">
                     @php $startIndex = request()->get('startIndex', 0); @endphp
                     @if($startIndex > 0)

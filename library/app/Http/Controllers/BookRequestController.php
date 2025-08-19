@@ -233,7 +233,7 @@ class BookRequestController extends Controller
         ]);
 
 
-        return redirect()->route('dashboard.citizen')->with('success', 'Requisição cancelada com sucesso.');
+        return redirect()->back()->with('success', 'Requisição cancelada com sucesso.');
     }
 
 

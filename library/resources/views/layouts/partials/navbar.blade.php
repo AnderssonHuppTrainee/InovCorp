@@ -13,7 +13,7 @@
                 <div>
                     @auth
                         <x-nav-link href="{{ route('public.books.index') }}" :active="request()->routeIs('public.books.index')">
-                            {{ __('Livros') }}
+                            {{ __('Catálogo') }}
                         </x-nav-link>
                     @endauth
                 </div>

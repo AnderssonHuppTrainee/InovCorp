@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-6">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Editar Utilizador</h1>
+            <h1 class="text-2xl font-bold">Editar </h1>
         </div>
 
         <x-form action="{{ route('users.update', $user) }}" method="PUT" enctype="multipart/form-data">

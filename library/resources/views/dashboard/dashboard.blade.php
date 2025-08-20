@@ -16,14 +16,14 @@
                     <i class="fas fa-file-excel"></i>
                     Exportar Livros
                 </a>
-                <a href="{{ route('export.authors') }}" class="btn btn-outline btn-sm gap-2">
+                <!--<a href="{{ route('export.authors') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i>
                     Exportar Autores
                 </a>
                 <a href="{{ route('export.publishers') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i>
                     Exportar Editoras
-                </a>
+                </a>-->
             </div>
         </div>
 
@@ -162,7 +162,7 @@
                                 @foreach ($requests as $request)
                                                     <tr>
                                                         <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                        <td class="px-6 py-4 whitespace-wrap">
                                                             <div class="flex items-center">
                                                                 @if($request->book->cover_image)
                                                                     <img src="{{ asset('storage/' . $request->book->cover_image) }}"
@@ -171,9 +171,9 @@
                                                                     <img src="https://placehold.co/48x72" class="mr-3" />
                                                                 @endif
                                                                 <div>
-                                                                    <div class="font-medium">{{ $request->book->name }}</div>
+                                                                    <div class="font-bold">{{ $request->book->name }}</div>
                                                                     <div class="text-sm text-gray-500">
-                                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                                        {{  Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
                                                                     </div>
                                                                 </div>
 
@@ -185,7 +185,7 @@
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                             <span class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $request->status == 'approved' ? 'badge-success' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $request->status == 'approved' ? 'badge-success' :
                                     ($request->status == 'pending' ? 'badge-warning' :
                                         ($request->status == 'returned' ? 'badge-info' : 'badge-error')) }}">
                                                                 {{ ucfirst($request->status) }}
@@ -229,6 +229,9 @@
                         <i class="fas fa-info-circle"></i>
                         <span>Nenhum livro devolvido recentemente.</span>
                     </div>
+                    <div class="flex justify-end m-4">
+                        <a href="{{ route('returns.index') }}" class="link-info">Ver todas as devoluções...</a>
+                    </div>
                 @else
                     <div class="overflow-x-auto">
                         <table class="table table-zebra w-full divide-y divide-gray-200">
@@ -258,50 +261,48 @@
                             <tbody>
                                 @foreach($returnedBooks as $request)
                                     <tr class="hover">
-                                        <td>{{ $request->number }}</td>
-                                        <td>
+                                        <td class="whitespace-nowrap">{{ $request->number }}</td>
+                                        <td class="whitespace-wrap">
                                             <div class="flex items-center gap-3">
                                                 @if($request->book->cover_image)
-                                                    <div class="avatar">
-                                                        <div class="mask mask-squircle w-12 h-12">
-                                                            <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                                alt="{{ $request->book->name }}" />
-                                                        </div>
-                                                    </div>
+                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
+                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
                                                 @endif
                                                 <div>
-                                                    <div class="font-bold">{{ $request->book->name }}</div>
-                                                    <div class="text-sm opacity-50">
-                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                    <div class="font-bold">{{ Str::limit($request->book->name, 30) }}</div>
+                                                    <div class="text-sm text-gray-500">
+                                                        {{  Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $request->user->name }}</td>
-                                        <td>
+                                        <td class="whitespace-nowrap">{{ $request->user->name }}</td>
+                                        <td class="whitespace-nowrap">
                                             {{ $request->returned_date->format('d/m/Y') }}
                                             @if($request->isOverdue())
                                                 <span class="badge badge-error ml-2">Atrasado</span>
                                             @endif
                                         </td>
 
-                                        <td>
+                                        <td class="whitespace-nowrap">
                                             {{ $request->actual_days }} dias
                                         </td>
-                                        <td>
-                                            <a href="{{ route('requests.reviewReturn', $request) }}"
+                                        <td class="whitespace-nowrap">
+                                            <a href="{{ route('returns.reviewReturn', $request) }}"
                                                 class="btn btn-sm btn-outline">
                                                 Ver
                                             </a>
                                             <!--@if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
-                                                                                                                                                        <form class="inline" action="{{ route('requests.approveReturn', $request) }}"
-                                                                                                                                                            method="POST">
-                                                                                                                                                            @csrf
-                                                                                                                                                            <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                                                                                                                                Aprovar
-                                                                                                                                                            </button>
-                                                                                                                                                        </form>
-                                                                                                                                                    @endif-->
+                                                                                                                                                                                <form class="inline" action="{{ route('returns.approveReturn', $request) }}"
+                                                                                                                                                                                method="POST">
+                                                                                                                                                                                @csrf
+                                                                                                                                                                                <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                                                                                                                                                Aprovar
+                                                                                                                                                                                </button>
+                                                                                                                                                                                </form>
+                                                                                                                                                                                @endif-->
                                         </td>
                                     </tr>
                                 @endforeach

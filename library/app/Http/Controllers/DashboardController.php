@@ -27,7 +27,7 @@ class DashboardController extends Controller
                     ->take(3)
                     ->get()
             ];
-            $activeRequestsCount = BookRequest::whereIn('status', ['pending', 'approved'])->count();
+            $activeRequestsCount = BookRequest::whereIn('status', ['pending'])->count();
             $recentRequestsCount = BookRequest::where('created_at', '>=', now()->subDays(30))->count();
             $returnedTodayCount = BookRequest::whereDate('admin_confirmed_return_date', today())->count();
 

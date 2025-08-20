@@ -9,8 +9,11 @@
         <div class="card bg-base-100 mx-auto">
             <div class="card-body p-4">
                 <h1 class="card-title text-3xl mb-6">
-                    <i class="fas fa-clipboard-check mr-2"></i> Avaliação de Devolução
-                    <span class="badge badge-lg ml-2 gap-1 text-white
+                    <i class="fas fa-clipboard-check mr-2"></i>
+                    Avaliação de Devolução
+                </h1>
+
+                <span class="badge badge-lg ml-2 gap-1 text-white
                             @if($bookRequest->status === 'approved') badge-success
                             @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
                             @elseif($bookRequest->status === 'returned') badge-success
@@ -18,18 +21,18 @@
                             @else badge-neutral 
                             @endif">
 
-                        @if($bookRequest->status === 'approved')
-                            <i class="fas fa-check-circle"></i>
-                        @elseif(in_array($bookRequest->status, ['pending', 'pending_returned']))
-                            <i class="fas fa-clock"></i>
-                        @elseif($bookRequest->status === 'returned')
-                            <i class="fas fa-undo"></i>
-                        @elseif($bookRquest->status === 'rejected')
-                            <i class="fas fa-times-circle"></i>
-                        @endif
+                    @if($bookRequest->status === 'approved')
+                        <i class="fas fa-check-circle"></i>
+                    @elseif(in_array($bookRequest->status, ['pending', 'pending_returned']))
+                        <i class="fas fa-clock"></i>
+                    @elseif($bookRequest->status === 'returned')
+                        <i class="fas fa-undo"></i>
+                    @elseif($bookRquest->status === 'rejected')
+                        <i class="fas fa-times-circle"></i>
+                    @endif
 
-                        {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
-                    </span>
+                    {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
+                </span>
                 </h1>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -111,7 +114,7 @@
 
 
                 <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                    <form id="approveReturnForm" action="{{ route('requests.approveReturn', $bookRequest) }}"
+                    <form id="approveReturnForm" action="{{ route('returns.approveReturn', $bookRequest) }}"
                         method="POST" class="flex-1">
                         @csrf
                         <button type="submit" class="btn btn-success w-full text-white">
@@ -119,7 +122,7 @@
                         </button>
                     </form>
 
-                    <form action="{{ route('requests.rejectReturn', $bookRequest) }}" method="POST" class="flex-1">
+                    <form action="{{ route('returns.rejectReturn', $bookRequest) }}" method="POST" class="flex-1">
                         @csrf
                         <button type="submit" class="btn btn-error w-full text-white">
                             <i class="fas fa-times mr-2"></i> Rejeitar Devolução

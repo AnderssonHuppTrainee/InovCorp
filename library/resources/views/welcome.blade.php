@@ -4,13 +4,13 @@
         .multi-card-carousel {
             width: 100%;
             padding: 20px 0;
-            /* Reduzi o padding lateral para ganhar espaço */
+
             position: relative;
         }
 
         .multi-card-carousel .swiper-slide {
             width: auto !important;
-            /* Permite que os slides se ajustem ao conteúdo */
+
         }
 
 
@@ -58,9 +58,9 @@
         </div>
     </section>
 
-    <!-- Carrossel dos ultimos livros -->
+
     <section class="py-12 bg-base-200">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto p-4">
             <h2 class="text-2xl font-bold mb-8 text-center">Últimos Livros Adicionados</h2>
 
             <div class="swiper multi-card-carousel">
@@ -178,7 +178,7 @@
 
 
     <section id="all-books" class="py-12 bg-base-100">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto p-4 ">
 
             <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Principais Livros</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -186,7 +186,7 @@
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
                         @if ($book->cover_image)
                             <figure class="aspect-[2/3]">
-                                <img src="{{ $book->cover_image }}" class="h-72 w-full object-cover">
+                                <img src="{{ $book->cover_image }}" class="h-full w-full object-cover">
                             </figure>
                         @else
                             <figure class="aspect-[2/3]">

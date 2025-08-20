@@ -88,5 +88,12 @@ class User extends Authenticatable
 
         return $activeRequests < 3;
     }
+    public function hasPendingFines()
+    {
+        return $this->bookRequests()
+            ->where('fine_amount', '>', 0)
+            ->whereNull('fine_paid_at')
+            ->exists();
+    }
 
 }

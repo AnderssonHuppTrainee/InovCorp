@@ -30,7 +30,9 @@ class BookRequestController extends Controller
                 $q->where('name', 'like', "%{$search}%");
             });
         }
-        $requests = $query->orderBy('request_date', 'desc')->get();
+        $requests = $query->orderBy('request_date', 'desc')
+            ->paginate(10)->withQueryString();
+        ;
 
         return view('requests.index', compact('requests'));
     }
@@ -66,7 +68,7 @@ class BookRequestController extends Controller
         ]);
 
 
-        // Enviar emails de notificação
+        // enviar emails de notificação
         try {
 
             Mail::to($bookRequest->user->email)
@@ -90,7 +92,7 @@ class BookRequestController extends Controller
 
     public function show(BookRequest $request)
     {
-        // Verifica se o usuário tem permissão para ver esta requisição
+        //verificação
         if (auth()->user()->isCitizen() && auth()->id() !== $request->user_id) {
             abort(403, 'Você só pode visualizar suas próprias requisições.');
         }
@@ -102,7 +104,7 @@ class BookRequestController extends Controller
     public function approve(BookRequest $request)
     {
 
-        // verifica se o admin
+        // verifica se e o admin
         if (!auth()->user()->isAdmin()) {
             abort(403, 'Acesso negado');
         }
@@ -114,7 +116,7 @@ class BookRequestController extends Controller
         $request->update([
             'status' => 'approved',
             'actual_receipt_date' => now(),
-            'actual_days' => now()->diffInDays($request->request_date),
+            'expected_return_date' => now()->addDays(5),
         ]);
         $request->book->update([
             'avaliable' => false,
@@ -140,86 +142,7 @@ class BookRequestController extends Controller
             ->with('error', 'Requisição rejeitada. Multas em atraso');
     }
 
-    public function returnForm(BookRequest $bookRequest)
-    {
-        if (auth()->id() !== $bookRequest->user_id) {
-            abort(403, 'Você só pode devolver seus próprios livros.');
-        }
 
-        if ($bookRequest->status !== 'approved') {
-            return redirect()->back()->with('error', 'Este livro não está em status de devolução.');
-        }
-
-        return view('requests.return', compact('bookRequest'));
-    }
-    public function submitReturn(Request $request, BookRequest $bookRequest)
-    {
-        $request->validate([
-            'return_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        $photoPath = $request->file('return_photo')->store('return-photos', 'public');
-        $bookRequest->update([
-            'returned_date' => now(),
-            'return_photo_path' => $photoPath,
-            'status' => 'pending_returned',
-        ]);
-        return redirect()->route('dashboard')
-            ->with('success', 'Solicitação de devolução enviada. Aguarde a avaliação do administrador.');
-    }
-
-    public function reviewReturn(BookRequest $bookRequest)
-    {
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Acesso não autorizado.');
-        }
-
-        if ($bookRequest->status !== 'pending_returned') {
-            return redirect()->back()->with('error', 'Esta requisição não está aguardando devolução.');
-        }
-
-        $bookRequest->load(['book', 'user']);
-
-        return view('requests.review-return', compact('bookRequest'));
-    }
-
-    public function approveReturn(Request $request, BookRequest $bookRequest)
-    {
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Acesso não autorizado.');
-        }
-        $request->validate([
-            'book_condition' => 'required|string|in:Excellent,Good,Bad,Dammage'
-        ]);
-
-        $bookRequest->update([
-            'status' => 'returned',
-            'admin_confirmed_return_date' => now(),
-            'actual_days' => $bookRequest->request_date->diffInDays(now()),
-            'book_condition' => $request->book_condition,
-        ]);
-        $bookRequest->book->update([
-            'avaliable' => true,
-        ]);
-
-        return redirect()->route('requests.index')
-            ->with('success', 'Devolução aprovada com sucesso.');
-    }
-
-    public function rejectReturn(BookRequest $bookRequest)
-    {
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Acesso não autorizado.');
-        }
-
-        $bookRequest->update([
-            'status' => 'approved', // volta para aprovado, pois n aceitou a devolucao
-        ]);
-
-
-        return redirect()->route('requests.index')
-            ->with('error', 'Devolução rejeitada. O livro deve ser reapresentado.');
-    }
 
     public function cancel(BookRequest $bookRequest)
     {

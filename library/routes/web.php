@@ -34,15 +34,22 @@ Route::middleware([
     Route::resource('requests', BookRequestController::class)->except(['create']);
     Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])
         ->name('requests.create');
+    Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
+        ->name('requests.cancel');
 
     //  registrar devolução
-    Route::get('/requests/{bookRequest}/return', [BookRequestController::class, 'returnForm'])
+    /*Route::get('/requests/{bookRequest}/return', [BookRequestController::class, 'returnForm'])
         ->name('requests.returnForm');
 
     Route::post('/requests/{bookRequest}/return', [BookRequestController::class, 'submitReturn'])
-        ->name('requests.submitReturn');
-    Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
-        ->name('requests.cancel');
+        ->name('requests.submitReturn');*/
+
+    Route::get('/returns/{bookRequest}/return', [ReturnsController::class, 'returnForm'])
+        ->name('returns.returnForm');
+
+    Route::post('/returns/{bookRequest}/return', [ReturnsController::class, 'submitReturn'])
+        ->name('returns.submitReturn');
+
 
 });
 
@@ -59,15 +66,16 @@ Route::middleware([
         ->name('requests.approve');
     Route::post('/requests/{bookRequest}/reject', [BookRequestController::class, 'reject'])
         ->name('requests.reject');
+    //gestao de devoluçao
 
-    Route::get('/requests/{bookRequest}/review-return', [BookRequestController::class, 'reviewReturn'])
-        ->name('requests.reviewReturn');
+    Route::get('/returns/{bookRequest}/review-return', [ReturnsController::class, 'reviewReturn'])
+        ->name('returns.reviewReturn');
 
-    Route::post('/requests/{bookRequest}/approve-return', [BookRequestController::class, 'approveReturn'])
-        ->name('requests.approveReturn');
+    Route::post('/returns/{bookRequest}/approve-return', [ReturnsController::class, 'approveReturn'])
+        ->name('returns.approveReturn');
 
-    Route::post('/requests/{bookRequest}/reject-return', [BookRequestController::class, 'rejectReturn'])
-        ->name('requests.rejectReturn');
+    Route::post('/returns/{bookRequest}/reject-return', [ReturnsController::class, 'rejectReturn'])
+        ->name('returns.rejectReturn');
 
     Route::resource('returns', ReturnsController::class);
 

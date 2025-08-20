@@ -98,7 +98,7 @@
                     <!-- Botões login/registro -->
                     <a href="{{ route('login') }}" class="btn btn-ghost btn-sm md:btn-md">Login</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm md:btn-md">Register</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm md:btn-md text-white">Register</a>
                     @endif
                 @endauth
 

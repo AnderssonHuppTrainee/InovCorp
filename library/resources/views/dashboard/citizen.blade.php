@@ -77,7 +77,7 @@
                     <div class="overflow-x-auto">
                         <table class="table table-zebra w-full">
                             <thead class="bg-gray-50">
-                                <tr>
+                                <tr class="hover">
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Livro
@@ -103,7 +103,7 @@
                             <tbody>
                                 @foreach($requests as $request)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-wrap">
                                             <div class="flex items-center">
                                                 @if($request->book->cover_image)
                                                     <img src="{{ asset('storage/' . $request->book->cover_image) }}"
@@ -114,7 +114,8 @@
                                                 <div>
                                                     <div class="font-medium">{{ $request->book->name }}</div>
                                                     <div class="text-sm text-gray-500">
-                                                        {{ $request->book->authors->pluck('name')->join(', ') }}</div>
+                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -127,14 +128,13 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="badge badge-lg ml-2 gap-1 text-white
-                                                                                                                                                                                                                                                @if($request->status === 'approved') badge-success
-                                                                                                                                                                                                                                                @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                                                                                                                                                @elseif($request->status === 'returned') badge-success
-                                                                                                                                                                                                                                                @elseif($request->status === 'rejected') badge-error
-                                                                                                                                                                                                                                                @else badge-neutral 
-                                                                                                                                                                                                                                                @endif">
+                                            <span class="badge badge-lg ml-2 gap-1 text-white
+                                                                                @if($request->status === 'approved') badge-success
+                                                                                @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                @elseif($request->status === 'returned') badge-success
+                                                                                @elseif($request->status === 'rejected') badge-error
+                                                                                @else badge-neutral 
+                                                                                @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i>
@@ -151,7 +151,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($request->status === 'approved')
-                                                <a href="{{ route('requests.returnForm', $request) }}"
+                                                <a href="{{ route('returns.returnForm', $request) }}"
                                                     class="btn btn-sm btn-primary">
                                                     <i class="fas fa-undo mr-1"></i> Devolver
                                                 </a>

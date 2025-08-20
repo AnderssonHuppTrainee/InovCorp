@@ -33,12 +33,12 @@ class BookRequest extends Model
         parent::boot();
 
         static::creating(function ($request) {
-            // Gerar número sequencial
+            // gerar num sequencial
             $lastRequest = BookRequest::orderBy('id', 'desc')->first();
             $request->number = 'REQ-' . str_pad($lastRequest ? $lastRequest->id + 1 : 1, 6, '0', STR_PAD_LEFT);
 
-            // Definir data de retorno esperada (5 dias após)
-            $request->expected_return_date = now()->addDays(5);
+            //define o prazo de devolução 5 dias
+            //$request->expected_return_date = now()->addDays(5);
         });
     }
     public function book()
@@ -56,6 +56,44 @@ class BookRequest extends Model
         return $this->status === 'approved' &&
             $this->expected_return_date < now() &&
             $this->returned_at === null;
+    }
+    //função para aplicar coima caso livro danificado ou perdido
+    public function calculateFine(string $condition): array
+    {
+        $book = $this->book;
+        $daysUsed = $this->request_date->diffInDays(now());
+
+        $daysLate = now()->greaterThan($this->expected_return_date)
+            ? $this->expected_return_date->diffInDays(now())
+            : 0;
+
+        $fine = 0;
+        $reason = null;
+
+        // coima por atraso
+        if ($daysLate > 0) {
+            $fine += $daysLate * 0.10; // 10c por dia
+            $reason = "Atraso de {$daysLate} dias";
+        }
+
+        //coima por dano
+        if (in_array($condition, ['Bad', 'Dammage'])) {
+            $fine += 10;
+            $reason = $reason ? $reason . ' + Dano' : 'Dano';
+        }
+        //coima por livro perdido
+        if ($condition == 'Lost') {
+            $price = $book?->price ?? 0;
+            $fine += $price;
+            $reason = $reason ? $reason . ' + Livro Perdido' : 'Livro Perdido';
+        }
+
+        return [
+            'days_used' => $daysUsed,
+            'days_late' => $daysLate,
+            'fine' => $fine,
+            'reason' => $reason,
+        ];
     }
 
 }

@@ -6,7 +6,7 @@
                 Voltar
             </a>
         </div>
-        <div class="container mx-auto px-4 py-4">
+        <div class="container mx-auto p-4">
             <x-resources.header title="Gestão de Livros" createRoute="{{ route('books.create') }}" />
 
             <!-- filtros -->

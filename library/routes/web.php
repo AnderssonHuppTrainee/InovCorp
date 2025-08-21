@@ -10,6 +10,7 @@ use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookRequestController;
 use App\Http\Controllers\PublicBookController;
+use App\Http\Controllers\FineController;
 
 
 // Rotas Públicas (sem autenticação)
@@ -30,25 +31,24 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-
+    //requisicao
     Route::resource('requests', BookRequestController::class)->except(['create']);
     Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])
         ->name('requests.create');
     Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
         ->name('requests.cancel');
 
-    //  registrar devolução
-    /*Route::get('/requests/{bookRequest}/return', [BookRequestController::class, 'returnForm'])
-        ->name('requests.returnForm');
 
-    Route::post('/requests/{bookRequest}/return', [BookRequestController::class, 'submitReturn'])
-        ->name('requests.submitReturn');*/
-
+    // devolução
     Route::get('/returns/{bookRequest}/return', [ReturnsController::class, 'returnForm'])
         ->name('returns.returnForm');
 
     Route::post('/returns/{bookRequest}/return', [ReturnsController::class, 'submitReturn'])
         ->name('returns.submitReturn');
+
+    //multas
+    Route::get('/my-fines', [FineController::class, 'index'])->name('fines.index');
+    Route::post('/fines/{fine}/pay', [FineController::class, 'pay'])->name('fines.pay');
 
 
 });

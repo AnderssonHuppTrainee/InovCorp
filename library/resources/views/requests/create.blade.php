@@ -42,11 +42,15 @@
                             identificação.</p>
                     </div>
 
-                    <div class="flex items-center justify-end mt-4">
-                        <x-button class="ml-4 text-white">
-                            {{ __('Confirmar Requisição') }}
-                        </x-button>
+                    <div class="flex flex-col sm:flex-row justify-end gap-4">
+                        <a href="{{ route('dashboard') }}" class="btn btn-ghost">
+                            <i class="fas fa-times mr-2"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary text-white">
+                            <i class="fas fa-check mr-2"></i> Confirmar Requisição
+                        </button>
                     </div>
+
                 </form>
 
             </div>

@@ -109,6 +109,7 @@
                         <option value="Good">Bom</option>
                         <option value="Bad">Mau</option>
                         <option value="Damaged">Danificado</option>
+                        <option value="Lost">Perdido</option>
                     </select>
                 </div>
 

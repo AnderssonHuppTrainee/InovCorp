@@ -88,12 +88,27 @@ class User extends Authenticatable
 
         return $activeRequests < 3;
     }
+
+
     public function hasPendingFines()
     {
-        return $this->bookRequests()
-            ->where('fine_amount', '>', 0)
-            ->whereNull('fine_paid_at')
+        return $this->requests()
+            ->whereHas('fines', function ($query) {
+                $query->whereNull('paid_at')
+                    ->orWhere('status', 'pending');
+            })
             ->exists();
+    }
+    public function totalFines(): float
+    {
+        return $this->requests()
+            ->with('fines')
+            ->get()
+            ->pluck('fines')
+            ->flatten()
+            ->whereNull('paid_at')
+            ->where('status', 'pending')
+            ->sum('amount');
     }
 
 }

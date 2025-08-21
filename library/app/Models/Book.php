@@ -14,7 +14,8 @@ class Book extends Model
         'publisher_id',
         'bibliography',
         'cover_image',
-        'price'
+        'price',
+        'available',
     ];
     //cryptografy
     protected $casts = [

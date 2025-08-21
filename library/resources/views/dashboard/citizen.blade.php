@@ -9,13 +9,29 @@
 
             @auth
                 @if(auth()->user()->canRequestMoreBooks())
-                    <a href="{{ route('public.books.index') }}" class="btn btn-primary gap-2">
+                    <a href="{{ route('public.books.index') }}" class="btn btn-primary text-white gap-2">
                         <i class="fas fa-plus"></i>
                         Nova Requisição
                     </a>
                 @endif
             @endauth
         </div>
+        <!--ALERTA DE COIMAS-->
+        @if(auth()->user()->hasPendingFines())
+            <div class="alert alert-error shadow-lg mb-6">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <h3 class="font-bold">Você possui multas pendentes!</h3>
+                    <div class="text-sm">
+                        Total em dívida: <strong>€
+                            {{ number_format(auth()->user()->totalFines(), 2, ',', '.') }}</strong>
+                    </div>
+                </div>
+                <a href="{{ route('fines.index') }}" class="btn btn-sm btn-light ml-auto">
+                    <i class="fas fa-wallet mr-1"></i> Pagar Agora
+                </a>
+            </div>
+        @endif
 
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -114,27 +130,29 @@
                                                 <div>
                                                     <div class="font-medium">{{ $request->book->name }}</div>
                                                     <div class="text-sm text-gray-500">
-                                                        {{ $request->book->authors->pluck('name')->join(', ') }}
+                                                        {{Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
                                         </td>
-                                        <td class="{{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
+                                        <td
+                                            class=" whitespace-nowrap {{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
                                             {{ $request->expected_return_date->format('d/m/Y') }}
                                             @if($request->isOverdue())
                                                 <span class="badge badge-error ml-2">Atrasado</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                                @if($request->status === 'approved') badge-success
-                                                                                @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                @elseif($request->status === 'returned') badge-success
-                                                                                @elseif($request->status === 'rejected') badge-error
-                                                                                @else badge-neutral 
-                                                                                @endif">
+                                            <span
+                                                class="badge badge-lg ml-2 gap-1 text-white
+                                                                                                                                                                        @if($request->status === 'approved') badge-success
+                                                                                                                                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                                                                                        @elseif($request->status === 'returned') badge-success
+                                                                                                                                                                        @elseif($request->status === 'rejected') badge-error
+                                                                                                                                                                        @else badge-neutral 
+                                                                                                                                                                        @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i>

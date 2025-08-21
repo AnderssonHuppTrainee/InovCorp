@@ -22,7 +22,7 @@ class PublicBookController extends Controller
             });
         }
 
-        // Filtro por faixa de preço
+        //  faixa de preço
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
         }
@@ -30,7 +30,7 @@ class PublicBookController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Ordenação
+
         $sortOptions = [
             'title_asc' => ['field' => 'name', 'direction' => 'asc'],
             'title_desc' => ['field' => 'name', 'direction' => 'desc'],
@@ -45,5 +45,10 @@ class PublicBookController extends Controller
         $books = $query->paginate(12)->withQueryString();
 
         return view('public.books.index', compact('books'));
+    }
+
+    public function show(Book $book)
+    {
+        return view('public.books.show', compact('book'));
     }
 }

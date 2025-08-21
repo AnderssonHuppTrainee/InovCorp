@@ -72,23 +72,20 @@
                     @foreach($books as $book)
                         <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
 
-                            <!--@if($book->cover_image)
-                                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}"
-                                                        class="h-full w-full object-cover">
-                                                        @else
-                                                        <div class="text-gray-500 text-center p-4">
-                                                        <i class="fas fa-book-open fa-3x mb-2"></i>
-                                                        <p>Sem imagem</p>
-                                                        </div>
-                                                        @endif-->
-                            <figure class="aspect-[2/3]">
-                                <x-image-book class="h-48 w-full object-cover" />
-                            </figure>
+                            @if ($book->cover_image)
+                                <figure class="aspect-[2/3]">
+                                    <img src="{{ $book->cover_image }}" class="h-full w-full object-cover">
+                                </figure>
+                            @else
+                                <figure class="aspect-[2/3]">
+                                    <x-image-book class="h-48 w-full object-cover" />
+                                </figure>
+                            @endif
 
 
                             <div class="card-body p-4">
                                 <h2 class="card-title line-clamp-2 text-sm sm:text-base">
-                                    <a href="{{ route('books.show', $book) }}" class="hover:underline text-indigo-600">
+                                    <a href="{{ route('public.books.show', $book) }}" class="hover:underline text-indigo-600">
                                         {{ $book->name }}
                                     </a>
                                 </h2>

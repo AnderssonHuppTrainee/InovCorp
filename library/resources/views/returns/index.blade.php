@@ -29,7 +29,7 @@
                     </div>
                 @else
 
-                    <div class="bg-white  shadow-sm sm:rounded-lg">
+                    <div class="bg-white  shadow-md sm:rounded-lg">
                         <div class="overflow-x-auto">
                             <table class="table table-zebra w-full">
                                 <thead class="bg-gray-50">
@@ -72,9 +72,7 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($returns as $return)
                                         <tr class="hover">
-                                            <td class="
-
-                                                    whitespace-nowrap ">{{ $return->number }}</td>
+                                            <td class="whitespace-nowrap ">{{ $return->number }}</td>
                                             <td class="whitespace-wrap">
                                                 <div class="flex items-center gap-3">
                                                     @if($return->book->cover_image)
@@ -107,12 +105,12 @@
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span
                                                     class="badge badge-lg ml-2 gap-1
-                                                                                                                                                                                                                                @if($return->status === 'approved') badge-primary
-                                                                                                                                                                                                                                @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                                                                                                                                @elseif($return->status === 'returned') badge-success
-                                                                                                                                                                                                                                @elseif($return->status === 'rejected') badge-error
-                                                                                                                                                                                                                                @else badge-neutral 
-                                                                                                                                                                                                                                @endif">
+                                                                                                                                                                                                                                                @if($return->status === 'approved') badge-primary
+                                                                                                                                                                                                                                                @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                                                                                                                                                                @elseif($return->status === 'returned') badge-success
+                                                                                                                                                                                                                                                @elseif($return->status === 'rejected') badge-error
+                                                                                                                                                                                                                                                @else badge-neutral 
+                                                                                                                                                                                                                                                @endif">
 
                                                     @if($return->status === 'approved')
                                                         <i class="fas fa-check-circle"></i>

@@ -49,44 +49,53 @@ class BookRequest extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
     public function isOverdue()
     {
         return $this->status === 'approved' &&
             $this->expected_return_date < now() &&
             $this->returned_at === null;
     }
-    //função para aplicar coima caso livro danificado ou perdido
+    public function fines()
+    {
+        return $this->hasMany(Fine::class, 'book_request_id');
+    }
+
+
+    //função para aplicar coima caso livro, atrasado,danificado ou perdido
     public function calculateFine(string $condition): array
     {
         $book = $this->book;
         $daysUsed = $this->request_date->diffInDays(now());
+        $daysLate = 0;
 
-        $daysLate = now()->greaterThan($this->expected_return_date)
-            ? $this->expected_return_date->diffInDays(now())
-            : 0;
+        if (now()->gt($this->expected_return_date)) {
+
+            $daysLate = $this->expected_return_date->copy()->addDay()->startOfDay()->diffInDays(now()->startOfDay());
+        }
 
         $fine = 0;
-        $reason = null;
+        $reasonParts = [];
 
         // coima por atraso
         if ($daysLate > 0) {
-            $fine += $daysLate * 0.10; // 10c por dia
-            $reason = "Atraso de {$daysLate} dias";
+            $fine += $daysLate * 1.0; // 1 euro diario
+            $reasonParts[] = "Atraso de {$daysLate} dia(s)";
         }
 
-        //coima por dano
-        if (in_array($condition, ['Bad', 'Dammage'])) {
-            $fine += 10;
-            $reason = $reason ? $reason . ' + Dano' : 'Dano';
+        // coima por dano
+        if (in_array($condition, ['Bad', 'Damaged'])) {
+            $fine += 5;
+            $reasonParts[] = "Dano";
         }
-        //coima por livro perdido
-        if ($condition == 'Lost') {
+
+        // coima livro perdido
+        if ($condition === 'Lost') {
             $price = $book?->price ?? 0;
             $fine += $price;
-            $reason = $reason ? $reason . ' + Livro Perdido' : 'Livro Perdido';
+            $reasonParts[] = "Livro Perdido";
         }
+
+        $reason = $reasonParts ? implode(' + ', $reasonParts) : null;
 
         return [
             'days_used' => $daysUsed,

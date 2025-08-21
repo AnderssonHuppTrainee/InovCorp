@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BookRequest;
+use App\Models\Fine;
 
 class ReturnsController extends Controller
 {
@@ -78,23 +79,31 @@ class ReturnsController extends Controller
             abort(403, 'Acesso não autorizado.');
         }
         $request->validate([
-            'book_condition' => 'required|string|in:Excellent,Good,Bad,Dammage,Lost'
+            'book_condition' => 'required|string|in:Excellent,Good,Bad,Damaged,Lost'
         ]);
-        $result = $bookRequest->calculateFine($request->book_condition);
-
+        //calcular coima se houver
+        $fineData = $bookRequest->calculateFine($request->book_condition);
+        if ($fineData['fine'] > 0) {
+            Fine::create([
+                'book_request_id' => $bookRequest->id,
+                'amount' => $fineData['fine'],
+                'reason' => $fineData['reason'],
+            ]);
+        }
         $bookRequest->update([
             'status' => 'returned',
             'admin_confirmed_return_date' => now(),
-            'actual_days' => $result['days_used'],
+            'actual_days' => $fineData['days_used'],
             'book_condition' => $request->book_condition,
-            //'fine_amount' => $result['fine'],
-            //'fine_reason' => $result['reason'],
+
         ]);
         $bookRequest->book->update([
             'avaliable' => true,
         ]);
 
-        return redirect()->back()->with('success', 'Devolução aprovada com sucesso.');
+        return redirect()->route('dashboard')
+            ->with('success', 'Devolução aprovada com sucesso.');
+
     }
 
     public function rejectReturn(BookRequest $bookRequest)

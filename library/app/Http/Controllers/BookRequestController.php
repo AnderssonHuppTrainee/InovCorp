@@ -45,13 +45,16 @@ class BookRequestController extends Controller
 
     public function store(StoreBookRequestRequest $request)
     {
-        // Verificar se o usuário pode fazer mais requisições
+        // verifica se pode fazer mais requisições
         if (!auth()->user()->canRequestMoreBooks()) {
             return back()->with('error', 'Você já tem 3 livros requisitados. Devolva algum antes de requisitar outro.');
         }
 
         $book = Book::findOrFail($request->book_id);
 
+        if (!$book->available) {
+            return back()->with('error', 'Este livro já foi requisitado e não está disponível.');
+        }
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
@@ -63,6 +66,7 @@ class BookRequestController extends Controller
             'user_id' => auth()->id(),
             'book_id' => $book->id,
             'request_date' => now(),
+            'expected_return_date' => now()->addDays(5),
             'status' => 'pending',
             'photo_path' => $photoPath,
         ]);
@@ -82,12 +86,13 @@ class BookRequestController extends Controller
             \Log::error('Erro ao enviar emails: ' . $e->getMessage());
 
         }
-        $request->book->update([
-            'avaliable' => false,
+        $book->update([
+            'available' => false,
         ]);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Requisição realizada com sucesso. Você receberá um email de confirmação.');
+            ->with('success', 'Requisição realizada com sucesso.
+            Você receberá um email de confirmação.');
     }
 
     public function show(BookRequest $request)
@@ -101,7 +106,7 @@ class BookRequestController extends Controller
         return view('requests.show', compact('request'));
     }
 
-    public function approve(BookRequest $request)
+    public function approve(BookRequest $bookRequest)
     {
 
         // verifica se e o admin
@@ -110,16 +115,16 @@ class BookRequestController extends Controller
         }
 
 
-        if ($request->status !== 'pending') {
+        if ($bookRequest->status !== 'pending') {
             return redirect()->back()->with('error', 'Apenas requisições pendentes podem ser aprovadas');
         }
-        $request->update([
+        $bookRequest->update([
             'status' => 'approved',
             'actual_receipt_date' => now(),
             'expected_return_date' => now()->addDays(5),
         ]);
-        $request->book->update([
-            'avaliable' => false,
+        $bookRequest->book->update([
+            'available' => false,
         ]);
 
         return redirect()->back()->with('success', 'Requisição aprovada com sucesso.');
@@ -135,7 +140,7 @@ class BookRequestController extends Controller
             'status' => 'rejected', // rejeitado
         ]);
         $bookRequest->book->update([
-            'avaliable' => true,
+            'available' => true,
         ]);
 
         return redirect()->route('requests.index')

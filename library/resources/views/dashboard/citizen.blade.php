@@ -19,10 +19,10 @@
         <!--ALERTA DE COIMAS-->
         @if(auth()->user()->hasPendingFines())
             <div class="alert alert-error shadow-lg mb-6">
-                <i class="fas fa-exclamation-circle"></i>
+                <i class="fas fa-exclamation-circle mr-2 text-white"></i>
                 <div>
-                    <h3 class="font-bold">Você possui multas pendentes!</h3>
-                    <div class="text-sm">
+                    <h3 class="font-bold text-white">Você possui multas pendentes!</h3>
+                    <div class="text-sm text-white">
                         Total em dívida: <strong>€
                             {{ number_format(auth()->user()->totalFines(), 2, ',', '.') }}</strong>
                     </div>
@@ -31,8 +31,13 @@
                     <i class="fas fa-wallet mr-1"></i> Pagar Agora
                 </a>
             </div>
-        @endif
+        @elseif(!auth()->user()->canRequestMoreBooks())
+            <div class="alert alert-warning shadow-lg mb-6">
+                <i class="fas fa-exclamation-triangle mr-2 text-white"></i>
+                <p class="font-bold text-white">Você atingiu o limite máximo de 3 livros requisitados simultaneamente.</p>
+            </div>
 
+        @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <!-- Total de Requisições -->
@@ -65,7 +70,7 @@
                 </div>
             </div>
 
-            <!-- Atrasadas -->
+
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
@@ -141,30 +146,33 @@
                                             class=" whitespace-nowrap {{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
                                             {{ $request->expected_return_date->format('d/m/Y') }}
                                             @if($request->isOverdue())
-                                                <span class="badge badge-error ml-2">Atrasado</span>
+                                                <span class="badge badge-error ml-2 text-white">Atrasado</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="badge badge-lg ml-2 gap-1 text-white
-                                                                                                                                                                        @if($request->status === 'approved') badge-success
-                                                                                                                                                                        @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                                                                        @elseif($request->status === 'returned') badge-success
-                                                                                                                                                                        @elseif($request->status === 'rejected') badge-error
-                                                                                                                                                                        @else badge-neutral 
-                                                                                                                                                                        @endif">
+                                            <span class="badge badge-lg ml-2 gap-1 text-white
+                                                                            @if($request->status === 'approved') badge-success
+                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                            @elseif($request->status === 'returned') badge-success
+                                                                            @elseif($request->status === 'rejected') badge-error
+                                                                            @else badge-neutral 
+                                                                            @endif">
 
                                                 @if($request->status === 'approved')
-                                                    <i class="fas fa-check-circle"></i>
-                                                @elseif(in_array($request->status, ['pending', 'pending_returned']))
-                                                    <i class="fas fa-clock"></i>
+                                                    <i class="fas fa-check-circle"></i> Aprovado
+                                                @elseif($request->status === 'pending')
+                                                    <i class="fas fa-clock"></i> Pendente
+                                                @elseif($request->status === 'pending_returned')
+                                                    <i class="fas fa-clock"></i> Devolução Pendente
                                                 @elseif($request->status === 'returned')
-                                                    <i class="fas fa-undo"></i>
+                                                    <i class="fas fa-undo"></i> Devolvido
                                                 @elseif($request->status === 'rejected')
-                                                    <i class="fas fa-times-circle"></i>
+                                                    <i class="fas fa-times-circle"></i> Rejeitado
+                                                @elseif($request->status === 'cancelled')
+                                                    <i class="fas fa-ban"></i> Cancelado
+                                                @else
+                                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                                 @endif
-
-                                                {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -183,6 +191,8 @@
                                                         Cancelar
                                                     </button>
                                                 </form>
+                                            @else
+                                                <p class="flex justify-center">-</p>
                                             @endif
                                         </td>
                                     </tr>
@@ -196,12 +206,5 @@
                 @endif
             </div>
         </div>
-
-        @if(!auth()->user()->canRequestMoreBooks())
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Você atingiu o limite máximo de 3 livros requisitados simultaneamente.
-            </div>
-        @endif
     </div>
 </x-app-layout>

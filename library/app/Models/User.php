@@ -80,16 +80,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(BookRequest::class);
     }
-    public function canRequestMoreBooks()
-    {
-        $activeRequests = $this->requests()
-            ->whereIn('status', ['pending', 'approved', 'pending_returned'])
-            ->count();
-
-        return $activeRequests < 3;
-    }
-
-
     public function hasPendingFines()
     {
         return $this->requests()
@@ -99,6 +89,20 @@ class User extends Authenticatable
             })
             ->exists();
     }
+    public function canRequestMoreBooks()
+    {
+        if ($this->hasPendingFines()) {
+            return false;
+        }
+
+        $activeRequests = $this->requests()
+            ->whereIn('status', ['pending', 'approved', 'pending_returned'])
+            ->count();
+
+        return $activeRequests < 3;
+
+    }
+
     public function totalFines(): float
     {
         return $this->requests()

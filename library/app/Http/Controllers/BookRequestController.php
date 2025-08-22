@@ -114,7 +114,6 @@ class BookRequestController extends Controller
             abort(403, 'Acesso negado');
         }
 
-
         if ($bookRequest->status !== 'pending') {
             return redirect()->back()->with('error', 'Apenas requisições pendentes podem ser aprovadas');
         }

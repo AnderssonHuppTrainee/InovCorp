@@ -24,16 +24,20 @@
                             @endif">
 
                                 @if($request->status === 'approved')
-                                    <i class="fas fa-check-circle"></i>
-                                @elseif(in_array($request->status, ['pending', 'pending_returned']))
-                                    <i class="fas fa-clock"></i>
+                                    <i class="fas fa-check-circle"></i> Aprovado
+                                @elseif($request->status === 'pending')
+                                    <i class="fas fa-clock"></i> Pendente
+                                @elseif($request->status === 'pending_returned')
+                                    <i class="fas fa-clock"></i> Devolução Pendente
                                 @elseif($request->status === 'returned')
-                                    <i class="fas fa-undo"></i>
+                                    <i class="fas fa-undo"></i> Devolvido
                                 @elseif($request->status === 'rejected')
-                                    <i class="fas fa-times-circle"></i>
+                                    <i class="fas fa-times-circle"></i> Rejeitado
+                                @elseif($request->status === 'cancelled')
+                                    <i class="fas fa-ban"></i> Cancelado
+                                @else
+                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                 @endif
-
-                                {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                             </span>
                         </h1>
                         <div class="text-sm text-gray-500 mt-1">
@@ -49,7 +53,7 @@
                         <div
                             class="bg-base-200 rounded-lg shadow-md overflow-hidden w-40 h-60 flex items-center justify-center">
                             @if($request->book->cover_image)
-                                <x-image-book class="w-full h-full object-cover" />
+                                <img src="{{ $request->book->cover_image }}" class="w-full h-full object-cover" />
                             @else
                                 <div class="text-center p-4">
                                     <i class="fas fa-book-open text-4xl text-gray-400 mb-2"></i>

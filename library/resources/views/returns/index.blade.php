@@ -100,29 +100,32 @@
                                             </td>
 
                                             <td>
-                                                {{ $return->actual_days }} dias
+                                                {{ round($return->actual_days) }} dias
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span
-                                                    class="badge badge-lg ml-2 gap-1
-                                                                                                                                                                                                                                                @if($return->status === 'approved') badge-primary
-                                                                                                                                                                                                                                                @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                                                                                                                                                @elseif($return->status === 'returned') badge-success
-                                                                                                                                                                                                                                                @elseif($return->status === 'rejected') badge-error
-                                                                                                                                                                                                                                                @else badge-neutral 
-                                                                                                                                                                                                                                                @endif">
+                                                <span class="badge badge-lg ml-2 gap-1 text-white
+                                                                        @if($return->status === 'approved') badge-success
+                                                                        @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
+                                                                        @elseif($return->status === 'returned') badge-success
+                                                                        @elseif($return->status === 'rejected') badge-error
+                                                                        @else badge-neutral 
+                                                                        @endif">
 
                                                     @if($return->status === 'approved')
-                                                        <i class="fas fa-check-circle"></i>
-                                                    @elseif(in_array($return->status, ['pending', 'pending_returned']))
-                                                        <i class="fas fa-clock"></i>
+                                                        <i class="fas fa-check-circle"></i> Aprovado
+                                                    @elseif($return->status === 'pending')
+                                                        <i class="fas fa-clock"></i> Pendente
+                                                    @elseif($return->status === 'pending_returned')
+                                                        <i class="fas fa-clock"></i> Devolução Pendente
                                                     @elseif($return->status === 'returned')
-                                                        <i class="fas fa-undo"></i>
+                                                        <i class="fas fa-undo"></i> Devolvido
                                                     @elseif($return->status === 'rejected')
-                                                        <i class="fas fa-times-circle"></i>
+                                                        <i class="fas fa-times-circle"></i> Rejeitado
+                                                    @elseif($return->status === 'cancelled')
+                                                        <i class="fas fa-ban"></i> Cancelado
+                                                    @else
+                                                        {{ ucfirst(str_replace('_', ' ', $return->status)) }}
                                                     @endif
-
-                                                    {{ ucfirst(str_replace('_', ' ', $return->status)) }}
                                                 </span>
                                             </td>
                                             <td class="whitespace-nowrap">
@@ -134,7 +137,7 @@
                                                     <form class="inline" action="{{ route('returns.approveReturn', $return) }}"
                                                         method="POST">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                        <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
                                                             Aprovar
                                                         </button>
                                                     </form>

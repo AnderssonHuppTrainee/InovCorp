@@ -52,7 +52,7 @@
                 Descubra, explore e leia os melhores livros com facilidade.
             </p>
             <div class="flex justify-center gap-4">
-                <a href="{{ route('login') }}" class="btn btn-primary">Acessar Conta</a>
+                <a href="{{ route('login') }}" class="btn btn-primary text-white">Acessar Conta</a>
                 <a href="{{ route('public.books.index')}}" class="btn btn-outline">Explorar Livros</a>
             </div>
         </div>
@@ -61,7 +61,7 @@
 
     <section class="py-12 bg-base-200">
         <div class="container mx-auto p-4">
-            <h2 class="text-2xl font-bold mb-8 text-center">Últimos Livros Adicionados</h2>
+            <h2 class="text-3xl font-bold mb-8 text-center">Últimos Livros Adicionados</h2>
 
             <div class="swiper multi-card-carousel">
                 <div class="swiper-wrapper">
@@ -88,7 +88,7 @@
                                         {{ Str::limit($book->name, 20) }}
                                     </h2>
                                     <div class="card-actions justify-end">
-                                        <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm">
+                                        <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm text-white">
                                             Detalhes
                                         </label>
                                     </div>
@@ -169,7 +169,6 @@
                             </div>
                         </div>
 
-
                     </div>
                 </div>
             </div>
@@ -181,7 +180,7 @@
         <div class="container mx-auto p-4 ">
 
             <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Principais Livros</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  mx-auto">
                 @foreach ($allBooks as $book)
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
                         @if ($book->cover_image)

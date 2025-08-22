@@ -45,12 +45,19 @@
                                     <td class="whitespace-nowrap">€ {{ number_format($fine->amount, 2, ',', '.') }}</td>
                                     <td>
                                         @if($fine->status === 'pending')
-                                            <span class="badge badge-warning">Pendente</span>
+                                            <span class="badge badge-warning text-white">
+                                                <i class="fas fa-clock"></i>
+                                                Pendente
+                                            </span>
                                         @else
-                                            <span class="badge badge-success">Paga</span>
+                                            <span class="badge badge-success text-white">
+                                                <i class="fas fa-check-circle"></i>
+                                                Paga
+                                            </span>
                                         @endif
                                     </td>
                                     <td>
+
                                         @if($fine->status === 'pending')
                                             <form action="{{ route('fines.pay', $fine) }}" method="POST">
                                                 @csrf
@@ -61,6 +68,7 @@
                                         @else
                                             <span>-</span>
                                         @endif
+
                                     </td>
                                 </tr>
                             @empty

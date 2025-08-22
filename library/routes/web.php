@@ -62,7 +62,7 @@ Route::middleware([
 ])->group(function () {
     //gestao requisicoes
     Route::get('/requests/{request}', [BookRequestController::class, 'show'])->name('requests.show');
-    Route::post('/requests/{request}/approve', [BookRequestController::class, 'approve'])
+    Route::post('/requests/{bookRequest}/approve', [BookRequestController::class, 'approve'])
         ->name('requests.approve');
     Route::post('/requests/{bookRequest}/reject', [BookRequestController::class, 'reject'])
         ->name('requests.reject');

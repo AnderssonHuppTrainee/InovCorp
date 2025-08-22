@@ -17,11 +17,11 @@ class SendReturnReminders extends Command
      */
     public function handle()
     {
-        $tomorrow = Carbon::tomorrow()->toDateString();
+        $tomorrow = Carbon::tomorrow()->startOfDay();
 
         $requests = BookRequest::whereDate('expected_return_date', $tomorrow)
             ->where('status', 'approved')
-            ->whereNull('returned_at')
+            ->whereNull('returned_date')
             ->with(['user', 'book'])
             ->get();
 

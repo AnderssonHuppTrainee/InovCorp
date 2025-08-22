@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
         <div class="mb-3">
-            <a href="{{ route('public.home') }}" class="btn btn-ghost gap-2">
+            <a href="{{ route('public.books.index')}}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
                 Voltar
             </a>

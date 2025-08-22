@@ -88,25 +88,29 @@
                                                 {{ $request->expected_return_date->format('d/m/Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="badge badge-lg ml-2 gap-1
-                                                                                                                    @if($request->status === 'approved') badge-primary
-                                                                                                                    @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                    @elseif($request->status === 'returned') badge-success
-                                                                                                                    @elseif($request->status === 'rejected') badge-error
-                                                                                                                    @else badge-neutral 
-                                                                                                                    @endif">
+                                                <span class="badge badge-lg ml-2 gap-1 text-white
+                                                                            @if($request->status === 'approved') badge-success
+                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                            @elseif($request->status === 'returned') badge-success
+                                                                            @elseif($request->status === 'rejected') badge-error
+                                                                            @else badge-neutral 
+                                                                            @endif">
 
                                                     @if($request->status === 'approved')
-                                                        <i class="fas fa-check-circle"></i>
-                                                    @elseif(in_array($request->status, ['pending', 'pending_returned']))
-                                                        <i class="fas fa-clock"></i>
+                                                        <i class="fas fa-check-circle"></i> Aprovado
+                                                    @elseif($request->status === 'pending')
+                                                        <i class="fas fa-clock"></i> Pendente
+                                                    @elseif($request->status === 'pending_returned')
+                                                        <i class="fas fa-clock"></i> Devolução Pendente
                                                     @elseif($request->status === 'returned')
-                                                        <i class="fas fa-undo"></i>
+                                                        <i class="fas fa-undo"></i> Devolvido
                                                     @elseif($request->status === 'rejected')
-                                                        <i class="fas fa-times-circle"></i>
+                                                        <i class="fas fa-times-circle"></i> Rejeitado
+                                                    @elseif($request->status === 'cancelled')
+                                                        <i class="fas fa-ban"></i> Cancelado
+                                                    @else
+                                                        {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                                     @endif
-
-                                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -117,7 +121,7 @@
                                                     <form class="inline" action="{{ route('requests.approve', $request) }}"
                                                         method="POST">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-success ml-2">
+                                                        <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
                                                             Aprovar
                                                         </button>
                                                     </form>

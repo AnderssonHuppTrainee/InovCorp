@@ -51,8 +51,7 @@ class BookRequest extends Model
     }
     public function isOverdue()
     {
-        return $this->status === 'approved' &&
-            $this->expected_return_date < now() &&
+        return $this->status != 'cancelled' && $this->expected_return_date < now() &&
             $this->returned_at === null;
     }
     public function fines()

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use App\Models\Publisher;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Rules\Exists;
 
 class BookController extends Controller
 {
@@ -207,8 +209,6 @@ class BookController extends Controller
 
             $books = $response->json()['items'] ?? [];
 
-
-
         }
 
         return view('books.import', compact('books'));
@@ -235,24 +235,37 @@ class BookController extends Controller
     }
     public function storeGoogle(Request $request)
     {
-        $selectedBooks = $request->input('books', []);
+        try {
+            $bookData = $request->input('book');
 
-        foreach ($selectedBooks as $bookData) {
+            if (!$bookData) {
+                return redirect()->back()->with('error', 'Nenhum livro selecionado para importar!');
+            }
+
             $info = json_decode($bookData, true);
 
+            //verifica se o livro ja existe
+            $isbn = $info['industryIdentifiers'][0]['identifier'] ?? null;
 
+            if ($isbn) {
+                $existingBook = Book::where('isbn', $isbn)->first();
+                if ($existingBook) {
+                    return redirect()->back()->with('error', 'Livro já existente na base de dados!');
+                }
+            }
+            //cria editora
             $publisherName = $info['publisher'] ?? 'Desconhecido';
             $publisher = Publisher::firstOrCreate(
                 ['name' => $publisherName]
             );
-            logger($info);
+            //registra livro
             $book = Book::create([
                 'isbn' => $info['industryIdentifiers'][0]['identifier'] ?? 'NOISBN-' . uniqid(),
                 'name' => $info['title'] ?? 'Sem título',
                 'publisher_id' => $publisher->id,
                 'bibliography' => $info['description'] ?? 'Descrição não disponível',
                 'cover_image' => $info['imageLinks']['thumbnail'] ?? null,
-                'price' => rand(0, 50),
+                'price' => rand(1, 50),
                 'available' => true,
             ]);
 
@@ -267,11 +280,15 @@ class BookController extends Controller
                 // vincula autor ao livro via pivot
                 $book->authors()->syncWithoutDetaching($author->id);
             }
+
+
+            return redirect()->back()
+                ->with('success', 'Livro importado com sucesso!');
+
+        } catch (Exception $e) {
+            \Log::error('Erro ao importar livros: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Falha ao importar os livros! Detalhes: ' . $e->getMessage());
         }
-
-        return redirect()->route('books.index')
-            ->with('success', 'Livros importados com sucesso!');
     }
-
-
 }

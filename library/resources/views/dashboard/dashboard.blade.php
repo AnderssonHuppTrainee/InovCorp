@@ -8,8 +8,8 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('books.import') }}" class="btn btn-info btn-sm gap-2">
-                    <i class="fas fa-file"></i>
+                <a href="{{ route('books.import') }}" class="btn btn-info btn-sm gap-2 text-white">
+                    <i class="fas fa-download"></i>
                     Importar Livros
                 </a>
                 <a href="{{ route('export.books') }}" class="btn btn-outline btn-sm gap-2">
@@ -125,7 +125,7 @@
             <div class="card-body">
                 <h2 class="text-xl font-semibold mb-4">Últimas Requisições</h2>
                 @if($requests->isEmpty())
-                    <div class="alert alert-info m-4 sm:m-6">
+                    <div class="alert alert-info m-4 sm:m-6 text-white">
                         <div>
                             <i class="fas fa-info-circle mr-2"></i>
                             <span>Nenhuma requisição encontrada.</span>
@@ -160,52 +160,71 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($requests as $request)
-                                                    <tr>
-                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
-                                                        <td class="px-6 py-4 whitespace-wrap">
-                                                            <div class="flex items-center">
-                                                                @if($request->book->cover_image)
-                                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
-                                                                @else
-                                                                    <img src="https://placehold.co/48x72" class="mr-3" />
-                                                                @endif
-                                                                <div>
-                                                                    <div class="font-bold">{{ $request->book->name }}</div>
-                                                                    <div class="text-sm text-gray-500">
-                                                                        {{  Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
-                                                                    </div>
-                                                                </div>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->number }}</td>
+                                        <td class="px-6 py-4 whitespace-wrap">
+                                            <div class="flex items-center">
+                                                @if($request->book->cover_image)
+                                                    <img src="{{ $request->book->cover_image }}" alt="{{ $request->book->name }}" class="w-12 h-17 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
+                                                @endif
 
-                                                        </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
-                                                        </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                            {{ $request->expected_return_date->format('d/m/Y') }}
-                                                        </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                            <span class="badge 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $request->status == 'approved' ? 'badge-success' :
-                                    ($request->status == 'pending' ? 'badge-warning' :
-                                        ($request->status == 'returned' ? 'badge-info' : 'badge-error')) }}">
-                                                                {{ ucfirst($request->status) }}
-                                                            </span>
-                                                        </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                            <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
-                                                                Ver
-                                                            </a>
-                                                            @if(auth()->user()->isAdmin() && $request->status === 'pending')
-                                                                <form class="inline" action="{{ route('requests.approve', $request) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                                        Aprovar
-                                                                    </button>
-                                                                </form>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
+                                                <div>
+                                                    <div class="font-bold">{{ $request->book->name }}</div>
+                                                    <div class="text-sm text-gray-500">
+                                                        {{  Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge ml-2 gap-1 text-white
+                                            @if($request->status === 'approved') badge-success
+                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                            @elseif($request->status === 'returned') badge-success
+                                            @elseif($request->status === 'rejected') badge-error
+                                            @else badge-neutral 
+                                            @endif">
+
+                                                @if($request->status === 'approved')
+                                                    <i class="fas fa-check-circle"></i> Aprovado
+                                                @elseif($request->status === 'pending')
+                                                    <i class="fas fa-clock"></i> Pendente
+                                                @elseif($request->status === 'pending_returned')
+                                                    <i class="fas fa-clock"></i> Devolução Pendente
+                                                @elseif($request->status === 'returned')
+                                                    <i class="fas fa-undo"></i> Devolvido
+                                                @elseif($request->status === 'rejected')
+                                                    <i class="fas fa-times-circle"></i> Rejeitado
+                                                @elseif($request->status === 'cancelled')
+                                                    <i class="fas fa-ban"></i> Cancelado
+                                                @else
+                                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                                @endif
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
+                                                Ver
+                                            </a>
+                                            @if(auth()->user()->isAdmin() && $request->status === 'pending')
+                                                <form class="inline" action="{{ route('requests.approve', $request) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success text-white ml-2">
+                                                        Aprovar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -225,7 +244,7 @@
                 <h2 class="text-xl font-semibold mb-4">Livros Devolvidos Recentemente</h2>
 
                 @if($returnedBooks->isEmpty())
-                    <div class="alert alert-info m-4 sm:m-6">
+                    <div class="alert alert-info m-4 sm:m-6 text-white">
                         <i class="fas fa-info-circle"></i>
                         <span>Nenhum livro devolvido recentemente.</span>
                     </div>
@@ -263,10 +282,10 @@
                                     <tr class="hover">
                                         <td class="whitespace-nowrap">{{ $request->number }}</td>
                                         <td class="whitespace-wrap">
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center">
                                                 @if($request->book->cover_image)
-                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                    <img src="{{ $request->book->cover_image }}"
+                                                        alt="{{ $request->book->name }}" class="w-12 h-17 mr-3 object-cover">
                                                 @else
                                                     <img src="https://placehold.co/48x72" class="mr-3" />
                                                 @endif
@@ -282,27 +301,27 @@
                                         <td class="whitespace-nowrap">
                                             {{ $request->returned_date->format('d/m/Y') }}
                                             @if($request->isOverdue())
-                                                <span class="badge badge-error ml-2">Atrasado</span>
+                                                <span class="badge badge-error ml-2 text-white">Atrasado</span>
                                             @endif
                                         </td>
 
                                         <td class="whitespace-nowrap">
-                                            {{ $request->actual_days }} dias
+                                            {{ round($request->actual_days) }} dias
                                         </td>
                                         <td class="whitespace-nowrap">
                                             <a href="{{ route('returns.reviewReturn', $request) }}"
                                                 class="btn btn-sm btn-outline">
                                                 Ver
                                             </a>
-                                            <!--@if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
-                                                                                                                                                                                <form class="inline" action="{{ route('returns.approveReturn', $request) }}"
-                                                                                                                                                                                method="POST">
-                                                                                                                                                                                @csrf
-                                                                                                                                                                                <button type="submit" class="btn btn-sm btn-success ml-2">
-                                                                                                                                                                                Aprovar
-                                                                                                                                                                                </button>
-                                                                                                                                                                                </form>
-                                                                                                                                                                                @endif-->
+                                            @if(auth()->user()->isAdmin() && $request->status === 'pending_returned')
+                                                <form class="inline" action="{{ route('returns.approveReturn', $request) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
+                                                        Aprovar
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -318,9 +337,84 @@
                 @endif
             </div>
         </div>
+        <!--Multas pendentes-->
+        <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
+            <div class="card-body ">
+                <h2 class="text-xl font-semibold mb-4">Últimas multas</h2>
 
+                @if($fines->isEmpty())
+                    <div class="alert alert-info m-4 sm:m-6 text-white">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Nenhum livro devolvido recentemente.</span>
+                    </div>
+                    <div class="flex justify-end m-4">
+                        <a href="{{ route('fines.index') }}" class="link-info">Ver todas as multas...</a>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro
+                                    </th>
+                                      <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Utilizador
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Motivo
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Valor
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
 
-        <!-- Últimos livros adicionados -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($fines as $fine)
+                                    <tr>
+                                        <td>{{ $fine->bookRequest->book->name ?? 'Livro removido' }}</td>
+                                         <td>{{ $fine->bookRequest->user->name ?? 'Utilizador removido' }}</td>
+                                        <td>{{ $fine->reason }}</td>
+                                        <td class="whitespace-nowrap">€ {{ number_format($fine->amount, 2, ',', '.') }}</td>
+                                        <td>
+                                            @if($fine->status === 'pending')
+                                                <span class="badge badge-warning text-white">
+                                                    <i class="fas fa-clock"></i>
+                                                    Pendente
+                                                </span>
+                                            @else
+                                                <span class="badge badge-success text-white">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Paga
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-end m-4">
+                        <a href="{{ route('fines.index') }}" class="link-info">Ver todas as multas...</a>
+                    </div>
+                    <div class="px-4 pb-4 sm:px-6">
+                        {{ $fines->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- ultimos livros adicionados -->
         <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
                 <h2 class="text-xl font-semibold mb-4">Últimos Livros Adicionados</h2>

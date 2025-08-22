@@ -1,5 +1,56 @@
 <x-app-layout>
+    <style>
+        .alert-close {
+            @apply cursor-pointer;
+        }
+    </style>
     <div class="container mx-auto px-4 py-6">
+        <!--notificacao-->
+        @if(session('success'))
+            <div class="flex items-center justify-between alert alert-success shadow-lg mb-6" id="alert">
+
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-white"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">
+                            {{ session('success') }}
+                        </p>
+                    </div>
+                </div>
+                <div class="ml-auto pl-3">
+                    <button type="button" class="alert-close"
+                        onclick="document.getElementById('alert').style.display='none'">
+                        <i class=" fas fa-times text-white"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        @endif
+
+        @if(session('error'))
+            <div class="flex items-center justify-between alert alert-error shadow-lg mb-6" id="alert">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-white"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">
+                            {{ session('error') }}
+                        </p>
+                    </div>
+                </div>
+                <div class="ml-auto pl-3">
+                    <button type="button" class="alert-close"
+                        onclick="document.getElementById('alert').style.display='none'">
+                        <i class=" fas fa-times text-white"></i>
+                    </button>
+                </div>
+
+            </div>
+        @endif
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -10,9 +61,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
 
                 <div class="flex justify-start mb-6 items-center">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><i class="fa fa-book mr-2"
-                            aria-hidden="true"></i>Importar Livros
-                        do Google Books</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Importar Livros
+                        do Google Books<i class="fa fa-book ml-2" aria-hidden="true"></i>
+                    </h1>
                 </div>
 
                 <x-resources.filters action="{{ route('books.import') }}" :clear-url="route('books.import')">
@@ -42,7 +93,7 @@
                         @foreach($books as $index => $book)
                             @php
                                 $info = $book['volumeInfo'] ?? [];
-                                $thumbnail = data_get($info, 'imageLinks.thumbnail'); // Acesso seguro
+                                $thumbnail = data_get($info, 'imageLinks.thumbnail');
                             @endphp
 
                             <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
@@ -68,7 +119,7 @@
                                 </div>
                             </div>
 
-                            <!-- Modal -->
+                            <!-- modal -->
                             <input type="checkbox" id="bookModal{{ $index }}" class="modal-toggle" />
                             <div class="modal">
                                 <div class="modal-box max-w-3xl">
@@ -104,7 +155,7 @@
                                             <div class="modal-action">
                                                 <form action="{{ route('books.storeGoogle') }}" method="POST">
                                                     @csrf
-                                                    <input type="hidden" name="books[]" value='@json($info)'>
+                                                    <input type="hidden" name="book" value='@json($info)'>
                                                     <button type="submit" class="btn btn-success text-white">Importar</button>
                                                 </form>
                                             </div>
@@ -137,4 +188,5 @@
             </div>
         </div>
     </div>
+
 </x-app-layout>

@@ -12,6 +12,7 @@ use App\Exports\AuthorsExport;
 use App\Exports\PublishersExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Fine;
 
 class DashboardController extends Controller
 {
@@ -36,9 +37,12 @@ class DashboardController extends Controller
                 ->latest()->paginate(10);
 
             $returnedBooks = BookRequest::with(['user', 'book'])
-                ->where('status', 'pending_returned')
+                ->where('status', ['pending_returned', 'returned'])
                 ->latest('returned_date')
-                ->paginate(10, ['*'], 'returned_page');
+                ->paginate(10);
+            $fines = Fine::with('bookRequest.book', 'bookRequest.user')
+                ->latest()
+                ->paginate(10);
 
             return view('dashboard.dashboard', compact(
                 'stats',
@@ -46,7 +50,8 @@ class DashboardController extends Controller
                 'activeRequestsCount',
                 'recentRequestsCount',
                 'returnedTodayCount',
-                'returnedBooks'
+                'returnedBooks',
+                'fines'
 
             ));
         } else {
@@ -63,7 +68,11 @@ class DashboardController extends Controller
             $requests = auth()->user()->requests()->with('book')->orderBy('request_date', 'desc')
                 ->paginate(10);
 
-            return view('dashboard.citizen', compact('stats', 'requests'));
+            $fines = Fine::whereHas('bookRequest', function ($q) {
+                $q->where('user_id', auth()->id());
+            })->latest()->get();
+
+            return view('dashboard.citizen', compact('stats', 'requests', 'fines'));
 
         }
     }

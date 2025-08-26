@@ -9,7 +9,12 @@ class PublicBookController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Book::query()->with(['publisher', 'authors']);
+        $query = Book::query()->with(['publisher', 'authors'])
+            ->withAvg([
+                'reviews' => function ($q) {
+                    $q->where('reviews.status', 'active');
+                }
+            ], 'rating');
 
         // Filtro por termo de busca
         if ($request->has('search')) {
@@ -49,6 +54,14 @@ class PublicBookController extends Controller
 
     public function show(Book $book)
     {
-        return view('public.books.show', compact('book'));
+        $reviews = $book->reviews()
+            ->where('reviews.status', 'active')
+            ->with('user')
+            ->latest() // mais recentes primeiro
+            ->paginate(10);
+
+        $relatedBooks = $book->relatedBooks(4);
+
+        return view('public.books.show', compact('book', 'reviews', 'relatedBooks'));
     }
 }

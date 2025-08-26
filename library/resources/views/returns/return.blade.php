@@ -21,7 +21,7 @@
                     <div
                         class="bg-base-200 rounded-lg shadow-md overflow-hidden w-40 h-60 flex items-center justify-center">
                         @if($bookRequest->book->cover_image)
-                            <x-image-book class="w-full h-full object-cover" />
+                            <img src="{{ $bookRequest->book->cover_image }}" class="w-full h-full object-cover" />
                         @else
                             <div class="text-center p-4">
                                 <i class="fas fa-book text-4xl text-gray-400 mb-2"></i>
@@ -64,14 +64,16 @@
                         </label>
                     </div>
 
+
                     <div class="form-control ">
                         <label class="label" for="notes">
                             <span class="label-text font-semibold">Observações:</span>
                         </label>
                         <textarea name="notes" id="notes" rows="3" class="textarea textarea-bordered w-full"
-                            placeholder="Algum dano ou observação importante...">
-                        </textarea>
+                            placeholder="Algum dano ou observação importante..."></textarea>
                     </div>
+
+
 
 
                     <div class="flex flex-col sm:flex-row justify-end gap-4">

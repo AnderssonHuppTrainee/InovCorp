@@ -61,14 +61,14 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach ($requests as $request)
                                         <tr>
-                                            <td class="px-6 py-4 ">
+                                            <td class="px-6 py-4 whitespace-nowrap ">
                                                 {{ $request->number }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-6 py-4 whitespace-wrap">
                                                 <div class="flex items-center">
                                                     @if($request->book->cover_image)
-                                                        <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                            alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                        <img src="{{  $request->book->cover_image }}"
+                                                            alt="{{ $request->book->name }}" class="w-10 h-15 mr-3 object-cover">
                                                     @else
                                                         <img src="https://placehold.co/48x72" class="mr-3" />
                                                     @endif
@@ -89,12 +89,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                            @if($request->status === 'approved') badge-success
-                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                            @elseif($request->status === 'returned') badge-success
-                                                                            @elseif($request->status === 'rejected') badge-error
-                                                                            @else badge-neutral 
-                                                                            @endif">
+                                                                                                             @if($request->status === 'approved') badge-success
+                                                                                                              @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                              @elseif($request->status === 'returned') badge-success
+                                                                                                               @elseif($request->status === 'rejected') badge-error
+                                                                                                               @else badge-neutral 
+                                                                                                               @endif">
 
                                                     @if($request->status === 'approved')
                                                         <i class="fas fa-check-circle"></i> Aprovado

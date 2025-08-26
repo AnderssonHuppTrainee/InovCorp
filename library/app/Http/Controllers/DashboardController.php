@@ -10,6 +10,7 @@ use App\Models\Publisher;
 use App\Exports\BooksExport;
 use App\Exports\AuthorsExport;
 use App\Exports\PublishersExport;
+use App\Models\Review;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Fine;
@@ -71,6 +72,7 @@ class DashboardController extends Controller
             $fines = Fine::whereHas('bookRequest', function ($q) {
                 $q->where('user_id', auth()->id());
             })->latest()->get();
+
 
             return view('dashboard.citizen', compact('stats', 'requests', 'fines'));
 

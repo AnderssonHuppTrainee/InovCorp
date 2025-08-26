@@ -88,7 +88,26 @@
                                 </a>
                             </h2>
                             <p class="text-gray-600 text-sm mb-2">por {{ $book->authors->pluck('name')->join(', ') }} </p>
+                            <div>
+                                <div class="flex items-center">
+                                    @php
+                                        $rating = round($book->reviews_avg_rating * 2) / 2;
+                                    @endphp
 
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($rating))
+                                            <i class="fas fa-star text-orange-400"></i>
+                                        @elseif($i - $rating < 1)
+                                            <i class="fas fa-star-half-alt text-orange-400"></i>
+                                        @else
+                                            <i class="far fa-star text-orange-400"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <p class="text-sm text-gray-600">
+                                    {{ number_format($rating, 1, ',', '.') }} / 5
+                                </p>
+                            </div>
                             <div class="flex items-center justify-between mt-2">
                                 <span class="font-bold text-indigo-600">€{{ number_format($book->price, 2, ',', '.') }}</span>
 

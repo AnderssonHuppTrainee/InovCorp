@@ -12,10 +12,15 @@
                     <i class="fas fa-download"></i>
                     Importar Livros
                 </a>
+                  <a href="{{ route('reviews.index') }}" class="btn btn-accent btn-sm gap-2 text-white">
+                    <i class="fas fa-star"></i>
+                    Moderar Avaliações
+                </a>
                 <a href="{{ route('export.books') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i>
                     Exportar Livros
                 </a>
+
                 <!--<a href="{{ route('export.authors') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i>
                     Exportar Autores

@@ -13,8 +13,6 @@
 
         }
 
-
-
         /* botões de navegacao */
         .multi-card-carousel .swiper-button-prev,
         .multi-card-carousel .swiper-button-next {
@@ -87,6 +85,26 @@
                                     <h2 class="card-title text-sm sm:text-base line-clamp-2">
                                         {{ Str::limit($book->name, 20) }}
                                     </h2>
+                                    <div>
+                                        <div class="flex items-center">
+                                            @php
+                                                $rating = round($book->reviews_avg_rating * 2) / 2;
+                                            @endphp
+
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($rating))
+                                                    <i class="fas fa-star text-orange-400"></i>
+                                                @elseif($i - $rating < 1)
+                                                    <i class="fas fa-star-half-alt text-orange-400"></i>
+                                                @else
+                                                    <i class="far fa-star text-orange-400"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <p class="text-sm text-gray-600">
+                                            {{ number_format($rating, 1, ',', '.') }} / 5
+                                        </p>
+                                    </div>
                                     <div class="card-actions justify-end">
                                         <label for="modal-{{ $book->id }}" class="btn btn-primary btn-sm text-white">
                                             Detalhes
@@ -153,7 +171,43 @@
 
                             <p class="font-semibold">Sinopse:</p>
                             <p class="text-justify">{{ $book->bibliography }}</p>
+
                             <div class="divider my-2"></div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Avaliações</h3>
+
+                                @forelse($book->reviews as $review)
+                                    <div class=" bg-gray-50 dark:bg-gray-700 mb-4 p-4 rounded-lg shadow-sm">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-semibold">{{ $review->user->name }}</span>
+                                            <span
+                                                class="text-sm text-gray-500">{{ $review->created_at->format('d/m/Y') }}</span>
+                                        </div>
+
+                                        <!-- rating  -->
+                                        <div class="flex items-center mb-2 text-orange-400">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($review->rating))
+                                                    <i class="fas fa-star text-orange-400"></i>
+                                                @elseif($i - $review->rating < 1)
+                                                    <i class="fas fa-star-half-alt text-orange-400"></i>
+                                                @else
+                                                    <i class="far fa-star text-orange-400"></i>
+                                                @endif
+                                            @endfor
+                                            <span class="ml-2 text-sm text-gray-500">
+                                                {{ number_format($review->rating, 1) }}/5
+                                            </span>
+                                        </div>
+
+                                        <p class="text-gray-700 dark:text-gray-300">{{ $review->comment }}</p>
+                                    </div>
+                                @empty
+                                    <p class="text-gray-500">Nenhuma avaliação disponível para este livro.</p>
+                                @endforelse
+
+                            </div>
                             <div class="flex justify-end">
                                 @auth
                                     <a href="{{ route('requests.create', $book->id) }}" class="btn btn-primary btn-sm mt-4">
@@ -196,6 +250,26 @@
                         <div class="card-body p-4">
                             <h2 class="card-title text-sm sm:text-base line-clamp-2">{{ $book->name }}</h2>
                             <p class="text-sm text-gray-500">{{ Str::limit($book->bibliography, 50) }}</p>
+                            <div>
+                                <div class="flex items-center">
+                                    @php
+                                        $rating = round($book->reviews_avg_rating * 2) / 2;
+                                    @endphp
+
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($rating))
+                                            <i class="fas fa-star text-orange-400"></i>
+                                        @elseif($i - $rating < 1)
+                                            <i class="fas fa-star-half-alt text-orange-400"></i>
+                                        @else
+                                            <i class="far fa-star text-orange-400"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <p class="text-sm text-gray-600">
+                                    {{ number_format($rating, 1, ',', '.') }} / 5
+                                </p>
+                            </div>
                             <div class="card-actions justify-end">
                                 <label for="modal-{{ $book->id }}" class="btn btn-sm btn-outline">Detalhes</label>
                             </div>

@@ -59,6 +59,11 @@ class BookRequest extends Model
         return $this->hasMany(Fine::class, 'book_request_id');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'book_request_id');
+    }
+
 
     //função para aplicar coima caso livro, atrasado,danificado ou perdido
     public function calculateFine(string $condition): array

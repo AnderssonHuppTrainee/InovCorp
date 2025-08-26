@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\BookRequest;
 use App\Notifications\BookRequestNotification;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\FuncCall;
 
 class BookRequestController extends Controller
 {
@@ -147,7 +148,6 @@ class BookRequestController extends Controller
     }
 
 
-
     public function cancel(BookRequest $bookRequest)
     {
 
@@ -162,6 +162,8 @@ class BookRequestController extends Controller
 
         return redirect()->back()->with('success', 'Requisição cancelada com sucesso.');
     }
+
+
 
 
 }

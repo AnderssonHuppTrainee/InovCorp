@@ -127,8 +127,8 @@
                                         <td class="px-6 py-4 whitespace-wrap">
                                             <div class="flex items-center">
                                                 @if($request->book->cover_image)
-                                                    <img src="{{ asset('storage/' . $request->book->cover_image) }}"
-                                                        alt="{{ $request->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                    <img src="{{ $request->book->cover_image }}" alt="{{ $request->book->name }}"
+                                                        class="w-12 h-17 mr-3 object-cover">
                                                 @else
                                                     <img src="https://placehold.co/48x72" class="mr-3" />
                                                 @endif
@@ -150,13 +150,14 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                            @if($request->status === 'approved') badge-success
-                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                            @elseif($request->status === 'returned') badge-success
-                                                                            @elseif($request->status === 'rejected') badge-error
-                                                                            @else badge-neutral 
-                                                                            @endif">
+                                            <span
+                                                class="badge badge-lg ml-2 gap-1 text-white
+                                                                                                                            @if($request->status === 'approved') badge-success
+                                                                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                                                                                            @elseif($request->status === 'returned') badge-success
+                                                                                                                            @elseif($request->status === 'rejected') badge-error
+                                                                                                                             @else badge-neutral 
+                                                                                                                              @endif">
 
                                                 @if($request->status === 'approved')
                                                     <i class="fas fa-check-circle"></i> Aprovado
@@ -178,7 +179,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($request->status === 'approved')
                                                 <a href="{{ route('returns.returnForm', $request) }}"
-                                                    class="btn btn-sm btn-primary">
+                                                    class="btn btn-sm btn-primary text-white">
                                                     <i class="fas fa-undo mr-1"></i> Devolver
                                                 </a>
                                             @elseif($request->status === 'pending' && auth()->id() === $request->user_id)
@@ -191,6 +192,11 @@
                                                         Cancelar
                                                     </button>
                                                 </form>
+                                            @elseif($request->status === 'returned' && $request->reviews()->count() === 0)
+                                                <a href="{{ route('reviews.create', $request) }}"
+                                                    class="btn btn-sm btn-accent text-white">
+                                                    <i class="fas fa-star mr-1"></i> Avaliar
+                                                </a>
                                             @else
                                                 <p class="flex justify-center">-</p>
                                             @endif

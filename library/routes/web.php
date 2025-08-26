@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReturnsController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
@@ -11,16 +12,23 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookRequestController;
 use App\Http\Controllers\PublicBookController;
 use App\Http\Controllers\FineController;
+use Illuminate\Support\Facades\Mail;
 
+
+Route::get('/test-mail', function () {
+    Mail::raw('Este é um teste de envio com Mailtrap!', function ($message) {
+        $message->to('teste@exemplo.com')
+            ->subject('Teste Mailtrap');
+    });
+
+    return 'E-mail enviado para Mailtrap!';
+});
 
 // Rotas Públicas (sem autenticação)
 Route::name('public.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    // Rota pública para catálogo de livros
     Route::get('/catalog', [PublicBookController::class, 'index'])->name('books.index');
-
-    // Detalhe público do livro
     Route::get('/catalog/{book}', [PublicBookController::class, 'show'])->name('books.show');
 });
 
@@ -38,13 +46,18 @@ Route::middleware([
     Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
         ->name('requests.cancel');
 
+    //review
+    Route::prefix('book-requests/{bookRequest}')->group(function () {
+        Route::get('reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
+        Route::post('reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    });
 
     // devolução
     Route::get('/returns/{bookRequest}/return', [ReturnsController::class, 'returnForm'])
         ->name('returns.returnForm');
-
     Route::post('/returns/{bookRequest}/return', [ReturnsController::class, 'submitReturn'])
         ->name('returns.submitReturn');
+
 
     //multas
     Route::get('/my-fines', [FineController::class, 'index'])->name('fines.index');
@@ -79,6 +92,13 @@ Route::middleware([
 
     Route::resource('returns', ReturnsController::class);
 
+    //Moderação de avaliacoes
+    Route::prefix('admin/reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/{review}', [ReviewController::class, 'show'])->name('reviews.show');
+        Route::patch('/{review}/status', [ReviewController::class, 'update'])->name('reviews.update');
+    });
+
     //exportacoes
     Route::prefix('export')->middleware('admin')->group(function () {
         Route::get('books', [DashboardController::class, 'exportBooks'])->name('export.books');
@@ -90,9 +110,8 @@ Route::middleware([
     Route::get('books/import', [BookController::class, 'import'])->name('books.import');
     Route::get('books/search-google', [BookController::class, 'searchGoogle'])->name('books.searchGoogle');
     Route::post('books/store-google', [BookController::class, 'storeGoogle'])->name('books.storeGoogle');
-
-
     Route::resource('books', BookController::class)->except(['import']);
+
     Route::resource('authors', AuthorController::class);
     Route::resource('publishers', PublisherController::class);
 

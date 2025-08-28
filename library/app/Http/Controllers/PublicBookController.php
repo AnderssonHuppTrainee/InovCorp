@@ -60,7 +60,7 @@ class PublicBookController extends Controller
             ->latest() // mais recentes primeiro
             ->paginate(10);
 
-        $relatedBooks = $book->relatedBooks(4);
+        $relatedBooks = $book->relatedBooks(10);
 
         return view('public.books.show', compact('book', 'reviews', 'relatedBooks'));
     }

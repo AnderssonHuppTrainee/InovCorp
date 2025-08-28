@@ -71,17 +71,28 @@ class ReviewController extends Controller
     public function update(Request $request, Review $review)
     {
         $request->validate([
-            'status' => 'required|in:active,refused'
+            'status' => 'required|in:active,refused',
+            'reason' => 'nullable|string|max:500',
         ]);
 
-        $review->update(['status' => $request->status]);
+        $review->status = $request->status;
 
+        if ($review->status === 'refused') {
+            $review->reason = $request->reason;
+        } else {
+            $review->reason = null;
+        }
+
+        $review->save();
+
+        //NOTIFICATION
         if ($review->status === 'active') {
             $review->user->notify(new ReviewApprovedNotification($review));
         } elseif ($review->status === 'refused') {
             $review->user->notify(new ReviewRefusedNotification($review, $request->reason));
         }
 
-        return redirect()->route('reviews.index')->with('success', 'Estado atualizado com sucesso.');
+        return redirect()->route('reviews.index')
+            ->with('success', 'Avaliação atualizada com sucesso.');
     }
 }

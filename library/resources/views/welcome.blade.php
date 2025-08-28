@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
     <style>
         .multi-card-carousel {
             width: 100%;

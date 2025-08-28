@@ -41,6 +41,19 @@
         }
     </style>
     <div class="container mx-auto px-4 py-6">
+
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="alert alert-info shadow-lg mb-6 text-white">
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
+
         <div class="mb-3">
             <a href="{{ route('public.books.index')}}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -87,9 +100,12 @@
 
                         <div>
                             <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                Data de Publicação
+                                Disponibilidade
                             </h3>
-                            <p class="text-lg">{{ $book->published_at?->format('d/m/Y') ?? '-' }}</p>
+                            <span
+                                class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium                                                                                                                                                                                                                                                                                                                                                                     {{ $book->isAvailable() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $book->isAvailable() ? 'Disponível' : 'Indisponível' }}
+                            </span>
                         </div>
                         <div>
                             <!-- Autores -->
@@ -129,83 +145,90 @@
                         </div>
                     </div>
 
-
-                    <!-- Sinopse -->
+                    <!-- sinopse -->
                     <div class="mb-6">
                         <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">Sinopse</h3>
                         <p class=" text-gray-700 dark:text-gray-300 whitespace-pre-line text-justify">
                             {{ $book->bibliography ?? 'Nenhuma sinopse disponível.' }}
                         </p>
                     </div>
-                    <div class="divider"></div>
-                    <!-- avaliações -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-4">Avaliações</h3>
-
-                        @forelse($reviews as $review)
-                            <div class=" bg-gray-50 dark:bg-gray-700 mb-4 p-4 rounded-lg shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="font-semibold">{{ $review->user->name }}</span>
-                                    <span class="text-sm text-gray-500">{{ $review->created_at->format('d/m/Y') }}</span>
-                                </div>
-
-                                <!-- rating  -->
-                                <div class="flex items-center mb-2 text-orange-400">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($review->rating))
-                                            <i class="fas fa-star text-orange-400"></i>
-                                        @elseif($i - $review->rating < 1)
-                                            <i class="fas fa-star-half-alt text-orange-400"></i>
-                                        @else
-                                            <i class="far fa-star text-orange-400"></i>
-                                        @endif
-                                    @endfor
-                                    <span class="ml-2 text-sm text-gray-500">
-                                        {{ number_format($review->rating, 1) }}/5
-                                    </span>
-                                </div>
-
-                                <p class="text-gray-700 dark:text-gray-300">{{ $review->comment }}</p>
-                            </div>
-                        @empty
-                            <p class="text-gray-500">Nenhuma avaliação disponível para este livro.</p>
-                        @endforelse
-                        <div class="mt-4">
-                            {{ $reviews->links() }}
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-                    <div class="flex justify-end">
-                        @auth
-                            @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
-                                <a href="{{ route('requests.create', $book) }}" class="btn btn-md btn-outline">
-                                    Requisitar
-                                </a>
-                            @elseif(!$book->isAvailable())
-                                <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
-                                    Alugado
-                                </span>
-                            @endif
-                        @else
-                            @if($book->isAvailable())
-                                <a href="{{ route('login') }}" class="btn btn-md btn-outline">
-                                    Requisitar
-                                </a>
-                            @else
-                                <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
-                                    Alugado
-                                </span>
-                            @endif
-                        @endauth
-                    </div>
                 </div>
             </div>
             <div class="divider"></div>
 
+            <!-- avaliações -->
+            <div class="p-4">
+                <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Avaliações</h3>
+
+                    @forelse($reviews as $review)
+                        <div class=" bg-gray-50 dark:bg-gray-700 mb-4 p-4 rounded-lg shadow-sm">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold">{{ $review->user->name }}</span>
+                                <span class="text-sm text-gray-500">{{ $review->created_at->format('d/m/Y') }}</span>
+                            </div>
+
+                            <!-- rating  -->
+                            <div class="flex items-center mb-2 text-orange-400">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if($i <= floor($review->rating))
+                                        <i class="fas fa-star text-orange-400"></i>
+                                    @elseif($i - $review->rating < 1)
+                                        <i class="fas fa-star-half-alt text-orange-400"></i>
+                                    @else
+                                        <i class="far fa-star text-orange-400"></i>
+                                    @endif
+                                @endfor
+                                <span class="ml-2 text-sm text-gray-500">
+                                    {{ number_format($review->rating, 1) }}/5
+                                </span>
+                            </div>
+
+                            <p class="text-gray-700 dark:text-gray-300">{{ $review->comment }}</p>
+                        </div>
+                    @empty
+                        <p class="text-gray-500">Nenhuma avaliação disponível para este livro.</p>
+                    @endforelse
+                    <div class="mt-4">
+                        {{ $reviews->links() }}
+                    </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="flex justify-end">
+                @auth
+                    @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
+                        <a href="{{ route('requests.create', $book) }}" class="btn btn-sm btn-outline">
+                            Requisitar
+                        </a>
+                    @elseif(!$book->isAvailable())
+                        <form method="POST" action="{{ route('books.notify', $book) }}">
+                            @csrf
+                            <button type="submit"
+                                class="btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
+                                Notificar-me quando disponível
+                            </button>
+                        </form>
+                    @endif
+                @endauth
+                @guest
+                    @if($book->isAvailable())
+                        <a href="{{ route('login') }}" class="btn btn-sm btn-outline">
+                            Requisitar
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-primary text-white">
+                            Notificar-me quando disponível
+                        </a>
+                    @endif
+                @endguest
+            </div>
+
+            <div class="divider"></div>
+
             <div class="mb-8">
                 <div class="container mx-auto p-4 ">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 border-b pb-2">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ">
                         Livros do Relacionados
                     </h2>
 

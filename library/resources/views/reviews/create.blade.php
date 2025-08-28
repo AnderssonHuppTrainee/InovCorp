@@ -21,25 +21,25 @@
                         </label>
                         <div class="rating rating-lg rating-half">
                             <input type="radio" name="rating" value="0.5"
-                                class="mask mask-star-2 mask-half-1 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-1 bg-orange-400" />
                             <input type="radio" name="rating" value="1"
-                                class="mask mask-star-2 mask-half-2 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-2 bg-orange-400" />
                             <input type="radio" name="rating" value="1.5"
-                                class="mask mask-star-2 mask-half-1 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-1 bg-orange-400" />
                             <input type="radio" name="rating" value="2"
-                                class="mask mask-star-2 mask-half-2 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-2 bg-orange-400" />
                             <input type="radio" name="rating" value="2.5"
-                                class="mask mask-star-2 mask-half-1 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-1 bg-orange-400" />
                             <input type="radio" name="rating" value="3"
-                                class="mask mask-star-2 mask-half-2 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-2 bg-orange-400" />
                             <input type="radio" name="rating" value="3.5"
-                                class="mask mask-star-2 mask-half-1 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-1 bg-orange-400" />
                             <input type="radio" name="rating" value="4"
-                                class="mask mask-star-2 mask-half-2 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-2 bg-orange-400" />
                             <input type="radio" name="rating" value="4.5"
-                                class="mask mask-star-2 mask-half-1 bg-indigo-600" />
+                                class="mask mask-star-2 mask-half-1 bg-orange-400" />
                             <input type="radio" name="rating" value="5"
-                                class="mask mask-star-2 mask-half-2 bg-indigo-600" checked />
+                                class="mask mask-star-2 mask-half-2 bg-orange-400" checked />
                         </div>
                     </div>
                     <div class="form-control mb-4">

@@ -13,8 +13,7 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\BookRequest;
 use App\Notifications\BookRequestNotification;
-use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Expr\FuncCall;
+use App\Events\BookAvailable;
 
 class BookRequestController extends Controller
 {
@@ -139,9 +138,14 @@ class BookRequestController extends Controller
         $bookRequest->update([
             'status' => 'rejected', // rejeitado
         ]);
-        $bookRequest->book->update([
-            'available' => true,
-        ]);
+        $book = $bookRequest->book;
+        $book->available = true;
+
+        if ($book->isDirty('available')) {
+            $book->save();
+            event(new BookAvailable($book));
+        }
+        ;
 
         return redirect()->route('requests.index')
             ->with('error', 'Requisição rejeitada. Multas em atraso');
@@ -162,9 +166,6 @@ class BookRequestController extends Controller
 
         return redirect()->back()->with('success', 'Requisição cancelada com sucesso.');
     }
-
-
-
 
 }
 

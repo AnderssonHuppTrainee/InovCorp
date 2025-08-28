@@ -1,6 +1,16 @@
 <x-guest-layout>
     <div class="container mx-auto px-4 py-6">
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
+        @if(session('info'))
+            <div class="alert alert-info shadow-lg mb-6 text-white">
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
 
         <h1 class="text-3xl font-bold text-gray-900 mb-4">Catálogo de Livros</h1>
 
@@ -53,7 +63,7 @@
                 </div>
 
                 <div class="md:col-span-4 flex justify-end space-x-2 mt-2">
-                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                    <button type="submit" class="btn btn-primary text-white">Aplicar Filtros</button>
                     <a href="{{ route('public.books.index') }}" class="btn btn-outline">Limpar</a>
                 </div>
             </form>
@@ -87,7 +97,10 @@
                                     {{ $book->name }}
                                 </a>
                             </h2>
-                            <p class="text-gray-600 text-sm mb-2">por {{ $book->authors->pluck('name')->join(', ') }} </p>
+                            <p class="text-gray-600 text-sm mb-1">por {{ $book->authors->pluck('name')->join(', ') }} </p>
+                            <div class="items-center mt-1">
+                                <span class="font-bold text-indigo-600">€{{ number_format($book->price, 2, ',', '.') }}</span>
+                            </div>
                             <div>
                                 <div class="flex items-center">
                                     @php
@@ -108,32 +121,36 @@
                                     {{ number_format($rating, 1, ',', '.') }} / 5
                                 </p>
                             </div>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="font-bold text-indigo-600">€{{ number_format($book->price, 2, ',', '.') }}</span>
-
+                            <div class="flex justify-end">
                                 @auth
                                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
                                         <a href="{{ route('requests.create', $book) }}" class="btn btn-sm btn-outline">
                                             Requisitar
                                         </a>
                                     @elseif(!$book->isAvailable())
-                                        <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
-                                            Alugado
-                                        </span>
+                                        <form method="POST" action="{{ route('books.notify', $book) }}">
+                                            @csrf
+                                            <button type="submit"
+                                                class="btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
+                                                Notificar-me quando disponível
+                                            </button>
+                                        </form>
                                     @endif
-                                @else
+                                @endauth
+                                @guest
                                     @if($book->isAvailable())
                                         <a href="{{ route('login') }}" class="btn btn-sm btn-outline">
                                             Requisitar
                                         </a>
                                     @else
-                                        <span class="px-3 py-1 bg-gray-200 text-gray-600 text-sm rounded">
-                                            Alugado
-                                        </span>
+                                        <a href="{{ route('login') }}" class="btn btn-primary text-white">
+                                            Notificar-me quando disponível
+                                        </a>
                                     @endif
-                                @endauth
-                            </div>
+                                @endguest
 
+                            </div>
 
                             <div class="mt-2">
                                 <span

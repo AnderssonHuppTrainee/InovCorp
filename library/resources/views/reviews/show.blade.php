@@ -19,15 +19,11 @@
         <div class="card bg-base-100 ">
             <div class="card-body p-4 space-y-6">
 
-
                 <div class="card-title">
                     <h1 class="text-3xl font-bold text-base-content">Detalhes da Avaliação</h1>
                 </div>
 
-
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-
                     <div class="flex justify-center">
                         <div
                             class="bg-base-200 rounded-lg shadow-md overflow-hidden w-40 h-60 flex items-center justify-center">

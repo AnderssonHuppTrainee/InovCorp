@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookNotification;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Author;
@@ -229,8 +230,6 @@ class BookController extends Controller
 
         $books = $response->json()['items'] ?? [];
 
-
-
         return view('books.results', compact('books'));
     }
     public function storeGoogle(Request $request)
@@ -290,5 +289,19 @@ class BookController extends Controller
 
             return redirect()->back()->with('error', 'Falha ao importar os livros! Detalhes: ' . $e->getMessage());
         }
+    }
+
+    public function notify(Book $book)
+    {
+
+        //cria a notificaçao 
+        $notification = BookNotification::firstOrCreate([
+            'book_id' => $book->id,
+            'user_id' => auth()->id(),
+        ]);
+        if ($notification->wasRecentlyCreated) {
+            return back()->with('success', 'Você será notificado quando este livro estiver disponível!');
+        }
+        return back()->with('info', 'Você já tinha solicitado notificação para este livro.');
     }
 }

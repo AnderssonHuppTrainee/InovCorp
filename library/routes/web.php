@@ -12,19 +12,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookRequestController;
 use App\Http\Controllers\PublicBookController;
 use App\Http\Controllers\FineController;
-use Illuminate\Support\Facades\Mail;
 
 
-Route::get('/test-mail', function () {
-    Mail::raw('Este é um teste de envio com Mailtrap!', function ($message) {
-        $message->to('teste@exemplo.com')
-            ->subject('Teste Mailtrap');
-    });
 
-    return 'E-mail enviado para Mailtrap!';
-});
-
-// Rotas Públicas (sem autenticação)
+// Rotas publicas
 Route::name('public.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -32,6 +23,7 @@ Route::name('public.')->group(function () {
     Route::get('/catalog/{book}', [PublicBookController::class, 'show'])->name('books.show');
 });
 
+//auth
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -40,7 +32,7 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
     //requisicao
-    Route::resource('requests', BookRequestController::class)->except(['create']);
+    Route::resource('requests', BookRequestController::class)->except(['create', 'show']);
     Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])
         ->name('requests.create');
     Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
@@ -53,43 +45,42 @@ Route::middleware([
     });
 
     // devolução
-    Route::get('/returns/{bookRequest}/return', [ReturnsController::class, 'returnForm'])
-        ->name('returns.returnForm');
-    Route::post('/returns/{bookRequest}/return', [ReturnsController::class, 'submitReturn'])
-        ->name('returns.submitReturn');
+    Route::prefix('returns')->group(function () {
+        Route::get('{bookRequest}/return', [ReturnsController::class, 'returnForm'])->name('returns.returnForm');
+        Route::post('{bookRequest}/return', [ReturnsController::class, 'submitReturn'])->name('returns.submitReturn');
+    });
 
 
     //multas
     Route::get('/my-fines', [FineController::class, 'index'])->name('fines.index');
     Route::post('/fines/{fine}/pay', [FineController::class, 'pay'])->name('fines.pay');
 
+    //notificacao
+    Route::post('books/{book}/notify', [BookController::class, 'notify'])->name('books.notify');
 
 });
 
-// Rotas protegidas apenas para admin
+// Rotas  para admin
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
     'admin'
 ])->group(function () {
+
     //gestao requisicoes
-    Route::get('/requests/{request}', [BookRequestController::class, 'show'])->name('requests.show');
-    Route::post('/requests/{bookRequest}/approve', [BookRequestController::class, 'approve'])
-        ->name('requests.approve');
-    Route::post('/requests/{bookRequest}/reject', [BookRequestController::class, 'reject'])
-        ->name('requests.reject');
+    Route::prefix('requests')->group(function () {
+        Route::get('/{bookRequest}', [BookRequestController::class, 'show'])->name('requests.show');
+        Route::post('/{bookRequest}/approve', [BookRequestController::class, 'approve'])->name('requests.approve');
+        Route::post('/{bookRequest}/reject', [BookRequestController::class, 'reject'])->name('requests.reject');
+    });
+
     //gestao de devoluçao
-
-    Route::get('/returns/{bookRequest}/review-return', [ReturnsController::class, 'reviewReturn'])
-        ->name('returns.reviewReturn');
-
-    Route::post('/returns/{bookRequest}/approve-return', [ReturnsController::class, 'approveReturn'])
-        ->name('returns.approveReturn');
-
-    Route::post('/returns/{bookRequest}/reject-return', [ReturnsController::class, 'rejectReturn'])
-        ->name('returns.rejectReturn');
-
+    Route::prefix('returns')->group(function () {
+        Route::get('{bookRequest}/review-return', [ReturnsController::class, 'reviewReturn'])->name('returns.reviewReturn');
+        Route::post('{bookRequest}/approve-return', [ReturnsController::class, 'approveReturn'])->name('returns.approveReturn');
+        Route::post('{bookRequest}/reject-return', [ReturnsController::class, 'rejectReturn'])->name('returns.rejectReturn');
+    });
     Route::resource('returns', ReturnsController::class);
 
     //Moderação de avaliacoes
@@ -100,7 +91,7 @@ Route::middleware([
     });
 
     //exportacoes
-    Route::prefix('export')->middleware('admin')->group(function () {
+    Route::prefix('export')->group(function () {
         Route::get('books', [DashboardController::class, 'exportBooks'])->name('export.books');
         Route::get('authors', [DashboardController::class, 'exportAuthors'])->name('export.authors');
         Route::get('publishers', [DashboardController::class, 'exportPublishers'])->name('export.publishers');
@@ -110,7 +101,7 @@ Route::middleware([
     Route::get('books/import', [BookController::class, 'import'])->name('books.import');
     Route::get('books/search-google', [BookController::class, 'searchGoogle'])->name('books.searchGoogle');
     Route::post('books/store-google', [BookController::class, 'storeGoogle'])->name('books.storeGoogle');
-    Route::resource('books', BookController::class)->except(['import']);
+    Route::resource('books', BookController::class)->except(['import', 'notify']);
 
     Route::resource('authors', AuthorController::class);
     Route::resource('publishers', PublisherController::class);

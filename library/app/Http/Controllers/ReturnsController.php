@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BookAvailable;
 use Illuminate\Http\Request;
 use App\Models\BookRequest;
 use App\Models\Fine;
+use Illuminate\Support\Facades\DB;
 
 class ReturnsController extends Controller
 {
@@ -83,27 +85,33 @@ class ReturnsController extends Controller
         ]);
         //calcular coima se houver
         $fineData = $bookRequest->calculateFine($request->book_condition);
-        if ($fineData['fine'] > 0) {
-            Fine::create([
-                'book_request_id' => $bookRequest->id,
-                'amount' => $fineData['fine'],
-                'reason' => $fineData['reason'],
-            ]);
-        }
-        $bookRequest->update([
-            'status' => 'returned',
-            'admin_confirmed_return_date' => now(),
-            'actual_days' => $fineData['days_used'],
-            'book_condition' => $request->book_condition,
+        DB::transaction(function () use ($bookRequest, $request, $fineData) {
+            if ($fineData['fine'] > 0) {
+                Fine::create([
+                    'book_request_id' => $bookRequest->id,
+                    'amount' => $fineData['fine'],
+                    'reason' => $fineData['reason'],
+                ]);
+            }
 
-        ]);
-        $bookRequest->book->update([
-            'avaliable' => true,
-        ]);
+            $bookRequest->update([
+                'status' => 'returned',
+                'admin_confirmed_return_date' => now(),
+                'actual_days' => $fineData['days_used'],
+                'book_condition' => $request->book_condition,
+            ]);
+
+            $book = $bookRequest->book;
+            $book->available = true;
+
+            if ($book->isDirty('available')) {
+                $book->save();
+                event(new BookAvailable($book));
+            }
+        });
 
         return redirect()->route('dashboard')
             ->with('success', 'Devolução aprovada com sucesso.');
-
     }
 
     public function rejectReturn(BookRequest $bookRequest)

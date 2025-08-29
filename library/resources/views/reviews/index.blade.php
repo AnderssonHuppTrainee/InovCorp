@@ -2,7 +2,7 @@
 
     <div class="container mx-auto px-4 py-6">
         @if(session('success'))
-            <div class="alert alert-success mb-4">{{ session('success') }}</div>
+            <div class="alert alert-success mb-4 text-white">{{ session('success') }}</div>
         @endif
 
         <div class="mb-3">
@@ -15,7 +15,9 @@
         <div class="card mx-auto">
             <div class="card-body p-4">
                 <div class="card-title mb-6">
-                    <h1 class="text-3xl font-bold text-base-content">Moderação de Avaliações</h1>
+                    <h1 class="text-3xl font-bold text-base-content"><i class="fa fa-star mr-2" aria-hidden="true">
+                        </i>Moderação de Avaliações </i>
+                    </h1>
                 </div>
 
                 @if($reviews->isEmpty())
@@ -84,9 +86,9 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class=" flex justify-center">
                                                 <a href="{{ route('reviews.show', $review) }}" class="btn btn-sm btn-outline">
-                                                    Ver Detalhes
+                                                    Ver
                                                 </a>
                                             </td>
                                         </tr>

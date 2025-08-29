@@ -35,12 +35,13 @@ class DashboardController extends Controller
 
             $requests = BookRequest::with(['user', 'book'])
                 ->whereIn('status', ['pending', 'approved'])
-                ->latest()->paginate(10);
+                ->orderByDesc('request_date')
+                ->paginate(5);
 
             $returnedBooks = BookRequest::with(['user', 'book'])
-                ->where('status', ['pending_returned', 'returned'])
-                ->latest('returned_date')
-                ->paginate(10);
+                ->whereIn('status', ['pending_returned', 'returned']) // <-- use whereIn, não where com array
+                ->orderByDesc('returned_date') // desc = últimas primeiro
+                ->paginate(5);
             $fines = Fine::with('bookRequest.book', 'bookRequest.user')
                 ->latest()
                 ->paginate(10);

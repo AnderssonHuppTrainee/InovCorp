@@ -1,6 +1,10 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
 
+        @if(session('success'))
+            <div class="alert alert-success mb-4 text-white">{{ session('success') }}</div>
+        @endif
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-base-content">Dashboard Administrativo</h1>

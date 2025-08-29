@@ -95,15 +95,15 @@ class BookRequestController extends Controller
             Você receberá um email de confirmação.');
     }
 
-    public function show(BookRequest $request)
+    public function show(BookRequest $bookRequest)
     {
         //verificação
-        if (auth()->user()->isCitizen() && auth()->id() !== $request->user_id) {
+        if (auth()->user()->isCitizen() && auth()->id() !== $bookRequest->user_id) {
             abort(403, 'Você só pode visualizar suas próprias requisições.');
         }
-        $request->load(['book', 'user']);
+        $bookRequest->load(['book', 'user']);
 
-        return view('requests.show', compact('request'));
+        return view('requests.show', compact('bookRequest'));
     }
 
     public function approve(BookRequest $bookRequest)

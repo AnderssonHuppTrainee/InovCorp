@@ -113,6 +113,7 @@
                                 </div>
                             </div>
                         </div>
+
                     @endforeach
                 </div>
 
@@ -124,116 +125,17 @@
 
     <!-- modal para cada livro -->
     @foreach ($latestBooks as $book)
-        <!-- input checkbox que controla o modal -->
-        <input type="checkbox" id="modal-{{ $book->id }}" class="modal-toggle" />
-        <div class="modal">
-            <div class="modal-box max-w-2xl relative">
-                <label for="modal-{{ $book->id }}" class="btn btn-sm btn-circle absolute right-2 top-2">
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </label>
-
-                <div class="flex flex-col md:flex-row gap-6">
-                    <!-- capa -->
-                    <div class="flex-shrink-0">
-                        @if ($book->cover_image)
-                            <figure class="w-48 h-72 overflow-hidden rounded-lg shadow-md">
-                                <img src="{{ $book->cover_image }}" class="w-full h-full object-cover"
-                                    alt="Capa de {{ $book->name }}">
-                            </figure>
-                        @else
-                            <figure class="w-48 h-72 overflow-hidden rounded-lg shadow-md">
-                                <x-image-book class="w-full h-full object-cover" alt="Capa de {{ $book->name }}" />
-                            </figure>
-                        @endif
-                    </div>
-
-                    <!-- detalhes -->
-                    <div>
-                        <h3 class="text-2xl font-bold">{{ $book->name }}</h3>
-                        <div class="divider my-2"></div>
-
-                        <div class="space-y-2 text-sm">
-                            <p>
-                                <span class="font-semibold">ISBN:</span> {{ $book->isbn }}
-                            </p>
-                            <p>
-                                <span class="font-semibold">Autor(es):</span>{{ $book->authors->pluck('name')->join(', ') }}
-                            </p>
-                            <p>
-                                <span class="font-semibold">Editora:</span> {{ $book->publisher->name }}
-                            </p>
-                            <p>
-                                <span class="font-semibold">Preço:</span>
-                                {{ $book->price = '€ ' . number_format($book->price, 2, ',', '.')}}
-                            </p>
-
-                            <div class="divider my-2"></div>
-
-                            <p class="font-semibold">Sinopse:</p>
-                            <p class="text-justify">{{ $book->bibliography }}</p>
-
-                            <div class="divider my-2"></div>
-
-                            <div class="mb-6">
-                                <h3 class="text-lg font-semibold mb-4">Avaliações</h3>
-
-                                @forelse($book->reviews as $review)
-                                    <div class=" bg-gray-50 dark:bg-gray-700 mb-4 p-4 rounded-lg shadow-sm">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <span class="font-semibold">{{ $review->user->name }}</span>
-                                            <span
-                                                class="text-sm text-gray-500">{{ $review->created_at->format('d/m/Y') }}</span>
-                                        </div>
-
-                                        <!-- rating  -->
-                                        <div class="flex items-center mb-2 text-orange-400">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($review->rating))
-                                                    <i class="fas fa-star text-orange-400"></i>
-                                                @elseif($i - $review->rating < 1)
-                                                    <i class="fas fa-star-half-alt text-orange-400"></i>
-                                                @else
-                                                    <i class="far fa-star text-orange-400"></i>
-                                                @endif
-                                            @endfor
-                                            <span class="ml-2 text-sm text-gray-500">
-                                                {{ number_format($review->rating, 1) }}/5
-                                            </span>
-                                        </div>
-
-                                        <p class="text-gray-700 dark:text-gray-300">{{ $review->comment }}</p>
-                                    </div>
-                                @empty
-                                    <p class="text-gray-500">Nenhuma avaliação disponível para este livro.</p>
-                                @endforelse
-
-                            </div>
-                            <div class="flex justify-end">
-                                @auth
-                                    <a href="{{ route('requests.create', $book->id) }}" class="btn btn-primary btn-sm mt-4">
-                                        Requisitar
-                                    </a>
-                                @endauth
-
-                                @guest
-                                    <a href="{{ route('login') }}" class="btn btn-primary btn-sm mt-4 ">
-                                        Requisitar
-                                    </a>
-                                @endguest
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-book-modal :book="$book" />
     @endforeach
 
+    @foreach ($allBooks as $book)
+        <x-book-modal :book="$book" />
+    @endforeach
 
     <section id="all-books" class="py-12 bg-base-100">
         <div class="container mx-auto p-4 ">
 
-            <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Principais Livros</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">Melhores Avaliados</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  mx-auto">
                 @foreach ($allBooks as $book)
                     <div class="card bg-base-100 shadow hover:shadow-md transition-shadow">
@@ -275,6 +177,7 @@
                             </div>
                         </div>
                     </div>
+
                 @endforeach
             </div>
 

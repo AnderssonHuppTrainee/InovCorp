@@ -61,8 +61,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
 
                 <div class="flex justify-start mb-6 items-center">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Importar Livros
-                        do Google Books<i class="fa fa-book ml-2" aria-hidden="true"></i>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <i class="fa fa-download mr-2" aria-hidden="true"></i>
+                        Importar Livros do Google Books
                     </h1>
                 </div>
 

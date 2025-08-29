@@ -14,34 +14,34 @@
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h1 class="card-title text-2xl md:text-3xl">
-                            Requisição #{{ $request->number }}
+                            Requisição #{{ $bookRequest->number }}
                             <span class="badge badge-lg ml-2 gap-1 text-white
-                            @if($request->status === 'approved') badge-success
-                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                            @elseif($request->status === 'returned') badge-success
-                            @elseif($request->status === 'rejected') badge-error
+                            @if($bookRequest->status === 'approved') badge-success
+                            @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
+                            @elseif($bookRequest->status === 'returned') badge-success
+                            @elseif($bookRequest->status === 'rejected') badge-error
                             @else badge-neutral 
                             @endif">
 
-                                @if($request->status === 'approved')
+                                @if($bookRequest->status === 'approved')
                                     <i class="fas fa-check-circle"></i> Aprovado
-                                @elseif($request->status === 'pending')
+                                @elseif($bookRequest->status === 'pending')
                                     <i class="fas fa-clock"></i> Pendente
-                                @elseif($request->status === 'pending_returned')
+                                @elseif($bookRequest->status === 'pending_returned')
                                     <i class="fas fa-clock"></i> Devolução Pendente
-                                @elseif($request->status === 'returned')
+                                @elseif($bookRequest->status === 'returned')
                                     <i class="fas fa-undo"></i> Devolvido
-                                @elseif($request->status === 'rejected')
+                                @elseif($bookRequest->status === 'rejected')
                                     <i class="fas fa-times-circle"></i> Rejeitado
-                                @elseif($request->status === 'cancelled')
+                                @elseif($bookRequest->status === 'cancelled')
                                     <i class="fas fa-ban"></i> Cancelado
                                 @else
-                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                    {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
                                 @endif
                             </span>
                         </h1>
                         <div class="text-sm text-gray-500 mt-1">
-                            Criada em: {{ $request->created_at->format('d/m/Y H:i') }}
+                            Criada em: {{ $bookRequest->created_at?->format('d/m/Y H:i') ?? 'Sem data'}}
                         </div>
                     </div>
                 </div>
@@ -52,8 +52,8 @@
                     <div class="flex justify-center">
                         <div
                             class="bg-base-200 rounded-lg shadow-md overflow-hidden w-40 h-60 flex items-center justify-center">
-                            @if($request->book->cover_image)
-                                <img src="{{ $request->book->cover_image }}" class="w-full h-full object-cover" />
+                            @if($bookRequest->book->cover_image)
+                                <img src="{{ $bookRequest->book->cover_image }}" class="w-full h-full object-cover" />
                             @else
                                 <div class="text-center p-4">
                                     <i class="fas fa-book-open text-4xl text-gray-400 mb-2"></i>
@@ -65,19 +65,19 @@
 
 
                     <div class="space-y-4">
-                        <h2 class="text-xl font-bold">{{ $request->book->name }}</h2>
+                        <h2 class="text-xl font-bold">{{ $bookRequest->book?->name }}</h2>
                         <div>
                             <label class="text-sm font-semibold text-gray-500">ISBN:</label>
-                            <p>{{ $request->book->isbn ?? 'Não informado' }}</p>
+                            <p>{{ $bookRequest->book->isbn ?? 'Não informado' }}</p>
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-gray-500">Editora:</label>
-                            <p>{{ $request->book->publisher->name ?? 'Não informada' }}</p>
+                            <p>{{ $bookRequest->book->publisher->name ?? 'Não informada' }}</p>
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-gray-500">Autores:</label>
                             <div class="flex flex-wrap gap-2 mt-1">
-                                @foreach($request->book->authors as $author)
+                                @foreach($bookRequest->book->authors as $author)
                                     <span class="badge badge-primary">
                                         {{ $author->name }}
                                     </span>
@@ -97,8 +97,8 @@
                     <div class="flex justify-center">
                         <div
                             class="bg-base-200 rounded-lg shadow-md overflow-hidden w-48 h-64 flex items-center justify-center">
-                            @if($request->photo_path)
-                                <img src="{{ Storage::url($request->photo_path) }}" alt="Foto de identificação"
+                            @if($bookRequest->photo_path)
+                                <img src="{{ Storage::url($bookRequest->photo_path) }}" alt="Foto de identificação"
                                     class="w-full h-full object-cover">
                             @else
                                 <div class="text-center p-6">
@@ -116,24 +116,25 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="text-sm font-semibold text-gray-500">Requisição:</label>
-                                    <p>{{ $request->request_date->format('d/m/Y') }}</p>
+                                    <p>{{ $bookRequest->request_date->format('d/m/Y') }}</p>
                                 </div>
                                 <div>
                                     <label class="text-sm font-semibold text-gray-500">Devolução Prevista:</label>
                                     <p @class([
-                                        'font-bold' => $request->isOverdue(),
-                                        'text-error' => $request->isOverdue()
+                                        'font-bold' => $bookRequest->isOverdue(),
+                                        'text-error' => $bookRequest->isOverdue(),
+
                                     ])>
-           {{ $request->expected_return_date->format('d/m/Y') }}
-                                        @if($request->isOverdue())
-                                            <span class="badge badge-error ml-2">Atrasado</span>
+                                    {{ $bookRequest->expected_return_date->format('d/m/Y') }}
+                                        @if($bookRequest->isOverdue())
+                                            <span class="badge badge-error ml-2 text-white">Atrasado</span>
                                         @endif
                                     </p>
                                 </div>
-                                @if($request->returned_at)
+                                @if($bookRequest->returned_at)
                                     <div>
                                         <label class="text-sm font-semibold text-gray-500">Devolvido em:</label>
-                                        <p>{{ $request->returned_at->format('d/m/Y') }}</p>
+                                        <p>{{ $bookRequest->returned_at->format('d/m/Y') }}</p>
                                     </div>
                                 @endif
                             </div>
@@ -143,21 +144,22 @@
                             <div class="flex items-center gap-4">
                                 <div class="avatar">
                                     <div class="w-12 rounded-full">
-                                        <img src="{{ $request->user->profile_photo_url }}"
-                                            alt="{{ $request->user->name }}" />
+                                        <img src="{{ $bookRequest->user->profile_photo_url }}"
+                                            alt="{{ $bookRequest->user->name }}" />
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-semibold">{{ $request->user->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $request->user->email }}</p>
+                                    <p class="font-semibold">{{ $bookRequest->user->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $bookRequest->user->email }}</p>
                                 </div>
                             </div>
 
 
-                            @if($request->status === 'pending')
+                            @if($bookRequest->status === 'pending')
                                 <div class="divider"></div>
                                 <div class="flex gap-3">
-                                    <form method="POST" action="{{ route('requests.approve', $request) }}" class="w-full">
+                                    <form method="POST" action="{{ route('requests.approve', $bookRequest) }}"
+                                        class="w-full">
                                         @csrf
                                         <button type="submit" class="btn btn-success text-white w-full gap-2">
                                             <i class="fas fa-check"></i>
@@ -165,7 +167,8 @@
                                         </button>
                                     </form>
 
-                                    <form method="POST" action="{{ route('requests.reject', $request) }}" class="w-full">
+                                    <form method="POST" action="{{ route('requests.reject', $bookRequest) }}"
+                                        class="w-full">
                                         @csrf
                                         <button type="submit" class="btn btn-error text-white w-full gap-2"
                                             onclick="return confirm('Tem certeza que deseja rejeitar esta requisição?')">

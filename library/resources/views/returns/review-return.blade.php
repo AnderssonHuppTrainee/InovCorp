@@ -1,42 +1,45 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
+
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>
         </div>
 
-        <div class="card bg-base-100 mx-auto">
+        <div class="card bg-base-100">
             <div class="card-body p-4">
-                <h1 class="card-title text-3xl mb-6">
-                    <i class="fas fa-clipboard-check mr-2"></i>
-                    Avaliação de Devolução
-                </h1>
 
-                <span class="badge badge-lg ml-2 gap-1 text-white
-                            @if($bookRequest->status === 'approved') badge-success
-                            @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
-                            @elseif($bookRequest->status === 'returned') badge-success
-                            @elseif($bookRequest->status === 'rejected') badge-error
-                            @else badge-neutral 
-                            @endif">
 
-                    @if($bookRequest->status === 'approved')
-                        <i class="fas fa-check-circle"></i>
-                    @elseif(in_array($bookRequest->status, ['pending', 'pending_returned']))
-                        <i class="fas fa-clock"></i>
-                    @elseif($bookRequest->status === 'returned')
-                        <i class="fas fa-undo"></i>
-                    @elseif($bookRquest->status === 'rejected')
-                        <i class="fas fa-times-circle"></i>
-                    @endif
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                    <h1 class="text-3xl font-bold flex items-center gap-2">
+                        <i class="fas fa-clipboard-check"></i>
+                        Avaliação de Devolução
+                    </h1>
+                    <span class="badge badge-lg text-white
+                        @if($bookRequest->status === 'approved') badge-success
+                        @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
+                        @elseif($bookRequest->status === 'returned') badge-success
+                        @elseif($bookRequest->status === 'rejected') badge-error
+                        @else badge-neutral @endif
+                    ">
+                        @if($bookRequest->status === 'approved')
+                            <i class="fas fa-check-circle"></i>
+                        @elseif(in_array($bookRequest->status, ['pending', 'pending_returned']))
+                            <i class="fas fa-clock"></i>
+                        @elseif($bookRequest->status === 'returned')
+                            <i class="fas fa-undo"></i>
+                        @elseif($bookRequest->status === 'rejected')
+                            <i class="fas fa-times-circle"></i>
+                        @endif
+                        {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
+                    </span>
+                </div>
 
-                    {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
-                </span>
-                </h1>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                    <div class="card bg-base-200">
+                    <div class="card bg-base-200 shadow-inner">
                         <div class="card-body p-4">
                             <h3 class="card-title text-lg mb-4">Foto enviada pelo cidadão</h3>
                             <div class="flex justify-center">
@@ -44,53 +47,54 @@
                                     <img src="{{ asset('storage/' . $bookRequest->return_photo_path) }}"
                                         alt="Foto do livro devolvido" class="max-w-xs rounded-lg shadow-md object-cover">
                                 @else
-                                    <p class="text-red-500">Nenhuma foto enviada.</p>
+                                    <p class="text-red-500 font-medium">Nenhuma foto enviada.</p>
                                 @endif
                             </div>
-
                         </div>
                     </div>
-                    <div class="card bg-base-200 ">
-                        <div class="card-body p-4">
+
+
+                    <div class="card bg-base-200 shadow-inner">
+                        <div class="card-body p-4 space-y-4">
                             <h3 class="card-title text-lg mb-4">Informações</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div>
-                                    <div class="flex space-x-2">
-                                        <div class="avatar">
-                                            <div class="w-12 rounded-full">
-                                                <img src="{{ $bookRequest->user->profile_photo_url }}"
-                                                    alt="{{ $bookRequest->user->name }}" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">{{ $bookRequest->user->name }}</p>
-                                            <p class="text-sm text-gray-500">{{ $bookRequest->user->email }}</p>
-                                        </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">
+                                    <div class="w-12 rounded-full">
+                                        <img src="{{ $bookRequest->user->profile_photo_url }}"
+                                            alt="{{ $bookRequest->user->name }}">
                                     </div>
                                 </div>
+                                <div>
+                                    <p class="font-semibold">{{ $bookRequest->user->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $bookRequest->user->email }}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
 
                                 <div>
                                     <p><span class="font-semibold">Data de requisição:</span>
                                         {{ $bookRequest->request_date->format('d/m/Y') }}</p>
                                 </div>
                                 <div>
-                                    <p><span class="font-semibold">Livro:</span>
-                                        {{ $bookRequest->book->name }}</p>
+                                    <p><span class="font-semibold">Livro:</span> {{ $bookRequest->book->name }}</p>
                                 </div>
                                 <div>
                                     <p><span class="font-semibold">Data prevista de devolução:</span>
                                         {{ $bookRequest->expected_return_date->format('d/m/Y') }}</p>
                                 </div>
                                 <div>
-                                    <p>
-                                        <span class="font-semibold">Data de devolução:</span>
-                                        {{ $bookRequest->returned_date->format('d/m/Y') }}
-                                    </p>
+                                    <p><span class="font-semibold">Data de devolução:</span>
+                                        {{ $bookRequest->returned_date->format('d/m/Y') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
+
 
                 <div class="mt-6">
                     <h3 class="font-semibold mb-2">Observações do Utilizador</h3>
@@ -134,5 +138,4 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>

@@ -89,12 +89,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                                                             @if($request->status === 'approved') badge-success
-                                                                                                              @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                              @elseif($request->status === 'returned') badge-success
-                                                                                                               @elseif($request->status === 'rejected') badge-error
-                                                                                                               @else badge-neutral 
-                                                                                                               @endif">
+                                                         @if($request->status === 'approved') badge-success
+                                                         @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
+                                                          @elseif($request->status === 'returned') badge-success
+                                                         @elseif($request->status === 'rejected') badge-error
+                                                          @else badge-neutral 
+                                                        @endif">
 
                                                     @if($request->status === 'approved')
                                                         <i class="fas fa-check-circle"></i> Aprovado

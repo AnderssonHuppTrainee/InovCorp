@@ -121,38 +121,48 @@
                                     {{ number_format($rating, 1, ',', '.') }} / 5
                                 </p>
                             </div>
-                            <div class="flex justify-end">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 @auth
                                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
-                                        <a href="{{ route('requests.create', $book) }}" class="btn btn-sm btn-outline">
-                                            Requisitar
-                                        </a>
+                                        <div class="sm:col-span-2 flex justify-end">
+                                            <a href="{{ route('requests.create', $book) }}"
+                                                class="col-span-1 btn btn-sm btn-outline whitespace-nowrap">
+                                                Requisitar
+                                            </a>
+                                        </div>
                                     @elseif(!$book->isAvailable())
-                                        <form method="POST" action="{{ route('books.notify', $book) }}">
+
+                                        <form method="POST" action="{{ route('books.notify', $book) }}"
+                                            class="col-span-1 sm:col-span-2 w-full">
                                             @csrf
                                             <button type="submit"
-                                                class="btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
+                                                class="w-full btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150 
+                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                                 Notificar-me quando disponível
                                             </button>
                                         </form>
+
                                     @endif
                                 @endauth
                                 @guest
                                     @if($book->isAvailable())
-                                        <a href="{{ route('login') }}" class="btn btn-sm btn-outline">
-                                            Requisitar
-                                        </a>
+                                        <div class="sm:col-span-2 flex justify-end">
+                                            <a href="{{ route('login') }}" class="col-span-1 btn btn-sm btn-outline whitespace-nowrap">
+                                                Requisitar
+                                            </a>
+                                        </div>
                                     @else
-                                        <a href="{{ route('login') }}" class="btn btn-primary text-white">
+
+                                        <a href="{{ route('login') }}" class="col-span-1 sm:col-span-2 w-full btn btn-primary text-white 
+                                                            text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                             Notificar-me quando disponível
                                         </a>
+
                                     @endif
                                 @endguest
-
                             </div>
 
-                            <div class="mt-2">
+                            <div class=" mt-2">
                                 <span
                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium                                                                                                                                                                                                                                                                                                                                                                    {{ $book->isAvailable() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                     {{ $book->isAvailable() ? 'Disponível' : 'Indisponível' }}
@@ -162,7 +172,6 @@
                     </div>
                 @endforeach
             </div>
-
 
             <div class="mt-8">
                 {{ $books->withQueryString()->links() }}

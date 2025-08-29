@@ -54,13 +54,25 @@ class PublicBookController extends Controller
 
     public function show(Book $book)
     {
+        $book->loadAvg([
+            'reviews' => function ($q) {
+                $q->where('reviews.status', 'active');
+            }
+        ], 'rating');
+
         $reviews = $book->reviews()
             ->where('reviews.status', 'active')
             ->with('user')
-            ->latest() // mais recentes primeiro
-            ->paginate(10);
+            ->latest()
+            ->paginate(5);
 
-        $relatedBooks = $book->relatedBooks(10);
+
+        $relatedBooks = $book->relatedBooks(10)
+            ->loadAvg([
+                'reviews' => function ($q) {
+                    $q->where('reviews.status', 'active');
+                }
+            ], 'rating');
 
         return view('public.books.show', compact('book', 'reviews', 'relatedBooks'));
     }

@@ -42,10 +42,7 @@
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Livro
                                         </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Utilizador
-                                        </th>
+
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Data de devolução
@@ -89,12 +86,12 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="whitespace-nowrap">{{ $return->user->name }}</td>
-                                            <td>
+
+                                            <td class="whitespace-nowrap">
                                                 {{ $return->returned_date->format('d/m/Y') }}
 
                                             </td>
-                                            <td>
+                                            <td class="whitespace-nowrap">
                                                 {{ $return->expected_return_date->format('d/m/Y') }}
 
                                             </td>
@@ -104,12 +101,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                        @if($return->status === 'approved') badge-success
-                                                                        @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
-                                                                        @elseif($return->status === 'returned') badge-success
-                                                                        @elseif($return->status === 'rejected') badge-error
-                                                                        @else badge-neutral 
-                                                                        @endif">
+                                                                  @if($return->status === 'approved') badge-success
+                                                                  @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
+                                                                @elseif($return->status === 'returned') badge-success
+                                                                 @elseif($return->status === 'rejected') badge-error
+                                                                  @else badge-neutral 
+                                                                @endif">
 
                                                     @if($return->status === 'approved')
                                                         <i class="fas fa-check-circle"></i> Aprovado

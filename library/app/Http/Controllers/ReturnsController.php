@@ -17,7 +17,7 @@ class ReturnsController extends Controller
             ->when($request->search, function ($q) use ($request) {
                 $search = $request->search;
                 $q->whereHas('book', function ($q) use ($search) {
-                    $q->where('numero', 'like', "%{$search}%");
+                    $q->where('number', 'like', "%{$search}%");
                 })
                     ->orWhereHas('user', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");

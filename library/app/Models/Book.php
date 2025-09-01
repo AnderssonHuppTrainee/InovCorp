@@ -42,6 +42,16 @@ class Book extends Model
         return $this->hasManyThrough(Review::class, BookRequest::class);
     }
 
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function getAverageRatingAttribute()
     {
         return $this->reviews()

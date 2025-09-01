@@ -197,15 +197,18 @@
             <div class="flex justify-end">
                 @auth
                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
-                        <a href="{{ route('requests.create', $book) }}" class="btn btn-sm btn-outline">
-                            Requisitar
-                        </a>
+                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                Adicionar ao Carrinho
+                            </button>
+                        </form>
                     @elseif(!$book->isAvailable())
                         <form method="POST" action="{{ route('books.notify', $book) }}">
                             @csrf
                             <button type="submit"
                                 class="btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
+                                                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
                                 Notificar-me quando disponível
                             </button>
                         </form>
@@ -214,7 +217,7 @@
                 @guest
                     @if($book->isAvailable())
                         <a href="{{ route('login') }}" class="btn btn-sm btn-outline">
-                            Requisitar
+                            Add ao carrinho
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-primary text-white">

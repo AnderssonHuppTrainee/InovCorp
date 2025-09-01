@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReturnsController;
@@ -57,6 +58,14 @@ Route::middleware([
 
     //notificacao
     Route::post('books/{book}/notify', [BookController::class, 'notify'])->name('books.notify');
+
+
+
+    //carinho
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add');
+
+
 
 });
 

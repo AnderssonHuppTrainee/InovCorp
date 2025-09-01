@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Cart;
 
 class User extends Authenticatable
 {
@@ -80,6 +81,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(BookRequest::class);
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function hasPendingFines()
     {
         return $this->requests()

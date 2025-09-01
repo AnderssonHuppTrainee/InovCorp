@@ -125,10 +125,12 @@
                                 @auth
                                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
                                         <div class="sm:col-span-2 flex justify-end">
-                                            <a href="{{ route('requests.create', $book) }}"
-                                                class="col-span-1 btn btn-sm btn-outline whitespace-nowrap">
-                                                Requisitar
-                                            </a>
+                                            <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary">
+                                                    Adicionar ao Carrinho
+                                                </button>
+                                            </form>
                                         </div>
                                     @elseif(!$book->isAvailable())
 
@@ -137,7 +139,7 @@
                                             @csrf
                                             <button type="submit"
                                                 class="w-full btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150 
-                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
+                                                                                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                                 Notificar-me quando disponível
                                             </button>
                                         </form>
@@ -148,13 +150,14 @@
                                     @if($book->isAvailable())
                                         <div class="sm:col-span-2 flex justify-end">
                                             <a href="{{ route('login') }}" class="col-span-1 btn btn-sm btn-outline whitespace-nowrap">
-                                                Requisitar
+                                                Add ao carrinho
                                             </a>
                                         </div>
                                     @else
 
-                                        <a href="{{ route('login') }}" class="col-span-1 sm:col-span-2 w-full btn btn-primary text-white 
-                                                            text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
+                                        <a href="{{ route('login') }}"
+                                            class="col-span-1 sm:col-span-2 w-full btn btn-primary text-white 
+                                                                                                                            text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                             Notificar-me quando disponível
                                         </a>
 

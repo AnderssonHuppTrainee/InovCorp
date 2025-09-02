@@ -2,7 +2,7 @@
 <input type="checkbox" id="modal-{{ $book->id }}" class="modal-toggle" />
 
 <div class="modal">
-    <div class="modal-box max-w-2xl relative">
+    <div class="modal-box max-w-2xl max-h-70vh relative">
 
         <label for="modal-{{ $book->id }}" class="btn btn-sm btn-circle absolute right-2 top-2">
             <i class="fa fa-times" aria-hidden="true"></i>

@@ -1,7 +1,9 @@
 @props([
     'method' => 'POST',
     'action',
-    'enctype' => 'application/x-www-form-urlencoded'
+    'enctype' => 'application/x-www-form-urlencoded',
+    'submitText' => 'Salvar',
+    'color'
 ])
 <form method="{{ $method === 'GET' ? 'GET' : 'POST' }}" action="{{ $action }}" enctype="{{ $enctype }}"
 {{ $attributes }}>
@@ -19,8 +21,8 @@
         <a href="{{ url()->previous() }}" class="btn btn-outline">
             Cancelar
         </a>
-        <button type="submit" class="btn btn-primary">
-            {{ $submitText ?? 'Salvar' }}
+        <button type="submit" class="btn btn-{{ $color }} text-white">
+            {{ $submitText }}
         </button>
     </div>
 </form>

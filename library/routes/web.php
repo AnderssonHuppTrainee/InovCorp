@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReturnsController;
@@ -65,7 +66,11 @@ Route::middleware([
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add');
 
-
+    //checkout
+    Route::get('/checkout', [CheckoutController::class, 'addressForm'])->name('checkout.address');
+    Route::post('/checkout/store', [CheckoutController::class, 'storeAddress'])->name('checkout.storeAddress');
+    Route::get('/checkout/payment/{order}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 });
 

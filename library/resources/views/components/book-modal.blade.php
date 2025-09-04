@@ -2,7 +2,7 @@
 <input type="checkbox" id="modal-{{ $book->id }}" class="modal-toggle" />
 
 <div class="modal">
-    <div class="modal-box max-w-2xl max-h-70vh relative">
+    <div class="modal-box max-w-3xl relative" style="max-height: 70vh;">
 
         <label for="modal-{{ $book->id }}" class="btn btn-sm btn-circle absolute right-2 top-2">
             <i class="fa fa-times" aria-hidden="true"></i>
@@ -73,14 +73,14 @@
                     </div>
                     <div class="flex justify-end">
                         @auth
-                            <a href="{{ route('requests.create', $book->id) }}" class="btn btn-primary btn-sm mt-4">
-                                Requisitar
+                            <a href="{{ route('cart.add', $book->id) }}" class="btn btn-primary btn-sm mt-4 text-white">
+                                Adicionar ao carrinho
                             </a>
                         @endauth
 
                         @guest
-                            <a href="{{ route('login') }}" class="btn btn-primary btn-sm mt-4">
-                                Requisitar
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-sm mt-4 text-white">
+                                Adicionar ao carrinho
                             </a>
                         @endguest
                     </div>

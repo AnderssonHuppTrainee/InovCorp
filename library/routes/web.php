@@ -4,8 +4,10 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\ReviewController;
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
@@ -67,10 +69,17 @@ Route::middleware([
     Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add');
 
     //checkout
-    Route::get('/checkout', [CheckoutController::class, 'addressForm'])->name('checkout.address');
-    Route::post('/checkout/store', [CheckoutController::class, 'storeAddress'])->name('checkout.storeAddress');
+    //Route::get('/checkout', [CheckoutController::class, 'addressForm'])->name('checkout.address');
+    //Route::post('/checkout/store', [CheckoutController::class, 'storeAddress'])->name('checkout.storeAddress');
+
+
+
+    Route::get('/checkout/{cart}', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/address', [CheckoutController::class, 'saveAddress'])->name('checkout.address');
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/{order}/success', [CheckoutController::class, 'success'])->name('checkout.success');
+
+    //Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 });
 
@@ -111,6 +120,11 @@ Route::middleware([
         Route::get('publishers', [DashboardController::class, 'exportPublishers'])->name('export.publishers');
 
     });
+
+    //orders
+
+    Route::resource('/orders', OrderController::class);
+
 
     Route::get('books/import', [BookController::class, 'import'])->name('books.import');
     Route::get('books/search-google', [BookController::class, 'searchGoogle'])->name('books.searchGoogle');

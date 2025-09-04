@@ -63,7 +63,7 @@
                         <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
                             Total: € {{ number_format($cart->items->sum(fn($i) => $i->quantity * $i->price), 2, ',', '.') }}
                         </p>
-                        <a href="{{ route('checkout.address', $cart) }}" class="mt-3 btn btn-md  btn-success text-white">
+                        <a href="{{ route('checkout.index', $cart) }}" class="mt-3 btn btn-md  btn-success text-white">
                             Checkout
                         </a>
                     </div>

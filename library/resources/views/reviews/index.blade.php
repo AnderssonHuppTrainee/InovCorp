@@ -96,7 +96,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-4 pb-4 sm:px-6">
+                        <div class="mt-5 px-4 pb-4 sm:px-6">
                             {{ $reviews->links() }}
                         </div>
 

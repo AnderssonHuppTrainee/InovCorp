@@ -1,25 +1,23 @@
 <?php
 
 namespace App\Http\Controllers;
-
-
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 
 class CheckoutController extends Controller
 {
-    public function addressForm()
+    public function index(Request $request)
     {
         $cart = Auth::user()->cart()->with('items.book')->firstOrFail();
-        return view('checkout.address', compact('cart'));
+
+        return view('checkout.index', compact('cart'));
+
     }
 
-
-    public function storeAddress(Request $request)
+    public function saveAddress(Request $request, Order $order)
     {
         $request->validate([
             'address_line1' => 'required|string|max:255',
@@ -28,41 +26,49 @@ class CheckoutController extends Controller
             'postal_code' => 'required|string|max:20',
             'country' => 'required|string|max:50',
         ]);
-
         $cart = Auth::user()->cart()->with('items.book')->firstOrFail();
 
         $total = $cart->items->sum(fn($item) => $item->quantity * $item->price);
 
-        //criar a ordem de encomeneda
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'total' => $total,
-            'status' => 'pending',
-            'address_line1' => $request->address_line1,
-            'address_line2' => $request->address_line2,
-            'city' => $request->city,
-            'postal_code' => $request->postal_code,
-            'country' => $request->country,
+        //verifica se ja existre uma ordem pendente p evitar duplicacao na bd
+        $order = Order::where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
 
-        ]);
-        // transfere os itens
-        foreach ($cart->items as $item) {
-            $order->items()->create([
-                'book_id' => $item->book_id,
-                'quantity' => $item->quantity,
-                'price' => $item->price,
+        if (!$order) {
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'total' => $total,
+                'status' => 'pending',
+                'address_line1' => $request->address_line1,
+                'address_line2' => $request->address_line2,
+                'city' => $request->city,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
+
+            ]);
+
+            foreach ($cart->items as $item) {
+                $order->items()->create([
+                    'book_id' => $item->book_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                ]);
+            }
+            session(['checkout_order_id' => $order->id]);
+        } else {
+            // se ja existe, apenas atualiza 
+            $order->update([
+                'total' => $total,
+                'address_line1' => $request->address_line1,
+                'address_line2' => $request->address_line2,
+                'city' => $request->city,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
             ]);
         }
 
-        //  limpar o carrinho
-        $cart->items()->delete();
-
-        return redirect()->route('checkout.payment', $order);
-    }
-
-
-    public function payment(Order $order)
-    {
         Stripe::setApiKey(config('services.stripe.secret'));//pega a key
 
 
@@ -75,15 +81,23 @@ class CheckoutController extends Controller
         ]);
         //cria O paymentIntent ID 
         $order->update(['payment_intent_id' => $paymentIntent->id]);
-        return view('checkout.payment', [
-            'order' => $order,
-            'clientSecret' => $paymentIntent->client_secret,
-            'stripeKey' => config('services.stripe.key'),
-        ]);
+
+
+        return response()->json(
+            [
+                'success' => true,
+                'order_id' => $order->id,
+                'total' => $total,
+                'client_secret' => $paymentIntent->client_secret,
+                'stripe_key' => config('services.stripe.key')
+            ]
+        );
     }
 
     public function success(Order $order)
     {
+        $order->update(['status' => 'paid']);
+
         return view('checkout.success', compact('order'));
     }
 

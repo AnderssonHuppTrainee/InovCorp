@@ -52,6 +52,25 @@
 
             <!-- Ações do usuário -->
             <div class="flex items-center space-x-2">
+                <!-- Ícone do Carrinho -->
+                @auth
+                    <div class="relative">
+                        <a href="{{ route('cart.index') }}" class="btn btn-ghost btn-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <!-- Contador de itens -->
+                            @if($cartCount > 0)
+                                <span
+                                    class="absolute -top-1 -right-1 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                    {{ $cartCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </div>
+                @endauth
                 @auth
                     <!-- Dropdown com foto -->
                     <div class="hidden md:flex">
@@ -121,6 +140,14 @@
     <div :class="{'block': open, 'hidden': !open}" class="md:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
+                <x-responsive-nav-link href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">
+                    {{ __('Carrinho') }}
+                    @if($cartCount > 0)
+                        <span class="ml-2 bg-primary text-white rounded-full px-2 py-1 text-xs">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </x-responsive-nav-link>
                 @if(auth()->user()->isAdmin())
                     <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}

@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CartItem;
+use View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +33,16 @@ class AppServiceProvider extends ServiceProvider
             $schedule->command('reminders:send')
                 ->dailyAt('09:00')
                 ->timezone('Europe/Lisbon');
+        });
+
+        View::composer('*', function ($view) {
+            $cartCount = 0;
+            if (auth()->check()) {
+                // Carregar usuário com a contagem de itens do carrinho
+                $user = auth()->user()->load('cart.items');
+                $cartCount = $user->cart ? $user->cart->items->count() : 0;
+            }
+            $view->with('cartCount', $cartCount);
         });
     }
 }

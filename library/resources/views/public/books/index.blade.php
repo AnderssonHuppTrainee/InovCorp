@@ -139,7 +139,7 @@
                                             @csrf
                                             <button type="submit"
                                                 class="w-full btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150 
-                                                                                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
+                                                                                                                                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                                 Notificar-me quando disponível
                                             </button>
                                         </form>
@@ -149,15 +149,15 @@
                                 @guest
                                     @if($book->isAvailable())
                                         <div class="sm:col-span-2 flex justify-end">
-                                            <a href="{{ route('login') }}" class="col-span-1 btn btn-sm btn-outline whitespace-nowrap">
+                                            <a href="{{ route('login') }}"
+                                                class="col-span-1 btn btn-sm btn-primary text-white whitespace-nowrap">
                                                 Add ao carrinho
                                             </a>
                                         </div>
                                     @else
 
                                         <a href="{{ route('login') }}"
-                                            class="col-span-1 sm:col-span-2 w-full btn btn-primary text-white 
-                                                                                                                            text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
+                                            class="col-span-1 sm:col-span-2 w-full btn btn-primary text-white text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
                                             Notificar-me quando disponível
                                         </a>
 

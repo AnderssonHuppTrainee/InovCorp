@@ -14,6 +14,8 @@ use App\Models\Review;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Fine;
+use App\Models\Order;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -29,31 +31,38 @@ class DashboardController extends Controller
                     ->take(3)
                     ->get()
             ];
-            $activeRequestsCount = BookRequest::whereIn('status', ['pending'])->count();
-            $recentRequestsCount = BookRequest::where('created_at', '>=', now()->subDays(30))->count();
-            $returnedTodayCount = BookRequest::whereDate('admin_confirmed_return_date', today())->count();
+            $pendingOrdersCount = Order::whereIn('status', ['pending'])->count();
+            $paidOrdersCount = Order::whereIn('status', ['paid'])->count();
 
-            $requests = BookRequest::with(['user', 'book'])
-                ->whereIn('status', ['pending', 'approved'])
-                ->orderByDesc('request_date')
-                ->paginate(5);
+            $monthlyLabels = [];
+            $monthlyPending = [];
+            $monthlyPaid = [];
 
-            $returnedBooks = BookRequest::with(['user', 'book'])
-                ->whereIn('status', ['pending_returned', 'returned']) // <-- use whereIn, não where com array
-                ->orderByDesc('returned_date') // desc = últimas primeiro
-                ->paginate(5);
-            $fines = Fine::with('bookRequest.book', 'bookRequest.user')
-                ->latest()
-                ->paginate(10);
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $monthlyLabels[] = $month->format('M/Y');
+
+                $monthlyPending[] = Order::where('status', 'pending')
+                    ->whereMonth('created_at', $month->month)
+                    ->whereYear('created_at', $month->year)
+                    ->count();
+
+                $monthlyPaid[] = Order::where('status', 'paid')
+                    ->whereMonth('created_at', $month->month)
+                    ->whereYear('created_at', $month->year)
+                    ->count();
+            }
+
+            $orders = Order::with('user')->latest()->take(10)->get(); // pega as 10 ultimas
 
             return view('dashboard.dashboard', compact(
                 'stats',
-                'requests',
-                'activeRequestsCount',
-                'recentRequestsCount',
-                'returnedTodayCount',
-                'returnedBooks',
-                'fines'
+                'orders',
+                'pendingOrdersCount',
+                'paidOrdersCount',
+                'monthlyLabels',
+                'monthlyPending',
+                'monthlyPaid'
 
             ));
         } else {

@@ -1,11 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Jobs\SendInvoiceJob;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Mail;
+use Log;
 
 class CheckoutController extends Controller
 {
@@ -96,10 +100,21 @@ class CheckoutController extends Controller
 
     public function success(Order $order)
     {
-        $order->update(['status' => 'paid']);
+        if ($order->user_id !== Auth::id()) {
+            abort(404);
+        }
+
+        // atualizar status apenas se ainda n estiver pago
+        if ($order->status !== 'paid') {
+            $order->update(['status' => 'paid']);
+        }
+        //limpar o carrinho
+        $cart = Auth::user()->cart()->with('items.book')->firstOrFail();
+        $cart->items()->delete();
+
+        SendInvoiceJob::dispatch($order, auth()->user());
+
 
         return view('checkout.success', compact('order'));
     }
-
-
 }

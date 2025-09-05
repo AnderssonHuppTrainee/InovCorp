@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -34,5 +35,19 @@ class OrderController extends Controller
 
         $order->load(['user', 'items.book']); // carrega todos os itens da ordem com os livros
         return view('orders.show', compact('order'));
+    }
+
+    public function invoice(Order $order)
+    {
+        $data = [
+            'invoice' => $order,
+            'customer' => $order->user,
+            'items' => $order->items,
+            'total' => $order->total,
+        ];
+
+        $pdf = Pdf::loadView('invoices.invoice', $data);
+
+        return $pdf->stream("nota-fiscal-{$order->id}.pdf");
     }
 }

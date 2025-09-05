@@ -4,95 +4,72 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-base-content">Minha Área</h1>
-                <p class="text-sm text-base-content/70">Gerencie suas requisições de livros</p>
+                <p class="text-sm text-base-content/70">Gerencie seus pedidos de livros</p>
             </div>
 
             @auth
-                @if(auth()->user()->canRequestMoreBooks())
-                    <a href="{{ route('public.books.index') }}" class="btn btn-primary text-white gap-2">
-                        <i class="fas fa-plus"></i>
-                        Nova Requisição
-                    </a>
-                @endif
+                <a href="{{ route('public.books.index') }}" class="btn btn-primary text-white gap-2">
+                    <i class="fas fa-book"></i>
+                    Ver livros
+                </a>
             @endauth
         </div>
-        <!--ALERTA DE COIMAS-->
-        @if(auth()->user()->hasPendingFines())
-            <div class="alert alert-error shadow-lg mb-6">
-                <i class="fas fa-exclamation-circle mr-2 text-white"></i>
-                <div>
-                    <h3 class="font-bold text-white">Você possui multas pendentes!</h3>
-                    <div class="text-sm text-white">
-                        Total em dívida: <strong>€
-                            {{ number_format(auth()->user()->totalFines(), 2, ',', '.') }}</strong>
-                    </div>
-                </div>
-                <a href="{{ route('fines.index') }}" class="btn btn-sm btn-light ml-auto">
-                    <i class="fas fa-wallet mr-1"></i> Pagar Agora
-                </a>
-            </div>
-        @elseif(!auth()->user()->canRequestMoreBooks())
-            <div class="alert alert-warning shadow-lg mb-6">
-                <i class="fas fa-exclamation-triangle mr-2 text-white"></i>
-                <p class="font-bold text-white">Você atingiu o limite máximo de 3 livros requisitados simultaneamente.</p>
-            </div>
-
-        @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            <!-- Total de Requisições -->
+            <!-- Total de Pedidos -->
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
                         <div class="rounded-full bg-primary/10 p-3 text-primary">
-                            <i class="fas fa-book-open text-xl"></i>
+                            <i class="fas fa-shopping-cart text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="card-title text-sm sm:text-base">Total Requisições</h2>
-                            <p class="text-2xl font-bold">{{ $stats['total_requests'] }}</p>
+                            <h2 class="card-title text-sm sm:text-base">Total de Pedidos</h2>
+                            <p class="text-2xl font-bold">{{ $orders->total() }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Em Andamento -->
+            <!-- Pedidos Pagos -->
             <div class="card bg-base-100 shadow">
                 <div class="card-body p-4 sm:p-6">
                     <div class="flex items-center gap-4">
-                        <div class="rounded-full bg-info/10 p-3 text-info">
+                        <div class="rounded-full bg-success/10 p-3 text-success">
+                            <i class="fas fa-check-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="card-title text-sm sm:text-base">Pedidos Pagos</h2>
+                            <p class="text-2xl font-bold">{{ $orders->where('status', 'paid')->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedidos Pendentes -->
+            <div class="card bg-base-100 shadow">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="flex items-center gap-4">
+                        <div class="rounded-full bg-warning/10 p-3 text-warning">
                             <i class="fas fa-clock text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="card-title text-sm sm:text-base">Em Andamento</h2>
-                            <p class="text-2xl font-bold">{{ $stats['active_requests'] }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="card bg-base-100 shadow">
-                <div class="card-body p-4 sm:p-6">
-                    <div class="flex items-center gap-4">
-                        <div class="rounded-full bg-error/10 p-3 text-error">
-                            <i class="fas fa-exclamation-circle text-xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="card-title text-sm sm:text-base">Atrasadas</h2>
-                            <p class="text-2xl font-bold">{{ $stats['overdue_requests'] }}</p>
+                            <h2 class="card-title text-sm sm:text-base">Pedidos Pendentes</h2>
+                            <p class="text-2xl font-bold">{{ $orders->where('status', 'pending')->count() }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card  bg-white dark:bg-gray-800 shadow-lg mb-8">
-            <div class="card-body">
-                <h2 class="text-xl font-semibold mb-4">Meus Livros Requisitados</h2>
 
-                @if($requests->isEmpty())
+        <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold mb-4">Histórico de Compras</h2>
+
+                @if($orders->isEmpty())
                     <div class="alert alert-info m-4 sm:m-6">
                         <i class="fas fa-info-circle mr-2"></i>
-                        Você ainda não fez nenhuma requisição.
+                        Você ainda não fez nenhuma compra.
                     </div>
                 @else
                     <div class="overflow-x-auto">
@@ -101,15 +78,19 @@
                                 <tr class="hover">
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Livro
+                                        Pedido #
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Data Requisição
+                                        Itens
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Devolução Prevista
+                                        Data
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Total
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -122,83 +103,79 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($requests as $request)
+                                @foreach($orders as $order)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-wrap">
-                                            <div class="flex items-center">
-                                                @if($request->book->cover_image)
-                                                    <img src="{{ $request->book->cover_image }}" alt="{{ $request->book->name }}"
-                                                        class="w-12 h-17 mr-3 object-cover">
-                                                @else
-                                                    <img src="https://placehold.co/48x72" class="mr-3" />
-                                                @endif
-                                                <div>
-                                                    <div class="font-medium">{{ $request->book->name }}</div>
-                                                    <div class="text-sm text-gray-500">
-                                                        {{Str::limit($request->book->authors->pluck('name')->join(', '), 30) }}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            #{{ $order->id }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @foreach($order->items as $item)
+                                                <div class="flex items-center mb-2">
+                                                    @if($item->book->capa)
+                                                        <img src="{{ asset('storage/' . $item->book->capa) }}"
+                                                            alt="{{ $item->book->name }}" class="w-12 h-17 mr-3 object-cover">
+                                                    @else
+                                                        <img src="https://placehold.co/48x72" class="mr-3" />
+                                                    @endif
+                                                    <div>
+                                                        <div class="font-medium">{{ $item->book->name }}</div>
+                                                        <div class="text-sm text-gray-500">
+                                                            €{{ number_format($item->price, 2, ',', '.') }} × {{ $item->quantity }}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $request->request_date->format('d/m/Y') }}
-                                        </td>
-                                        <td
-                                            class=" whitespace-nowrap {{ $request->isOverdue() ? 'text-red-600 font-semibold' : '' }}">
-                                            {{ $request->expected_return_date->format('d/m/Y') }}
-                                            @if($request->isOverdue())
-                                                <span class="badge badge-error ml-2 text-white">Atrasado</span>
-                                            @endif
+                                            @endforeach
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="badge badge-lg ml-2 gap-1 text-white
-                                                                                                                            @if($request->status === 'approved') badge-success
-                                                                                                                            @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                                                                                            @elseif($request->status === 'returned') badge-success
-                                                                                                                            @elseif($request->status === 'rejected') badge-error
-                                                                                                                             @else badge-neutral 
-                                                                                                                              @endif">
-
-                                                @if($request->status === 'approved')
-                                                    <i class="fas fa-check-circle"></i> Aprovado
-                                                @elseif($request->status === 'pending')
+                                            {{ $order->created_at->format('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            €{{ number_format($order->total, 2, ',', '.') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge badge-md gap-1 text-white
+                                                     @if($order->status === 'paid') badge-success
+                                                      @elseif($order->status === 'pending') badge-warning
+                                                       @elseif($order->status === 'shipped') badge-info
+                                                     @elseif($order->status === 'delivered') badge-success
+                                                       @elseif($order->status === 'failed') badge-error
+                                                      @elseif($order->status === 'cancelled') badge-neutral
+                                                     @else badge-neutral 
+                                                      @endif">
+                                                @if($order->status === 'paid')
+                                                    <i class="fas fa-check-circle"></i> Pago
+                                                @elseif($order->status === 'pending')
                                                     <i class="fas fa-clock"></i> Pendente
-                                                @elseif($request->status === 'pending_returned')
-                                                    <i class="fas fa-clock"></i> Devolução Pendente
-                                                @elseif($request->status === 'returned')
-                                                    <i class="fas fa-undo"></i> Devolvido
-                                                @elseif($request->status === 'rejected')
-                                                    <i class="fas fa-times-circle"></i> Rejeitado
-                                                @elseif($request->status === 'cancelled')
+                                                @elseif($order->status === 'shipped')
+                                                    <i class="fas fa-truck"></i> Enviado
+                                                @elseif($order->status === 'delivered')
+                                                    <i class="fas fa-check-circle"></i> Entregue
+                                                @elseif($order->status === 'failed')
+                                                    <i class="fas fa-times-circle"></i> Falhou
+                                                @elseif($order->status === 'cancelled')
                                                     <i class="fas fa-ban"></i> Cancelado
                                                 @else
-                                                    {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                                                 @endif
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            @if($request->status === 'approved')
-                                                <a href="{{ route('returns.returnForm', $request) }}"
-                                                    class="btn btn-sm btn-primary text-white">
-                                                    <i class="fas fa-undo mr-1"></i> Devolver
+                                            @if($order->status === 'paid')
+                                                <a href="{{ route('orders.invoice', $order) }}"
+                                                    class="btn btn-sm btn-primary text-white mb-2">
+                                                    <i class="fas fa-download mr-1"></i> Imprimir Fatura
                                                 </a>
-                                            @elseif($request->status === 'pending' && auth()->id() === $request->user_id)
-                                                <form action="{{ route('requests.cancel', $request) }}" method="POST"
-                                                    class="inline">
+                                            @endif
+
+                                            @if($order->status === 'pending')
+                                                <form action="{{ route('orders.index', $order) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button type="submit" class="btn btn-sm btn-danger ml-2"
-                                                        onclick="return confirm('Tem certeza que deseja cancelar esta requisição?')">
-                                                        Cancelar
+                                                    <button type="submit" class="btn btn-sm btn-error text-white"
+                                                        onclick="return confirm('Tem certeza que deseja cancelar este pedido?')">
+                                                        <i class="fas fa-times mr-1"></i> Cancelar
                                                     </button>
                                                 </form>
-                                            @elseif($request->status === 'returned' && $request->reviews()->count() === 0)
-                                                <a href="{{ route('reviews.create', $request) }}"
-                                                    class="btn btn-sm btn-accent text-white">
-                                                    <i class="fas fa-star mr-1"></i> Avaliar
-                                                </a>
-                                            @else
-                                                <p class="flex justify-center">-</p>
                                             @endif
                                         </td>
                                     </tr>
@@ -207,7 +184,7 @@
                         </table>
                     </div>
                     <div class="mt-4">
-                        {{ $requests->links() }}
+                        {{ $orders->links() }}
                     </div>
                 @endif
             </div>

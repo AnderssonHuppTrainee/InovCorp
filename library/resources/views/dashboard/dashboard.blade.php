@@ -113,10 +113,29 @@
                                         <td>{{ $order->user->name }}</td>
                                         <td>€ {{ number_format($order->total, 2, ',', '.') }}</td>
                                         <td>
-                                            <span
-                                                class="badge 
-                                                                                                                                                                                                                                                                    {{ $order->status === 'pending' ? 'badge-warning text-white' : 'badge-success text-white' }}">
-                                                {{ ucfirst($order->status) }}
+                                            <span class="badge badge-md ml-2 gap-1 text-white
+                                                      @if($order->status === 'paid') badge-success
+                                                    @elseif($order->status === 'pending') badge-warning
+                                                      @elseif($order->status === 'shipped') badge-info
+                                                      @elseif($order->status === 'delivered') badge-success
+                                                     @elseif($order->status === 'failed') badge-error
+                                                    @else badge-neutral 
+                                                       @endif">
+                                                @if($order->status === 'paid')
+                                                    <i class="fas fa-check-circle"></i> Aprovado
+                                                @elseif($order->status === 'pending')
+                                                    <i class="fas fa-clock"></i> Pendente
+                                                @elseif($order->status === 'shipped')
+                                                    <i class="fas fa-truck"></i> Enviado
+                                                @elseif($order->status === 'delivered')
+                                                    <i class="fas fa-check-circle"></i> Entregue
+                                                @elseif($order->status === 'failed')
+                                                    <i class="fas fa-times-circle"></i> Rejeitado
+                                                @elseif($order->status === 'cancelled')
+                                                    <i class="fas fa-ban"></i> Cancelado
+                                                @else
+                                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                                @endif
                                             </span>
                                         </td>
                                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>

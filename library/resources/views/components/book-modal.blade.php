@@ -73,9 +73,12 @@
                     </div>
                     <div class="flex justify-end">
                         @auth
-                            <a href="{{ route('cart.add', $book->id) }}" class="btn btn-primary btn-sm mt-4 text-white">
-                                Adicionar ao carrinho
-                            </a>
+                            <form action="{{ route('cart.add', $book->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">
+                                    Adicionar ao Carrinho
+                                </button>
+                            </form>
                         @endauth
 
                         @guest

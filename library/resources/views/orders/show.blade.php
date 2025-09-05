@@ -9,7 +9,7 @@
         </div>
 
         <!-- Resumo do Pedido -->
-        <div class="card bg-base-100  mb-6 p-4">
+        <div class="card bg-base-100  mb-6 p-4 shadow-xl">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold">
@@ -37,7 +37,6 @@
                 </div>
             </div>
         </div>
-        <div class="divider divider-neutral"></div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="card bg-base-100 shadow p-4">
@@ -56,7 +55,7 @@
             </div>
 
             <div class="card bg-base-100 shadow p-4">
-                <h2 class="card-title mb-4">Endereço de Entrega</h2>
+                <h2 class="card-title mb-4">Morada de Entrega</h2>
                 <p>{{ $order->address_line1 }}</p>
                 @if($order->address_line2)
                 <p>{{ $order->address_line2 }}</p>@endif
@@ -111,8 +110,9 @@
             </div>
             <div class="flex gap-2">
 
-                <a href="{{ route('orders.index', $order) }}" class="btn btn-primary btn-sm text-white">Imprimir
-                    Nota</a>
+                <a href="{{ route('orders.invoice', $order) }}" class="btn btn-primary btn-sm text-white">
+                    Imprimir Fatura
+                </a>
             </div>
         </div>
 

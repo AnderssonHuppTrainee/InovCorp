@@ -1,12 +1,13 @@
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-8">
     <div class="mb-3">
         <a href="{{ route('public.books.index') }}" class="btn btn-ghost gap-2">
             <i class="fas fa-arrow-left"></i>
-            Voltar
+            Continuar a comprar
         </a>
     </div>
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">Meu Carrinho</h1>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6"><i class="fa fa-cart-shopping mr-2"></i>Meu
+            Carrinho</h1>
 
         @if($cart->items->count() > 0)
             <div class="overflow-x-auto">
@@ -64,7 +65,7 @@
                             Total: € {{ number_format($cart->items->sum(fn($i) => $i->quantity * $i->price), 2, ',', '.') }}
                         </p>
                         <a href="{{ route('checkout.index', $cart) }}" class="mt-3 btn btn-md  btn-success text-white">
-                            Checkout
+                            Ir para o Checkout
                         </a>
                     </div>
                 </div>

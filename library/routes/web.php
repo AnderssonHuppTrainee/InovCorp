@@ -69,17 +69,16 @@ Route::middleware([
     Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add');
 
     //checkout
-    //Route::get('/checkout', [CheckoutController::class, 'addressForm'])->name('checkout.address');
-    //Route::post('/checkout/store', [CheckoutController::class, 'storeAddress'])->name('checkout.storeAddress');
-
-
 
     Route::get('/checkout/{cart}', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/address', [CheckoutController::class, 'saveAddress'])->name('checkout.address');
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-    Route::get('/checkout/{order}/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
-    //Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    //orders
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])
+        ->name('orders.invoice');
+
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 });
 
@@ -122,7 +121,6 @@ Route::middleware([
     });
 
     //orders
-
     Route::resource('/orders', OrderController::class);
 
 

@@ -33,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
             $schedule->command('reminders:send')
                 ->dailyAt('09:00')
                 ->timezone('Europe/Lisbon');
+
+            $schedule->command('carts:check-abandoned')->hourly();
         });
 
         View::composer('*', function ($view) {

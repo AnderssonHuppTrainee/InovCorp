@@ -66,25 +66,13 @@ class DashboardController extends Controller
 
             ));
         } else {
-            $stats = [
-                'total_requests' => auth()->user()->requests()->count(),
-                'active_requests' => auth()->user()->requests()
-                    ->whereIn('status', ['pending', 'approved'])->count(),
-                'overdue_requests' => auth()->user()->requests()
-                    ->where('status', 'approved')
-                    ->where('expected_return_date', '<', now())
-                    ->count()
-            ];
 
-            $requests = auth()->user()->requests()->with('book')->orderBy('request_date', 'desc')
+            $orders = auth()->user()->orders()
+                ->with(['user', 'items.book']) // Carrega items e o book relacionado a cada item
+                ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
-            $fines = Fine::whereHas('bookRequest', function ($q) {
-                $q->where('user_id', auth()->id());
-            })->latest()->get();
-
-
-            return view('dashboard.citizen', compact('stats', 'requests', 'fines'));
+            return view('dashboard.citizen', compact('orders'));
 
         }
     }

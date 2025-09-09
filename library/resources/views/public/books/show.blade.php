@@ -40,7 +40,7 @@
             font-weight: bold;
         }
     </style>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
 
         @if(session('success'))
             <div class="alert alert-success shadow-lg mb-6 text-white">
@@ -194,21 +194,29 @@
             </div>
 
             <div class="divider"></div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-2">
                 @auth
                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
-                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="btn btn-primary">
-                                Adicionar ao Carrinho
-                            </button>
-                        </form>
+                        <div>
+                            <form action="{{ route('requests.create', $book) }}" method="GET">
+                                @csrf
+                                <button type="submit" class="btn btn-outline">
+                                    Requisitar
+                                </button>
+                            </form>
+                        </div>
+                        <div>
+                            <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="btn btn-primary text-white">
+                                    Adicionar ao Carrinho
+                                </button>
+                            </form>
+                        </div>
                     @elseif(!$book->isAvailable())
                         <form method="POST" action="{{ route('books.notify', $book) }}">
                             @csrf
-                            <button type="submit"
-                                class="btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                                                                                                                                                                                                                        disabled:opacity-50 transition ease-in-out duration-150">
+                            <button type="submit" class="btn btn-error text-white ">
                                 Notificar-me quando disponível
                             </button>
                         </form>

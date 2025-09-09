@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -73,16 +73,13 @@
                                             <td class="whitespace-wrap">
                                                 <div class="flex items-center gap-3">
                                                     @if($return->book->cover_image)
-                                                        <img src="{{ asset('storage/' . $return->book->cover_image) }}"
+                                                        <img src=" {{  $return->book->cover_image }}"
                                                             alt="{{ $return->book->name }}" class="w-10 h-10 mr-3 object-cover">
                                                     @else
                                                         <img src="https://placehold.co/48x72" class="mr-3" />
                                                     @endif
                                                     <div>
-                                                        <div class="font-bold">{{ Str::limit($return->book->name, 30) }}</div>
-                                                        <div class="text-sm text-gray-500">
-                                                            {{  Str::limit($return->book->authors->pluck('name')->join(', '), 30) }}
-                                                        </div>
+                                                        <div class="font-bold">{{ $return->book->name }}</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -100,52 +97,20 @@
                                                 {{ round($return->actual_days) }} dias
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="badge badge-lg ml-2 gap-1 text-white
-                                                                  @if($return->status === 'approved') badge-success
-                                                                  @elseif(in_array($return->status, ['pending', 'pending_returned'])) badge-warning
-                                                                @elseif($return->status === 'returned') badge-success
-                                                                 @elseif($return->status === 'rejected') badge-error
-                                                                  @else badge-neutral 
-                                                                @endif">
-
-                                                    @if($return->status === 'approved')
-                                                        <i class="fas fa-check-circle"></i> Aprovado
-                                                    @elseif($return->status === 'pending')
-                                                        <i class="fas fa-clock"></i> Pendente
-                                                    @elseif($return->status === 'pending_returned')
-                                                        <i class="fas fa-clock"></i> Devolução Pendente
-                                                    @elseif($return->status === 'returned')
-                                                        <i class="fas fa-undo"></i> Devolvido
-                                                    @elseif($return->status === 'rejected')
-                                                        <i class="fas fa-times-circle"></i> Rejeitado
-                                                    @elseif($return->status === 'cancelled')
-                                                        <i class="fas fa-ban"></i> Cancelado
-                                                    @else
-                                                        {{ ucfirst(str_replace('_', ' ', $return->status)) }}
-                                                    @endif
-                                                </span>
+                                                <x-status-badge :status="$return->status" />
                                             </td>
                                             <td class="whitespace-nowrap">
                                                 <a href="{{ route('returns.reviewReturn', $return) }}"
                                                     class="btn btn-sm btn-outline">
-                                                    Ver
+                                                    <i class="fa fa-eye"></i>Ver
                                                 </a>
-                                                @if(auth()->user()->isAdmin() && $return->status === 'pending_returned')
-                                                    <form class="inline" action="{{ route('returns.approveReturn', $return) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
-                                                            Aprovar
-                                                        </button>
-                                                    </form>
-                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-4 pb-4 sm:px-6">
+                        <div class=" mt-4 px-4 pb-4 sm:px-6">
                             {{ $returns->links() }}
                         </div>
                     </div>

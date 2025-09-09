@@ -39,7 +39,7 @@ Route::middleware([
     Route::resource('requests', BookRequestController::class)->except(['create', 'show']);
     Route::get('/requests/create/{book}', [BookRequestController::class, 'create'])
         ->name('requests.create');
-    Route::put('/requests/{bookRequest}/return', [BookRequestController::class, 'cancel'])
+    Route::put('/requests/{bookRequest}/cancel', [BookRequestController::class, 'cancel'])
         ->name('requests.cancel');
 
     //review
@@ -75,10 +75,11 @@ Route::middleware([
     Route::get('/checkout/payment/{order}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 
     //orders
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])
         ->name('orders.invoice');
-
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::put('/orders/cancel/{order}', [OrderController::class, 'cancel'])->name('orders.cancel');
 
 });
 

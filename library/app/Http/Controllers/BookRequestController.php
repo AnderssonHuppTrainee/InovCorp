@@ -25,9 +25,7 @@ class BookRequestController extends Controller
         if ($request->search) {
             $search = $request->search;
             $query->whereHas('book', function ($q) use ($search) {
-                $q->where('numero', 'like', "%{$search}%");
-            })->orWhereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                $q->where('number', 'like', "%{$search}%");
             });
         }
         $requests = $query->orderBy('request_date', 'desc')

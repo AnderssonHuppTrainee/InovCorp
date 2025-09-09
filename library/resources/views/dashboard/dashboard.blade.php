@@ -18,6 +18,12 @@
                 <a href="{{ route('reviews.index') }}" class="btn btn-accent btn-sm gap-2 text-white">
                     <i class="fas fa-star"></i> Moderar Avaliações
                 </a>
+                <a href="{{ route('requests.index') }}" class="btn btn-secondary btn-sm gap-2 text-white">
+                    <i class="fas fa-hand"></i> Gerir Requisições
+                </a>
+                <a href="{{ route('returns.index') }}" class="btn btn-neutral btn-sm gap-2 text-white">
+                    <i class="fas fa-undo"></i> Gerir Devoluções
+                </a>
                 <a href="{{ route('export.books') }}" class="btn btn-outline btn-sm gap-2">
                     <i class="fas fa-file-excel"></i> Exportar Livros
                 </a>
@@ -77,33 +83,54 @@
 
         <!-- graficos -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-            <div class="card bg-base-100 shadow-lg p-4">
-                <h2 class="text-xl font-semibold mb-4">Status das Encomendas</h2>
-                <canvas id="ordersChart" class="w-full h-48"></canvas>
+            <div class="card bg-base-100 shadow-lg p-4 h-73">
+                <h2 class="text-xl font-semibold mb-2">Status das Encomendas</h2>
+                <canvas id="ordersChart" class="w-full h-full"></canvas>
             </div>
 
-            <div class="card bg-base-100 shadow-lg  p-4">
-                <h2 class="text-xl font-semibold mb-4">Vendas Mensais</h2>
-                <canvas id="ordersChart2" class="w-full h-48"></canvas>
+            <div class="card bg-base-100 shadow-lg  p-4 h-73">
+                <h2 class="text-xl font-semibold mb-2">Vendas Mensais</h2>
+                <canvas id="ordersChart2" class="w-full h-full"></canvas>
             </div>
         </div>
         <!-- ultimas encomendas -->
         <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
-                <h2 class="text-xl font-semibold mb-4">Últimas Encomendas</h2>
+                <h2 class="text-xl font-semibold mb-4">
+                    Últimas Encomendas
+                    <i class="fa fa-truck ml-2"></i>
+                </h2>
                 @if($orders->isEmpty())
                     <div class="alert alert-info text-white">Nenhuma encomenda encontrada.</div>
                 @else
                     <div class="overflow-x-auto">
                         <table class="table table-zebra w-full">
-                            <thead>
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th>Número</th>
-                                    <th>Cliente</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Data</th>
-                                    <th>Ações</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Número
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Cliente
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Total
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Status
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Data
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Ações
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -113,35 +140,12 @@
                                         <td>{{ $order->user->name }}</td>
                                         <td>€ {{ number_format($order->total, 2, ',', '.') }}</td>
                                         <td>
-                                            <span class="badge badge-md ml-2 gap-1 text-white
-                                                      @if($order->status === 'paid') badge-success
-                                                    @elseif($order->status === 'pending') badge-warning
-                                                      @elseif($order->status === 'shipped') badge-info
-                                                      @elseif($order->status === 'delivered') badge-success
-                                                     @elseif($order->status === 'failed') badge-error
-                                                    @else badge-neutral 
-                                                       @endif">
-                                                @if($order->status === 'paid')
-                                                    <i class="fas fa-check-circle"></i> Aprovado
-                                                @elseif($order->status === 'pending')
-                                                    <i class="fas fa-clock"></i> Pendente
-                                                @elseif($order->status === 'shipped')
-                                                    <i class="fas fa-truck"></i> Enviado
-                                                @elseif($order->status === 'delivered')
-                                                    <i class="fas fa-check-circle"></i> Entregue
-                                                @elseif($order->status === 'failed')
-                                                    <i class="fas fa-times-circle"></i> Rejeitado
-                                                @elseif($order->status === 'cancelled')
-                                                    <i class="fas fa-ban"></i> Cancelado
-                                                @else
-                                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                                                @endif
-                                            </span>
+                                            <x-status-badge :status="$order->status" />
                                         </td>
                                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                         <td>
-                                            <a href={{ route('orders.show', $order)}} class="btn btn-sm btn-outline"><i
-                                                    class="fas fa-eye"></i>Ver</a>
+                                            <a href={{ route('orders.show', $order)}} class="btn btn-sm btn-outline">
+                                                <i class="fas fa-eye"></i>Ver</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -154,66 +158,254 @@
                 @endif
             </div>
         </div>
-
-        <!-- ultimos livros adicionados -->
+        <!--Ultimas Requisições-->
         <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
-                <h2 class="text-xl font-semibold mb-4">Últimos Livros Adicionados</h2>
-                @if($stats['latestBooks']->count() > 0)
+                <h2 class="text-xl font-semibold mb-4">Últimas Requisições
+                    <i class="fa fa-hand ml-2"></i>
+                </h2>
+                @if($requests->isEmpty())
+                    <div class="alert alert-info m-4 sm:m-6">
+                        <div>
+                            <i class="fas fa-info-circle"></i>
+                            <span>Nenhuma requisição encontrada.</span>
+                        </div>
+                    </div>
+                @else
                     <div class="overflow-x-auto">
-                        <table class="table table-zebra w-full divide-y divide-gray-200">
+                        <table class="table table-zebra w-full">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Título</th>
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Número</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Autor(es)</th>
+                                        Livro</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Editora</th>
+                                        Data Requisição</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        ISBN</th>
+                                        Devolução Prevista</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Data</th>
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($stats['latestBooks'] as $book)
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="flex items-center gap-2">
-                                            @if($book->cover_image)
-                                                <img src="{{ $book->cover_image }}" class="w-10 h-14 object-cover rounded" />
-                                            @endif
-                                            {{ $book->name }}
+                                @foreach ($requests as $request)
+                                    <tr>
+                                        <td class="whitespace-nowrap ">
+                                            {{ $request->number }}
                                         </td>
-                                        <td>{{ $book->authors->pluck('name')->join(', ') }}</td>
-                                        <td>{{ $book->publisher->name ?? '-' }}</td>
-                                        <td>{{ $book->isbn }}</td>
-                                        <td>{{ $book->created_at->format('d/m/Y') }}</td>
+                                        <td class="whitespace-wrap">
+                                            <div class="flex items-center">
+                                                @if($request->book->cover_image)
+                                                    <img src="{{  $request->book->cover_image }}" alt="{{ $request->book->name }}"
+                                                        class="w-10 h-15 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
+                                                @endif
+                                                <div>
+                                                    <div class="font-medium">{{ $request->book->name }}</div>
 
+                                                </div>
+
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ $request->request_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <x-status-badge :status="$request->status" />
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
+                                                <i class="fas fa-eye"></i>Ver
+                                            </a>
+                                            @if(auth()->user()->isAdmin() && $request->status === 'pending')
+                                                <form class="inline" action="{{ route('requests.approve', $request) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
+                                                        Aprovar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="flex justify-end m-4">
-                            <a href="{{ route('books.index') }}" class="link-info">Ver todos os livros...</a>
-                        </div>
                     </div>
-                @else
-                    <div class="alert alert-info m-4 sm:m-6">
-                        <div>
-                            <i class="fas fa-info-circle"></i>
-                            <span>Nenhum livro cadastrado ainda.</span>
-                        </div>
+                    <div class="px-4 sm:px-6">
+                        {{ $requests->links() }}
+                    </div>
+                    <div class="flex justify-end mt-2">
+                        <a href="{{ route('requests.index') }}" class="link-info">Ver todas as requisições...</a>
                     </div>
                 @endif
             </div>
-
         </div>
+        <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold mb-4">
+                    Devoluções Pendentes
+                    <i class="fa fa-undo ml-2"></i>
+                </h2>
+
+                @if($returns->isEmpty())
+                    <div class="alert alert-info m-4 sm:m-6">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Nenhuma devolução encontrada.</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Número
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Devolução Prevista
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Dias
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($returns as $return)
+                                    <tr class="hover">
+                                        <td class="whitespace-nowrap ">{{ $return->number }}</td>
+                                        <td class="whitespace-wrap">
+                                            <div class="flex items-center gap-3">
+                                                @if($return->book->cover_image)
+                                                    <img src="{{  $return->book->cover_image }}" alt="{{ $return->book->name }}"
+                                                        class="w-10 h-15 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
+                                                @endif
+                                                <div>
+                                                    <div class="font-bold">{{ Str::limit($return->book->name, 30) }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ $return->expected_return_date->format('d/m/Y') }}
+
+                                        </td>
+
+                                        <td>
+                                            {{ round($return->actual_days) }} dias
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <x-status-badge :status="$return->status" />
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <a href="{{ route('returns.reviewReturn', $return) }}"
+                                                class="btn btn-sm btn-outline">
+                                                <i class="fas fa-eye"></i>Ver
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-4 sm:px-6">
+                        {{ $returns->links() }}
+                    </div>
+                    <div class="flex justify-end mt-2">
+                        <a href="{{ route('returns.index') }}" class="link-info">Ver todas as devoluções...</a>
+                    </div>
+                @endif
+            </div>
+        </div>
+        <!-- ultimos livros adicionados 
+            <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
+                <div class="card-body">
+                    <h2 class="text-xl font-semibold mb-4">Últimos Livros Adicionados</h2>
+                    @if($stats['latestBooks']->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="table table-zebra w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Título</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Autor(es)</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Editora</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ISBN</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($stats['latestBooks'] as $book)
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="flex items-center gap-2">
+                                                @if($book->cover_image)
+                                                    <img src="{{ $book->cover_image }}" class="w-10 h-14 object-cover rounded" />
+                                                @endif
+                                                {{ $book->name }}
+                                            </td>
+                                            <td>{{ $book->authors->pluck('name')->join(', ') }}</td>
+                                            <td>{{ $book->publisher->name ?? '-' }}</td>
+                                            <td>{{ $book->isbn }}</td>
+                                            <td>{{ $book->created_at->format('d/m/Y') }}</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="flex justify-end m-4">
+                                <a href="{{ route('books.index') }}" class="link-info">Ver todos os livros...</a>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-info m-4 sm:m-6">
+                            <div>
+                                <i class="fas fa-info-circle"></i>
+                                <span>Nenhum livro cadastrado ainda.</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+            </div>-->
 
         <!-- Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -10,7 +10,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class OrderController extends Controller
 {
 
-
     public function index(Request $request)
     {
 
@@ -49,5 +48,18 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('invoices.invoice', $data);
 
         return $pdf->stream("nota-fiscal-{$order->id}.pdf");
+    }
+
+    public function cancel(Order $order)
+    {
+        if (auth()->id() !== $order->user_id) {
+            abort(403, 'Ação não autorizada.');
+        }
+
+        $order->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()->back()->with('success', 'Pedido cancelado com sucesso.');
     }
 }

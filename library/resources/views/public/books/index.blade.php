@@ -121,13 +121,19 @@
                                     {{ number_format($rating, 1, ',', '.') }} / 5
                                 </p>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div class="mt-1">
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium                                                                                                                                                                                                                                                                                                                                                                    {{ $book->isAvailable() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $book->isAvailable() ? 'Disponível' : 'Indisponível' }}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                                 @auth
                                     @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
                                         <div class="sm:col-span-2 flex justify-end">
                                             <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-primary">
+                                                <button type="submit" class="btn btn-primary text-white">
                                                     Adicionar ao Carrinho
                                                 </button>
                                             </form>
@@ -137,9 +143,7 @@
                                         <form method="POST" action="{{ route('books.notify', $book) }}"
                                             class="col-span-1 sm:col-span-2 w-full">
                                             @csrf
-                                            <button type="submit"
-                                                class="w-full btn btn-primary text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150 
-                                                                                                                                                                                                                text-2sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">
+                                            <button type="submit" class="w-full btn btn-error text-white ">
                                                 Notificar-me quando disponível
                                             </button>
                                         </form>
@@ -165,12 +169,7 @@
                                 @endguest
                             </div>
 
-                            <div class=" mt-2">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium                                                                                                                                                                                                                                                                                                                                                                    {{ $book->isAvailable() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ $book->isAvailable() ? 'Disponível' : 'Indisponível' }}
-                                </span>
-                            </div>
+
                         </div>
                     </div>
                 @endforeach

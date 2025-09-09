@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -74,9 +74,7 @@
                                                     @endif
                                                     <div>
                                                         <div class="font-medium">{{ $request->book->name }}</div>
-                                                        <div class="text-sm text-gray-500">
-                                                            {{ $request->book->authors->pluck('name')->join(', ') }}
-                                                        </div>
+
                                                     </div>
 
                                                 </div>
@@ -88,30 +86,7 @@
                                                 {{ $request->expected_return_date->format('d/m/Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="badge badge-lg ml-2 gap-1 text-white
-                                                         @if($request->status === 'approved') badge-success
-                                                         @elseif(in_array($request->status, ['pending', 'pending_returned'])) badge-warning
-                                                          @elseif($request->status === 'returned') badge-success
-                                                         @elseif($request->status === 'rejected') badge-error
-                                                          @else badge-neutral 
-                                                        @endif">
-
-                                                    @if($request->status === 'approved')
-                                                        <i class="fas fa-check-circle"></i> Aprovado
-                                                    @elseif($request->status === 'pending')
-                                                        <i class="fas fa-clock"></i> Pendente
-                                                    @elseif($request->status === 'pending_returned')
-                                                        <i class="fas fa-clock"></i> Devolução Pendente
-                                                    @elseif($request->status === 'returned')
-                                                        <i class="fas fa-undo"></i> Devolvido
-                                                    @elseif($request->status === 'rejected')
-                                                        <i class="fas fa-times-circle"></i> Rejeitado
-                                                    @elseif($request->status === 'cancelled')
-                                                        <i class="fas fa-ban"></i> Cancelado
-                                                    @else
-                                                        {{ ucfirst(str_replace('_', ' ', $request->status)) }}
-                                                    @endif
-                                                </span>
+                                                <x-status-badge :status="$request->status" />
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
@@ -132,10 +107,9 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-4 pb-4 sm:px-6">
+                        <div class="mt-4 px-4 pb-4 sm:px-6">
                             {{ $requests->links() }}
                         </div>
-
                     </div>
                 @endif
             </div>

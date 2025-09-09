@@ -1,19 +1,30 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
 
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-base-content">Minha Área</h1>
-                <p class="text-sm text-base-content/70">Gerencie seus pedidos de livros</p>
+                <p class="text-sm text-base-content/70">Gerencie seus pedidos e requisições de livros</p>
             </div>
 
             @auth
                 <a href="{{ route('public.books.index') }}" class="btn btn-primary text-white gap-2">
                     <i class="fas fa-book"></i>
-                    Ver livros
+                    Ver Livros
                 </a>
             @endauth
         </div>
+           @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span><i class="fa fa-circle-check mr-3"></i>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if(!Auth()->user()->canRequestMoreBooks())
+            <div class="alert alert-info shadow-lg mb-6 text-white">
+                <span><i class="fa fa-circle-exclamation mr-3"></i>Você já possue 3 requisições ativas! Por favor devolva um livro</span>
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <!-- Total de Pedidos -->
@@ -64,7 +75,108 @@
 
         <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
             <div class="card-body">
-                <h2 class="text-xl font-semibold mb-4">Histórico de Compras</h2>
+                <h2 class="text-xl font-semibold mb-4">Minhas Requisições
+                    <i class="fa fa-hand ml-2"></i>
+                </h2>
+                @if($requests->isEmpty())
+                    <div class="alert alert-info m-4 sm:m-6">
+                        <div>
+                            <i class="fas fa-info-circle"></i>
+                            <span>Nenhuma requisição encontrada.</span>
+                        </div>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                        Número</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Livro</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data Requisição</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Devolução Prevista</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach ($requests as $request)
+                                    <tr>
+                                        <td class="whitespace-nowrap ">
+                                            {{ $request->number }}
+                                        </td>
+                                        <td class="whitespace-wrap">
+                                            <div class="flex items-center">
+                                                @if($request->book->cover_image)
+                                                    <img src="{{  $request->book->cover_image }}" alt="{{ $request->book->name }}"
+                                                        class="w-10 h-15 mr-3 object-cover">
+                                                @else
+                                                    <img src="https://placehold.co/48x72" class="mr-3" />
+                                                @endif
+                                                <div>
+                                                    <div class="font-medium">{{ $request->book->name }}</div>
+
+                                                </div>
+
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ $request->request_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <x-status-badge :status="$request->status" />
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            @if(auth()->user() && $request->status === 'approved')
+                                                <a href="{{ route('returns.returnForm') }}" class="btn btn-accent text-white">
+                                                    <i class="fa fa-undo mr-2"></i>
+                                                    Devolver
+                                                </a>
+                                            @elseif(auth()->user() && $request->status === 'pending')
+
+                                                <form class="inline" action="{{ route('requests.cancel', $request) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-sm btn-error ml-2 text-white"
+                                                        onclick="return confirm('Tem certeza que deseja cancelar esta requisição?')">
+                                                        <i class="fas fa-times mr-1"></i> Cancelar
+
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <p class="text-center">-</p>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class=" mt-4 px-4 sm:px-6">
+                        {{ $requests->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
+        <div class="card bg-white dark:bg-gray-800 shadow-lg mb-8">
+            <div class="card-body">
+                <h2 class="text-xl font-semibold mb-4">Histórico de Compras <i class="fa fa-shopping-cart ml-2"></i>
+                </h2>
 
                 @if($orders->isEmpty())
                     <div class="alert alert-info m-4 sm:m-6">
@@ -111,8 +223,8 @@
                                         <td class="px-6 py-4">
                                             @foreach($order->items as $item)
                                                 <div class="flex items-center mb-2">
-                                                    @if($item->book->capa)
-                                                        <img src="{{ asset('storage/' . $item->book->capa) }}"
+                                                    @if($item->book->cover_image)
+                                                        <img src="{{  $item->book->cover_image }}"
                                                             alt="{{ $item->book->name }}" class="w-12 h-17 mr-3 object-cover">
                                                     @else
                                                         <img src="https://placehold.co/48x72" class="mr-3" />
@@ -120,7 +232,7 @@
                                                     <div>
                                                         <div class="font-medium">{{ $item->book->name }}</div>
                                                         <div class="text-sm text-gray-500">
-                                                            €{{ number_format($item->price, 2, ',', '.') }} × {{ $item->quantity }}
+                                                            €{{ number_format($item->price, 2, ',', '.') }} * {{ $item->quantity }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -133,49 +245,25 @@
                                             €{{ number_format($order->total, 2, ',', '.') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="badge badge-md gap-1 text-white
-                                                     @if($order->status === 'paid') badge-success
-                                                      @elseif($order->status === 'pending') badge-warning
-                                                       @elseif($order->status === 'shipped') badge-info
-                                                     @elseif($order->status === 'delivered') badge-success
-                                                       @elseif($order->status === 'failed') badge-error
-                                                      @elseif($order->status === 'cancelled') badge-neutral
-                                                     @else badge-neutral 
-                                                      @endif">
-                                                @if($order->status === 'paid')
-                                                    <i class="fas fa-check-circle"></i> Pago
-                                                @elseif($order->status === 'pending')
-                                                    <i class="fas fa-clock"></i> Pendente
-                                                @elseif($order->status === 'shipped')
-                                                    <i class="fas fa-truck"></i> Enviado
-                                                @elseif($order->status === 'delivered')
-                                                    <i class="fas fa-check-circle"></i> Entregue
-                                                @elseif($order->status === 'failed')
-                                                    <i class="fas fa-times-circle"></i> Falhou
-                                                @elseif($order->status === 'cancelled')
-                                                    <i class="fas fa-ban"></i> Cancelado
-                                                @else
-                                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                                                @endif
-                                            </span>
+                                            <x-status-badge :status="$order->status"></x-status-badge>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($order->status === 'paid')
-                                                <a href="{{ route('orders.invoice', $order) }}"
-                                                    class="btn btn-sm btn-primary text-white mb-2">
-                                                    <i class="fas fa-download mr-1"></i> Imprimir Fatura
-                                                </a>
-                                            @endif
-
-                                            @if($order->status === 'pending')
-                                                <form action="{{ route('orders.index', $order) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" class="btn btn-sm btn-error text-white"
-                                                        onclick="return confirm('Tem certeza que deseja cancelar este pedido?')">
-                                                        <i class="fas fa-times mr-1"></i> Cancelar
-                                                    </button>
-                                                </form>
+                                                    <a href="{{ route('orders.invoice', $order) }}"
+                                                        class="btn btn-sm btn-primary text-white mb-2">
+                                                        <i class="fas fa-download mr-1"></i> Imprimir Fatura
+                                                    </a>
+                                                @elseif($order->status === 'pending')
+                                                    <form action="{{ route('orders.cancel', $order) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit" class="btn btn-sm btn-error text-white"
+                                                            onclick="return confirm('Tem certeza que deseja cancelar este pedido?')">
+                                                            <i class="fas fa-times mr-1"></i> Cancelar
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <p class="text-center">-</p>
                                             @endif
                                         </td>
                                     </tr>
@@ -183,11 +271,14 @@
                             </tbody>
                         </table>
                     </div>
+                
                     <div class="mt-4">
                         {{ $orders->links() }}
                     </div>
+
                 @endif
             </div>
         </div>
+
     </div>
 </x-app-layout>

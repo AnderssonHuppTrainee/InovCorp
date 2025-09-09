@@ -13,19 +13,16 @@ class ReturnsController extends Controller
     public function index(Request $request)
     {
         $query = BookRequest::with(['user', 'book'])
-            ->whereNotNull('returned_date') // só devoluções
+            ->whereNotNull('returned_date')
             ->when($request->search, function ($q) use ($request) {
                 $search = $request->search;
                 $q->whereHas('book', function ($q) use ($search) {
                     $q->where('number', 'like', "%{$search}%");
-                })
-                    ->orWhereHas('user', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
+                });
             });
 
         $returns = $query
-            ->orderBy('return_date', 'desc')
+            ->orderBy('returned_date', 'desc')
             ->paginate(10)->withQueryString();
         ;
 

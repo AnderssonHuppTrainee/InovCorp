@@ -14,11 +14,23 @@
                 <table class="table w-full table-zebra">
                     <thead>
                         <tr class="border-b-2">
-                            <th class="py-3">Livro</th>
-                            <th class="py-3">Preço</th>
-                            <th class="py-3">Quantidade</th>
-                            <th class="py-3">Subtotal</th>
-                            <th class="py-3"></th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                Livro
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                Preço
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                Quantidade
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                Subtotal
+                            </th>
+                            <th class="py-3 px-6"></th>
                         </tr>
                         </tr>
                     </thead>
@@ -26,7 +38,7 @@
                         @foreach($cart->items as $item)
                             <tr class="border-b-2">
                                 <td class="flex items-center space-x-3 py-3">
-                                    <img src="{{ $item->book->cover_image ?? 'https://via.placeholder.com/80' }}"
+                                    <img src="{{ $item->book->cover_image ?? 'https://via.placeholder.com/48x72' }}"
                                         alt="{{ $item->book->name }}" class="w-16 h-20 object-cover rounded">
                                     <div>
                                         <p class="font-semibold text-gray-800 dark:text-gray-200">
@@ -37,8 +49,8 @@
                                         </p>
                                     </div>
                                 </td>
-                                <td class="py-3">€ {{ number_format($item->price, 2, ',', '.') }}</td>
-                                <td class="py-3">
+                                <td class="py-3 whitespace-nowrap">€ {{ number_format($item->price, 2, ',', '.') }}</td>
+                                <td class="py-3 whitespace-nowrap">
                                     <div class="flex items-center space-x-2">
                                         <button wire:click="decrementQuantity({{ $item->id }})"
                                             class="btn btn-sm btn-outline">-</button>
@@ -47,8 +59,10 @@
                                             class="btn btn-sm btn-outline">+</button>
                                     </div>
                                 </td>
-                                <td class="py-3">€ {{ number_format($item->quantity * $item->price, 2, ',', '.') }}</td>
-                                <td class="py-3">
+                                <td class="py-3 whitespace-nowrap">€
+                                    {{ number_format($item->quantity * $item->price, 2, ',', '.') }}
+                                </td>
+                                <td class="py-3 ">
                                     <button wire:click="removeItem({{ $item->id }})" class="btn btn-sm btn-error text-white">
                                         <i class="fa fa-trash"></i>
                                     </button>

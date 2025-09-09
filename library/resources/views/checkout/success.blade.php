@@ -19,12 +19,12 @@
 
                     <div class="divider"></div>
 
-                    <!-- Botões de ação -->
+
                     <div class="flex gap-3 mt-4">
                         <a href="{{ route('public.books.index') }}" class="btn btn-primary text-white">
                             Explorar mais livros
                         </a>
-                        <a href="{{ route('orders.index') }}" class="btn btn-outline">
+                        <a href="{{ route('dashboard') }}" class="btn btn-outline">
                             Ver meus pedidos
                         </a>
                     </div>

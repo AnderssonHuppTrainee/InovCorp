@@ -71,14 +71,25 @@
                             <p class="text-gray-500">Nenhuma avaliação disponível para este livro.</p>
                         @endforelse
                     </div>
-                    <div class="flex justify-end">
+                    <div class="flex justify-end mt-2 gap-2">
                         @auth
-                            <form action="{{ route('cart.add', $book->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-primary">
-                                    Adicionar ao Carrinho
-                                </button>
-                            </form>
+                            <div>
+                                <form action="{{ route('requests.create', $book->id) }}" method="GET">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline">
+                                        Requisitar
+                                    </button>
+                                </form>
+                            </div>
+                            <div>
+                                <form action="{{ route('cart.add', $book->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary text-white">
+                                        Adicionar ao Carrinho
+                                    </button>
+                                </form>
+                            </div>
+
                         @endauth
 
                         @guest

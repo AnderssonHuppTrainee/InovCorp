@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Mail;
-use Log;
+
 
 class CheckoutController extends Controller
 {

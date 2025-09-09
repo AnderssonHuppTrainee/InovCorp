@@ -4,7 +4,7 @@
             @apply cursor-pointer;
         }
     </style>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
         <!--notificacao-->
         @if(session('success'))
             <div class="flex items-center justify-between alert alert-success shadow-lg mb-6" id="alert">
@@ -60,10 +60,10 @@
         <div class="container mx-auto p-4">
             <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
 
-                <div class="flex justify-start mb-6 items-center">
+                <div class="flex justify-start mb-3 items-center p-4">
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        <i class="fa fa-download mr-2" aria-hidden="true"></i>
                         Importar Livros do Google Books
+                        <i class="fa fa-download ml-2" aria-hidden="true"></i>
                     </h1>
                 </div>
 

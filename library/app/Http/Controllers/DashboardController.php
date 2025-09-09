@@ -53,6 +53,13 @@ class DashboardController extends Controller
                     ->count();
             }
 
+            $requests = BookRequest::with('user', 'book')
+                ->whereIn('status', ['pending'])
+                ->paginate(5);
+            $returns = BookRequest::with('user', 'book')
+                ->wherein('status', ['pending_returned'])
+                ->paginate(5);
+
             $orders = Order::with('user')->latest()->take(10)->get(); // pega as 10 ultimas
 
             return view('dashboard.dashboard', compact(
@@ -62,7 +69,9 @@ class DashboardController extends Controller
                 'paidOrdersCount',
                 'monthlyLabels',
                 'monthlyPending',
-                'monthlyPaid'
+                'monthlyPaid',
+                'requests',
+                'returns'
 
             ));
         } else {
@@ -70,9 +79,12 @@ class DashboardController extends Controller
             $orders = auth()->user()->orders()
                 ->with(['user', 'items.book']) // Carrega items e o book relacionado a cada item
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(5);
+            $requests = auth()->user()->requests()
+                ->orderBy('request_date', 'desc')
+                ->paginate(5);
 
-            return view('dashboard.citizen', compact('orders'));
+            return view('dashboard.citizen', compact('orders', 'requests'));
 
         }
     }

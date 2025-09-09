@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreBookRequestRequest;
+use App\Http\Requests\StoreBookRequest;
 use App\Mail\BookRequestConfirmation;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +22,9 @@ class BookRequestController extends Controller
 
         $query = BookRequest::with(['user', 'book']);
 
+        if (!auth()->user()->isAdmin()) {
+            $query->where('user_id', auth()->id());
+        }
         if ($request->search) {
             $search = $request->search;
             $query->whereHas('book', function ($q) use ($search) {
@@ -41,7 +44,7 @@ class BookRequestController extends Controller
 
     }
 
-    public function store(StoreBookRequestRequest $request)
+    public function store(StoreBookRequest $request)
     {
         // verifica se pode fazer mais requisições
         if (!auth()->user()->canRequestMoreBooks()) {

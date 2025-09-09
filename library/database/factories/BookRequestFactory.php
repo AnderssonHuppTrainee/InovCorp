@@ -20,16 +20,15 @@ class BookRequestFactory extends Factory
     public function definition(): array
     {
 
-
         $requestDate = $this->faker->dateTimeBetween('-2 months', 'now');
-        $expectedReturnDate = (clone $requestDate)->modify('+5 days'); // prazo padrão
-        $returnedDate = $this->faker->boolean(70) // 70% de chance de devolver
+        $expectedReturnDate = (clone $requestDate)->modify('+5 days');
+        $returnedDate = $this->faker->boolean(70)
             ? $this->faker->dateTimeBetween($expectedReturnDate, '+15 days') // atraso
             : null;
 
         return [
-            'user_id' => User::inRandomOrder()->value('id'),
-            'book_id' => Book::inRandomOrder()->value('id'),
+            'user_id' => User::factory(),
+            'book_id' => Book::factory(),
             'request_date' => $requestDate,
             'expected_return_date' => $expectedReturnDate,
             'returned_date' => $returnedDate,
@@ -40,5 +39,6 @@ class BookRequestFactory extends Factory
             'book_condition' => $this->faker->randomElement(['Excellent', 'Good', 'Bad', 'Damaged', 'Lost']),
             'status' => $this->faker->randomElement(['approved', 'pending', 'pending_returned', 'returned']),
         ];
+
     }
 }

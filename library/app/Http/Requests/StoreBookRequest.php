@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Book;
 
-class StoreBookRequestRequest extends FormRequest
+class StoreBookRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,6 +29,11 @@ class StoreBookRequestRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     // verifica se o livro está disponível
                     $book = Book::find($value);
+
+                    if (!$book) {
+                        $fail('O livro selecionado não existe.');
+                        return; //valicao de id
+                    }
                     if (!$book->isAvailable()) {
                         $fail('Este livro já está requisitado.');
                     }

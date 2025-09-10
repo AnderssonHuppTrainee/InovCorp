@@ -15,11 +15,23 @@ use Illuminate\Http\Request;
 class ReviewController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $reviews = Review::with(['user', 'bookRequest.book'])
-            ->latest()
-            ->paginate(10);
+        $query = Review::with(['user', 'bookRequest.book'])
+            ->where('status', 'suspended')
+            ->when($request->search, function ($q) use ($request) {
+                $search = $request->search;
+
+                $q->where(function ($q) use ($search) {
+                    $q->whereHas('bookRequest.book', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })->orWhereHas('bookRequest.user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+                });
+            });
+
+        $reviews = $query->latest()->paginate(10);
 
         return view('reviews.index', compact('reviews'));
     }

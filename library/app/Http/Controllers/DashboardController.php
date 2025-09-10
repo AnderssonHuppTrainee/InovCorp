@@ -10,6 +10,7 @@ use App\Models\Publisher;
 use App\Exports\BooksExport;
 use App\Exports\AuthorsExport;
 use App\Exports\PublishersExport;
+use App\Exports\UsersExport;
 use App\Models\Review;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
@@ -53,14 +54,19 @@ class DashboardController extends Controller
                     ->count();
             }
 
-            $requests = BookRequest::with('user', 'book')
+            $bookRequests = BookRequest::with('user', 'book')
                 ->whereIn('status', ['pending'])
-                ->paginate(5);
-            $returns = BookRequest::with('user', 'book')
-                ->wherein('status', ['pending_returned'])
+                ->orderBy('request_date', 'desc')
                 ->paginate(5);
 
-            $orders = Order::with('user')->latest()->take(10)->get(); // pega as 10 ultimas
+            $returns = BookRequest::with('user', 'book')
+                ->wherein('status', ['pending_returned'])
+                ->orderBy('request_date', 'desc')
+                ->paginate(5);
+
+            $orders = Order::with('user')
+                ->latest()
+                ->paginate(5);
 
             return view('dashboard.dashboard', compact(
                 'stats',
@@ -70,7 +76,7 @@ class DashboardController extends Controller
                 'monthlyLabels',
                 'monthlyPending',
                 'monthlyPaid',
-                'requests',
+                'bookRequests',
                 'returns'
 
             ));
@@ -80,11 +86,11 @@ class DashboardController extends Controller
                 ->with(['user', 'items.book']) // Carrega items e o book relacionado a cada item
                 ->orderBy('created_at', 'desc')
                 ->paginate(5);
-            $requests = auth()->user()->requests()
+            $bookRequests = auth()->user()->requests()
                 ->orderBy('request_date', 'desc')
                 ->paginate(5);
 
-            return view('dashboard.citizen', compact('orders', 'requests'));
+            return view('dashboard.citizen', compact('orders', 'bookRequests'));
 
         }
     }
@@ -103,4 +109,9 @@ class DashboardController extends Controller
     {
         return Excel::download(new PublishersExport, 'editoras.xlsx');
     }
+    public function exportUsers()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+
 }

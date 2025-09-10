@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -7,7 +7,8 @@
             </a>
         </div>
         <div class="container mx-auto px-4 py-4">
-            <x-resources.header title="Gestão de Editoras" createRoute="{{ route('publishers.create') }}" />
+            <x-resources.header title="Gestão de Editoras" createRoute="{{ route('publishers.create') }}"
+                exportRoute="{{ route('export.publishers') }}" />
 
             <x-resources.filters action="{{ route('publishers.index') }}" clearUrl="{{ route('publishers.index') }}">
                 <div class="form-control w-full max-w-xs">
@@ -39,26 +40,23 @@
                                     @endif
                                 </a>
                             </th>
-                            <th class="whitespace-nowrap">Logo</th>
+
                             <th class="whitespace-nowrap">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($publishers as $publisher)
                             <tr>
-                                <td>{{ $publisher->name }}</td>
-
-                                <td>
-                                    @if($publisher->logo)
-                                        <img src="{{ asset('storage/' . $publisher->logo) }}" alt="{{ $publisher->name }}"
-                                            class="w-10 h-10 rounded-full object-containt">
-                                    @else
-                                        <div class="logo placeholder">
-                                            <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
-                                                <span>{{ substr($publisher->name, 0, 1) }}</span>
-                                            </div>
-                                        </div>
-                                    @endif
+                                <td class="whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        @if($publisher->logo)
+                                            <img src="{{ $publisher->logo }}" alt="{{ $publisher->name }}"
+                                                class="w-50 h-50 object-containt">
+                                        @else
+                                            <img src="https://placehold.co/50" class="object-cover">
+                                        @endif
+                                        <div class="font-medium">{{ $publisher->name }}</div>
+                                    </div>
                                 </td>
                                 <td class="flex space-x-2">
                                     <a href="{{ route('publishers.show', $publisher) }}"
@@ -88,7 +86,7 @@
                 </table>
             </div>
 
-            <!-- Paginação -->
+
             <div class="mt-4">
                 {{ $publishers->withQueryString()->links() }}
             </div>

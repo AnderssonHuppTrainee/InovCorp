@@ -1,8 +1,11 @@
 <x-app-layout>
 
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
+
         @if(session('success'))
-            <div class="alert alert-success mb-4 text-white">{{ session('success') }}</div>
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span><i class="fa fa-circle-check mr-3"></i>{{ session('success') }}</span>
+            </div>
         @endif
 
         <div class="mb-3">
@@ -15,13 +18,23 @@
         <div class="card mx-auto">
             <div class="card-body p-4">
                 <div class="card-title mb-6">
-                    <h1 class="text-3xl font-bold text-base-content"><i class="fa fa-star mr-2" aria-hidden="true">
-                        </i>Moderação de Avaliações </i>
+                    <h1 class="text-3xl font-bold text-base-content">
+                        Moderação de Avaliações
+                        <i class="fa fa-star mr-2"></i>
                     </h1>
                 </div>
+                <x-resources.filters action="{{ route('reviews.index') }}" clearUrl="{{ route('reviews.index') }}">
+                    <div class="form-control w-full max-w-xs">
+                        <label class="label">
+                            <span class="label-text">Pesquisar</span>
+                        </label>
+                        <input type="text" name="search" placeholder="Utilizador ou Livro"
+                            value="{{ request('search') }}" class="input input-bordered w-full">
+                    </div>
+                </x-resources.filters>
 
                 @if($reviews->isEmpty())
-                    <div class="alert alert-info m-4 sm:m-6">
+                    <div class="alert alert-info m-4 sm:m-6 text-white">
                         <div>
                             <i class="fas fa-info-circle"></i>
                             <span>Nenhuma avaliação encontrada.</span>
@@ -59,8 +72,20 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach ($reviews as $review)
                                         <tr>
-                                            <td>
-                                                {{ $review->bookRequest->book->name ?? 'Livro removido' }}
+                                            <td class="whitespace-nowrap">
+                                                <div class="flex items-center gap-3">
+                                                    @if($review->bookRequest->book->cover_image)
+                                                        <img src="{{ $review->bookRequest->book->cover_image }}"
+                                                            alt="{{ $review->bookRequest->book->name }}"
+                                                            class="w-12 h-15 object-cover">
+                                                    @else
+                                                        <img src="https://placehold.co/46x70" />
+                                                    @endif
+
+                                                    <div class="font-bold">
+                                                        {{ $review->bookRequest->book->name ?? 'Livro removido' }}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
                                                 {{ $review->user->name }}
@@ -88,6 +113,7 @@
                                             </td>
                                             <td class=" flex justify-center">
                                                 <a href="{{ route('reviews.show', $review) }}" class="btn btn-sm btn-outline">
+                                                    <i class="fa fa-eye"></i>
                                                     Ver
                                                 </a>
                                             </td>

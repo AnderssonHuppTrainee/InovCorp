@@ -29,19 +29,15 @@ class ReturnsController extends Controller
         return view('returns.index', compact('returns'));
     }
 
-    public function returnForm(BookRequest $bookRequest)
+    public function create(BookRequest $bookRequest)
     {
         if (auth()->id() !== $bookRequest->user_id) {
             abort(403, 'Você só pode devolver seus próprios livros.');
         }
 
-        if ($bookRequest->status !== 'approved') {
-            return redirect()->back()->with('error', 'Este livro não está em status de devolução.');
-        }
-
-        return view('returns.return', compact('bookRequest'));
+        return view('returns.create', compact('bookRequest'));
     }
-    public function submitReturn(Request $request, BookRequest $bookRequest)
+    public function store(Request $request, BookRequest $bookRequest)
     {
         $request->validate([
             'return_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
@@ -107,7 +103,7 @@ class ReturnsController extends Controller
             }
         });
 
-        return redirect()->route('dashboard')
+        return redirect()->route('returns.index')
             ->with('success', 'Devolução aprovada com sucesso.');
     }
 

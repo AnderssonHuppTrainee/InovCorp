@@ -3,7 +3,7 @@
     'action',
     'enctype' => 'application/x-www-form-urlencoded',
     'submitText' => 'Salvar',
-    'color'
+    'color' => 'primary'
 ])
 <form method="{{ $method === 'GET' ? 'GET' : 'POST' }}" action="{{ $action }}" enctype="{{ $enctype }}"
 {{ $attributes }}>

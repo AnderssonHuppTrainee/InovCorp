@@ -26,6 +26,7 @@ class BookFactory extends Factory
             'bibliography' => $this->faker->paragraph(),
             'cover_image' => $this->faker->imageUrl(640, 480, 'book'),
             'price' => $this->faker->randomFloat(2, 10, 50),
+            'stock' => $this->faker->numberBetween(1, 20),
         ];
     }
 

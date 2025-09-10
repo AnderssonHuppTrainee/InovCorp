@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
-
-
-
 class UserController extends Controller
 {
     /**
@@ -57,27 +54,29 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'photo' => 'nullable|image|max:2048',
+            'role' => 'required|in:citizen,admin',
         ]);
 
         // gerar senha aleatoria com letras, numeros e simbolos
         $randomPassword = Str::password(8, true, true, true);
 
-        $user = new User();
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->password = Hash::make($randomPassword);
-        $user->role = 'admin';
+        $user = new User([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($randomPassword),
+            'role' => $validated['role'],
+        ]);
 
         if ($request->hasFile('photo')) {
-            $user->photo_path = $request->file('photo')->store('profile-photos', 'public');
+            $user->profile_photo_path = $request->file('photo')->store('profile-photos', 'public');
         }
 
         $user->save();
 
-        // Mail::to($user->email)->send(new SendAdminPasswordMail($randomPassword));
+        // Mail::to($user->email)->send(new SendPasswordMail($randomPassword));
 
         return redirect()->route('users.index')
-            ->with('success', "Administrador criado com sucesso");
+            ->with('success', "Utilizador com sucesso");
     }
 
     /**

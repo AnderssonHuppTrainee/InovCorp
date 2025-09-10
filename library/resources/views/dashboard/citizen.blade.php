@@ -14,17 +14,35 @@
                 </a>
             @endauth
         </div>
-           @if(session('success'))
-            <div class="alert alert-success shadow-lg mb-6 text-white">
-                <span><i class="fa fa-circle-check mr-3"></i>{{ session('success') }}</span>
+  
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white flex items-center">
+                <i class="fa fa-circle-check mr-3 text-xl"></i>
+                <span>{{ session('success') }}</span>
             </div>
         @endif
 
-        @if(!Auth()->user()->canRequestMoreBooks())
-            <div class="alert alert-info shadow-lg mb-6 text-white">
-                <span><i class="fa fa-circle-exclamation mr-3"></i>Você já possue 3 requisições ativas! Por favor devolva um livro</span>
+
+        @if(!auth()->user()->canRequestMoreBooks())
+            <div class="alert alert-warning shadow-lg mb-6 text-white flex items-center">
+                <i class="fa fa-circle-exclamation mr-3 text-xl"></i>
+                <span>Você já possui 3 requisições ativas! Por favor, devolva um livro.</span>
             </div>
         @endif
+
+
+        @if(auth()->user()->hasPendingFines())
+            <div class="alert alert-error shadow-lg mb-6 text-white flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fa fa-circle-exclamation mr-3 text-xl"></i>
+                    <span>Você já possui multas pendentes! Pague agora e regularize sua situação.</span>
+                </div>
+                <a href="{{ route('fines.index') }}" class="btn btn-sm btn-neutral ml-4 text-white">
+                    Pagar
+                </a>
+            </div>
+        @endif
+
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <!-- Total de Pedidos -->
@@ -78,7 +96,7 @@
                 <h2 class="text-xl font-semibold mb-4">Minhas Requisições
                     <i class="fa fa-hand ml-2"></i>
                 </h2>
-                @if($requests->isEmpty())
+                @if($bookRequests->isEmpty())
                     <div class="alert alert-info m-4 sm:m-6">
                         <div>
                             <i class="fas fa-info-circle"></i>
@@ -111,44 +129,44 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($requests as $request)
+                                @foreach ($bookRequests as $bookRequest)
                                     <tr>
                                         <td class="whitespace-nowrap ">
-                                            {{ $request->number }}
+                                            {{ $bookRequest->number }}
                                         </td>
                                         <td class="whitespace-wrap">
                                             <div class="flex items-center">
-                                                @if($request->book->cover_image)
-                                                    <img src="{{  $request->book->cover_image }}" alt="{{ $request->book->name }}"
+                                                @if($bookRequest->book->cover_image)
+                                                    <img src="{{  $bookRequest->book->cover_image }}" alt="{{ $bookRequest->book->name }}"
                                                         class="w-10 h-15 mr-3 object-cover">
                                                 @else
                                                     <img src="https://placehold.co/48x72" class="mr-3" />
                                                 @endif
                                                 <div>
-                                                    <div class="font-medium">{{ $request->book->name }}</div>
+                                                    <div class="font-medium">{{ $bookRequest->book->name }}</div>
 
                                                 </div>
 
                                             </div>
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            {{ $request->request_date->format('d/m/Y') }}
+                                            {{ $bookRequest->request_date->format('d/m/Y') }}
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            {{ $request->expected_return_date->format('d/m/Y') }}
+                                            {{ $bookRequest->expected_return_date->format('d/m/Y') }}
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            <x-status-badge :status="$request->status" />
+                                            <x-status-badge :status="$bookRequest->status" />
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            @if(auth()->user() && $request->status === 'approved')
-                                                <a href="{{ route('returns.returnForm') }}" class="btn btn-accent text-white">
+                                            @if(auth()->user() && $bookRequest->status === 'approved')
+                                                <a href="{{ route('returns.create', $bookRequest->id) }}" class="btn btn-sm btn-accent text-white">
                                                     <i class="fa fa-undo mr-2"></i>
                                                     Devolver
                                                 </a>
-                                            @elseif(auth()->user() && $request->status === 'pending')
+                                            @elseif(auth()->user() && $bookRequest->status === 'pending')
 
-                                                <form class="inline" action="{{ route('requests.cancel', $request) }}"
+                                                <form class="inline" action="{{ route('requests.cancel', $bookRequest) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('PUT')
@@ -168,7 +186,7 @@
                         </table>
                     </div>
                     <div class=" mt-4 px-4 sm:px-6">
-                        {{ $requests->links() }}
+                        {{ $bookRequests->links() }}
                     </div>
                 @endif
             </div>
@@ -179,7 +197,7 @@
                 </h2>
 
                 @if($orders->isEmpty())
-                    <div class="alert alert-info m-4 sm:m-6">
+                    <div class="alert alert-info m-4 sm:m-6 text-white">
                         <i class="fas fa-info-circle mr-2"></i>
                         Você ainda não fez nenhuma compra.
                     </div>

@@ -1,8 +1,14 @@
-<x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+<<x-app-layout>
+    <div class="container mx-auto px-4 py-8">
+
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span><i class="fa fa-circle-check mr-3"></i>{{ session('success') }}</span>
+            </div>
+        @endif
 
         <div class="mb-3">
-            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <a href="{{ url()->previous() }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>
         </div>
@@ -16,24 +22,7 @@
                         <i class="fas fa-clipboard-check"></i>
                         Avaliação de Devolução
                     </h1>
-                    <span class="badge badge-lg text-white
-                        @if($bookRequest->status === 'approved') badge-success
-                        @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
-                        @elseif($bookRequest->status === 'returned') badge-success
-                        @elseif($bookRequest->status === 'rejected') badge-error
-                        @else badge-neutral @endif
-                    ">
-                        @if($bookRequest->status === 'approved')
-                            <i class="fas fa-check-circle"></i>
-                        @elseif(in_array($bookRequest->status, ['pending', 'pending_returned']))
-                            <i class="fas fa-clock"></i>
-                        @elseif($bookRequest->status === 'returned')
-                            <i class="fas fa-undo"></i>
-                        @elseif($bookRequest->status === 'rejected')
-                            <i class="fas fa-times-circle"></i>
-                        @endif
-                        {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
-                    </span>
+                    <x-status-badge :status="$bookRequest->status"></x-status-badge>
                 </div>
 
 
@@ -71,8 +60,6 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-
 
                                 <div>
                                     <p><span class="font-semibold">Data de requisição:</span>
@@ -138,4 +125,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+    </x-app-layout>

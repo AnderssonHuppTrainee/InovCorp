@@ -44,7 +44,7 @@
                     </form>
                 </div>
 
-                <!-- Step 2: Payment -->
+
                 <div id="payment-section" class="hidden">
                     <h2 class="card-title text-2xl font-bold mb-4">Pagamento</h2>
                     <p class="mb-4">
@@ -54,7 +54,7 @@
 
                     <form id="payment-form" class="space-y-4">
                         <div id="payment-element" class="p-4 border rounded-md bg-base-200">
-                            <!-- Stripe Elements -->
+
                         </div>
 
                         <div class="card-actions justify-end mt-6">
@@ -77,7 +77,7 @@
         const paymentSection = document.getElementById('payment-section');
         const stepAddress = document.getElementById('step-address');
         const stepPayment = document.getElementById('step-payment');
-        // Função utilitária para alternar seções
+
         function showStep(step) {
             if (step === 'address') {
                 addressSection.classList.remove('hidden');
@@ -98,7 +98,7 @@
             }
         }
 
-        // Clique nos steps
+
         stepAddress.addEventListener('click', () => showStep('address'));
         stepPayment.addEventListener('click', () => showStep('payment'));
         addressForm.addEventListener('submit', async function (e) {
@@ -115,17 +115,17 @@
             const result = await response.json();
 
             if (result.success) {
-                // Preencher valor
+
                 document.getElementById('order-total').innerText = (result.total).toFixed(2).replace('.', ',') + " €";
 
-                // Mostrar próxima etapa
+
                 addressSection.classList.add('hidden');
                 paymentSection.classList.remove('hidden');
                 stepAddress.classList.remove('step-primary');
                 stepAddress.classList.add('step-success');
                 stepPayment.classList.add('step-primary');
 
-                // Stripe PaymentElement
+
                 const stripe = Stripe(result.stripe_key);
                 const elements = stripe.elements({ clientSecret: result.client_secret });
 

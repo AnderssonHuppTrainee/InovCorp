@@ -70,13 +70,13 @@
                                     @foreach($returns as $return)
                                         <tr class="hover">
                                             <td class="whitespace-nowrap ">{{ $return->number }}</td>
-                                            <td class="whitespace-wrap">
-                                                <div class="flex items-center gap-3">
+                                            <td class="whitespace-nowrap">
+                                                <div class="flex items-center">
                                                     @if($return->book->cover_image)
-                                                        <img src=" {{  $return->book->cover_image }}"
-                                                            alt="{{ $return->book->name }}" class="w-10 h-10 mr-3 object-cover">
+                                                        <img src="{{  $return->book->cover_image }}" alt="{{ $return->book->name }}"
+                                                            class="w-12 h-15 mr-3 object-cover">
                                                     @else
-                                                        <img src="https://placehold.co/48x72" class="mr-3" />
+                                                        <img src="https://placehold.co/46x70" class="mr-3" />
                                                     @endif
                                                     <div>
                                                         <div class="font-bold">{{ $return->book->name }}</div>

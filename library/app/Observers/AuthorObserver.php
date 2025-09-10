@@ -12,7 +12,13 @@ class AuthorObserver
      */
     public function created(Author $author): void
     {
-        LogHelper::log('Author', $author->id, $author->toArray());
+        $dados = [
+            'Nome' => $author->name,
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Author', $author->id, "created: $textoDados");
     }
 
     /**
@@ -20,7 +26,12 @@ class AuthorObserver
      */
     public function updated(Author $author): void
     {
-        LogHelper::log('Author', $author->id, $author->getChanges());
+        $textoChanges = collect($author->getChanges())->map(function ($novoValor, $campo) use ($author) {
+            $antes = $author->getOriginal($campo);
+            return ucfirst($campo) . ": de '{$antes}' para '{$novoValor}'";
+        })->implode('; ');
+
+        LogHelper::log('Author', $author->id, "updated: $textoChanges");
     }
 
     /**
@@ -28,20 +39,21 @@ class AuthorObserver
      */
     public function deleted(Author $author): void
     {
-        LogHelper::log('Author', $author->id, 'deleted');
+        $dados = [
+            'Nome' => $author->name,
+            'Ação' => 'Autor apagado',
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Author', $author->id, "deleted: $textoDados");
     }
 
-    /**
-     * Handle the Author "restored" event.
-     */
     public function restored(Author $author): void
     {
         //
     }
 
-    /**
-     * Handle the Author "force deleted" event.
-     */
     public function forceDeleted(Author $author): void
     {
         //

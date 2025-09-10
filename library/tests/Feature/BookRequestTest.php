@@ -141,5 +141,28 @@ it('lista apenas requisições do user logado', function () {
 });
 
 
+it('nao pode requisitar um livro sem stock', function () {
+
+    $user = User::factory()->create();
+    //foto do id mandatorio
+    $photo = UploadedFile::fake()->image('id.jpg');
+
+    //criar livro com stock zero  ou indisponivel (em aluguer)
+    $book = Book::factory()->create([
+        'stock' => 0,
+        'available' => 'false',
+    ]);
+
+    $response = $this->actingAs($user)->post(route('requests.store'), [
+        'book_id' => $book->id,
+        'request_date' => now(),
+        'photo' => $photo,
+    ]);
+
+    expect(session('error'))->toBe('Este livro não está disponível.');
+
+    expect(BookRequest::count())->toBe(0);
+});
+
 
 

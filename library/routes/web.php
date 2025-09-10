@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\ReviewController;
@@ -50,8 +51,8 @@ Route::middleware([
 
     // devolução
     Route::prefix('returns')->group(function () {
-        Route::get('{bookRequest}/return', [ReturnsController::class, 'returnForm'])->name('returns.returnForm');
-        Route::post('{bookRequest}/return', [ReturnsController::class, 'submitReturn'])->name('returns.submitReturn');
+        Route::get('{bookRequest}/create', [ReturnsController::class, 'create'])->name('returns.create');
+        Route::post('{bookRequest}', [ReturnsController::class, 'store'])->name('returns.store');
     });
 
 
@@ -100,11 +101,12 @@ Route::middleware([
 
     //gestao de devoluçao
     Route::prefix('returns')->group(function () {
+        Route::get('index', [ReturnsController::class, 'index'])->name('returns.index');
         Route::get('{bookRequest}/review-return', [ReturnsController::class, 'reviewReturn'])->name('returns.reviewReturn');
         Route::post('{bookRequest}/approve-return', [ReturnsController::class, 'approveReturn'])->name('returns.approveReturn');
         Route::post('{bookRequest}/reject-return', [ReturnsController::class, 'rejectReturn'])->name('returns.rejectReturn');
     });
-    Route::resource('returns', ReturnsController::class);
+
 
     //Moderação de avaliacoes
     Route::prefix('admin/reviews')->group(function () {
@@ -118,12 +120,15 @@ Route::middleware([
         Route::get('books', [DashboardController::class, 'exportBooks'])->name('export.books');
         Route::get('authors', [DashboardController::class, 'exportAuthors'])->name('export.authors');
         Route::get('publishers', [DashboardController::class, 'exportPublishers'])->name('export.publishers');
+        Route::get('users', [DashboardController::class, 'exportUsers'])->name('export.users');
 
     });
 
     //orders
     Route::resource('/orders', OrderController::class);
 
+    //logs
+    Route::get('logs', [LogController::class, 'index'])->name('logs.index');
 
     Route::get('books/import', [BookController::class, 'import'])->name('books.import');
     Route::get('books/search-google', [BookController::class, 'searchGoogle'])->name('books.searchGoogle');

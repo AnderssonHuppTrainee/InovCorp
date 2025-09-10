@@ -5,6 +5,11 @@ namespace App\Observers;
 use App\Models\Publisher;
 use App\Helpers\LogHelper;
 
+namespace App\Observers;
+
+use App\Models\Publisher;
+use App\Helpers\LogHelper;
+
 class PublisherObserver
 {
     /**
@@ -12,7 +17,14 @@ class PublisherObserver
      */
     public function created(Publisher $publisher): void
     {
-        LogHelper::log('Publisher', $publisher->id, $publisher->toArray());
+        $dados = [
+            'Nome' => $publisher->name,
+            'Descrição' => $publisher->description ?? '-',
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Publisher', $publisher->id, "created: $textoDados");
     }
 
     /**
@@ -20,7 +32,13 @@ class PublisherObserver
      */
     public function updated(Publisher $publisher): void
     {
-        LogHelper::log('Publisher', $publisher->id, $publisher->getChanges());
+        $textoChanges = collect($publisher->getChanges())->filter(fn($_, $campo) => $campo !== 'updated_at')
+            ->map(function ($novoValor, $campo) use ($publisher) {
+                $antes = $publisher->getOriginal($campo);
+                return ucfirst($campo) . ": '{$antes}' → '{$novoValor}'";
+            })->implode('; ');
+
+        LogHelper::log('Publisher', $publisher->id, "updated: $textoChanges");
     }
 
     /**
@@ -28,20 +46,21 @@ class PublisherObserver
      */
     public function deleted(Publisher $publisher): void
     {
-        LogHelper::log('Publisher', $publisher->id, 'deleted');
+        $dados = [
+            'Nome' => $publisher->name,
+            'Ação' => 'Editora apagada',
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Publisher', $publisher->id, "deleted: $textoDados");
     }
 
-    /**
-     * Handle the Publisher "restored" event.
-     */
     public function restored(Publisher $publisher): void
     {
         //
     }
 
-    /**
-     * Handle the Publisher "force deleted" event.
-     */
     public function forceDeleted(Publisher $publisher): void
     {
         //

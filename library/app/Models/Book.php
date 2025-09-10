@@ -16,6 +16,7 @@ class Book extends Model
         'cover_image',
         'price',
         'available',
+        'stock',
     ];
     //cryptografy
     protected $casts = [

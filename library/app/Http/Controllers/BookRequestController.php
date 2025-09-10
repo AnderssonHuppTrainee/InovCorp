@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookRequest;
 use App\Mail\BookRequestConfirmation;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\BookRequest;
@@ -31,11 +28,11 @@ class BookRequestController extends Controller
                 $q->where('number', 'like', "%{$search}%");
             });
         }
-        $requests = $query->orderBy('request_date', 'desc')
+        $bookRequests = $query->orderBy('request_date', 'desc')
             ->paginate(10)->withQueryString();
         ;
 
-        return view('requests.index', compact('requests'));
+        return view('requests.index', compact('bookRequests'));
     }
 
     public function create(Book $book)
@@ -44,22 +41,22 @@ class BookRequestController extends Controller
 
     }
 
-    public function store(StoreBookRequest $request)
+    public function store(StoreBookRequest $bookRequest)
     {
         // verifica se pode fazer mais requisições
         if (!auth()->user()->canRequestMoreBooks()) {
             return back()->with('error', 'Você já tem 3 livros requisitados. Devolva algum antes de requisitar outro.');
         }
 
-        $book = Book::findOrFail($request->book_id);
+        $book = Book::findOrFail($bookRequest->book_id);
 
-        if (!$book->available) {
+        if (!$book->isAvailable()) {
             return back()->with('error', 'Este livro já foi requisitado e não está disponível.');
         }
 
         $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('request-photos', 'public');
+        if ($bookRequest->hasFile('photo')) {
+            $photoPath = $bookRequest->file('photo')->store('request-photos', 'public');
         }
 
 

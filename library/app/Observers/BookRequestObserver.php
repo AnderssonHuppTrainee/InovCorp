@@ -12,7 +12,17 @@ class BookRequestObserver
      */
     public function created(BookRequest $bookRequest): void
     {
-        LogHelper::log('BookRequest', $bookRequest->id, $bookRequest->toArray());
+        $dados = [
+            'Utilizador' => $bookRequest->user->name ?? $bookRequest->user_id,
+            'Livro' => $bookRequest->book->name ?? $bookRequest->book_id,
+            'Data Requisição' => $bookRequest->request_date->format('d/m/Y'),
+            'Data Esperada' => $bookRequest->expected_return_date->format('d/m/Y'),
+            'Status' => $bookRequest->status,
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('BookRequest', $bookRequest->id, "created: $textoDados");
     }
 
     /**
@@ -20,7 +30,12 @@ class BookRequestObserver
      */
     public function updated(BookRequest $bookRequest): void
     {
-        LogHelper::log('BookRequest', $bookRequest->id, $bookRequest->getChanges());
+        $textoChanges = collect($bookRequest->getChanges())->map(function ($novoValor, $campo) use ($bookRequest) {
+            $antes = $bookRequest->getOriginal($campo);
+            return ucfirst($campo) . ": de '{$antes}' para '{$novoValor}'";
+        })->implode('; ');
+
+        LogHelper::log('BookRequest', $bookRequest->id, "updated: $textoChanges");
     }
 
     /**
@@ -28,22 +43,14 @@ class BookRequestObserver
      */
     public function deleted(BookRequest $bookRequest): void
     {
-        LogHelper::log('BookRequest', $bookRequest->id, 'deleted');
-    }
+        $dados = [
+            'Utilizador' => $bookRequest->user->name ?? $bookRequest->user_id,
+            'Livro' => $bookRequest->book->name ?? $bookRequest->book_id,
+            'Ação' => 'Requisição apagada',
+        ];
 
-    /**
-     * Handle the BookRequest "restored" event.
-     */
-    public function restored(BookRequest $bookRequest): void
-    {
-        //
-    }
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
 
-    /**
-     * Handle the BookRequest "force deleted" event.
-     */
-    public function forceDeleted(BookRequest $bookRequest): void
-    {
-        //
+        LogHelper::log('BookRequest', $bookRequest->id, "deleted: $textoDados");
     }
 }

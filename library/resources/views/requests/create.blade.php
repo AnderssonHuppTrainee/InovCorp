@@ -1,7 +1,9 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
+
+
         <div class="mb-3">
-            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <a href="{{ url()->previous() }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
                 Voltar
             </a>

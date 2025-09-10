@@ -1,7 +1,15 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
+
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white flex items-center">
+                <i class="fa fa-circle-check mr-3 text-xl"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div class="mb-3">
-            <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
+            <a href="{{ url()->previous()}}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
                 Voltar
             </a>
@@ -15,30 +23,7 @@
                     <div>
                         <h1 class="card-title text-2xl md:text-3xl">
                             Requisição #{{ $bookRequest->number }}
-                            <span class="badge badge-lg ml-2 gap-1 text-white
-                            @if($bookRequest->status === 'approved') badge-success
-                            @elseif(in_array($bookRequest->status, ['pending', 'pending_returned'])) badge-warning
-                            @elseif($bookRequest->status === 'returned') badge-success
-                            @elseif($bookRequest->status === 'rejected') badge-error
-                            @else badge-neutral 
-                            @endif">
-
-                                @if($bookRequest->status === 'approved')
-                                    <i class="fas fa-check-circle"></i> Aprovado
-                                @elseif($bookRequest->status === 'pending')
-                                    <i class="fas fa-clock"></i> Pendente
-                                @elseif($bookRequest->status === 'pending_returned')
-                                    <i class="fas fa-clock"></i> Devolução Pendente
-                                @elseif($bookRequest->status === 'returned')
-                                    <i class="fas fa-undo"></i> Devolvido
-                                @elseif($bookRequest->status === 'rejected')
-                                    <i class="fas fa-times-circle"></i> Rejeitado
-                                @elseif($bookRequest->status === 'cancelled')
-                                    <i class="fas fa-ban"></i> Cancelado
-                                @else
-                                    {{ ucfirst(str_replace('_', ' ', $bookRequest->status)) }}
-                                @endif
-                            </span>
+                            <x-status-badge :status="$bookRequest->status"></x-status-badge>
                         </h1>
                         <div class="text-sm text-gray-500 mt-1">
                             Criada em: {{ $bookRequest->created_at?->format('d/m/Y H:i') ?? 'Sem data'}}
@@ -125,7 +110,7 @@
                                         'text-error' => $bookRequest->isOverdue(),
 
                                     ])>
-                                    {{ $bookRequest->expected_return_date->format('d/m/Y') }}
+                 {{ $bookRequest->expected_return_date->format('d/m/Y') }}
                                         @if($bookRequest->isOverdue())
                                             <span class="badge badge-error ml-2 text-white">Atrasado</span>
                                         @endif

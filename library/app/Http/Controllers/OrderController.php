@@ -17,9 +17,7 @@ class OrderController extends Controller
 
         if ($request->search) {
             $search = $request->search;
-            $query->WhereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            });
+            $query->where('id', 'like', "%{$search}%");
         }
         $orders = $query->orderBy('created_at', 'desc')
             ->paginate(10)->withQueryString();

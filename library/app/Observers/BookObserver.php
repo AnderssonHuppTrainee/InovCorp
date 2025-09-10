@@ -12,7 +12,15 @@ class BookObserver
      */
     public function created(Book $book): void
     {
-        LogHelper::log('Book', $book->id, $book->toArray());
+        $dados = [
+            'Nome' => $book->name,
+            'ISBN' => $book->isbn,
+            'Preço' => $book->price ?? 'N/A',
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Book', $book->id, "created: $textoDados");
     }
 
     /**
@@ -20,7 +28,12 @@ class BookObserver
      */
     public function updated(Book $book): void
     {
-        LogHelper::log('Book', $book->id, $book->getChanges());
+        $textoChanges = collect($book->getChanges())->map(function ($novoValor, $campo) use ($book) {
+            $antes = $book->getOriginal($campo);
+            return ucfirst($campo) . ": de '{$antes}' para '{$novoValor}'";
+        })->implode('; ');
+
+        LogHelper::log('Book', $book->id, "updated: $textoChanges");
     }
 
     /**
@@ -28,22 +41,26 @@ class BookObserver
      */
     public function deleted(Book $book): void
     {
-        LogHelper::log('Book', $book->id, 'deleted');
+        $dados = [
+            'Nome' => $book->name,
+            'ISBN' => $book->isbn,
+            'Ação' => 'Livro apagado',
+        ];
+
+        $textoDados = collect($dados)->map(fn($valor, $chave) => "$chave: $valor")->implode('; ');
+
+        LogHelper::log('Book', $book->id, "deleted: $textoDados");
     }
 
-    /**
-     * Handle the Book "restored" event.
-     */
     public function restored(Book $book): void
     {
         //
     }
 
-    /**
-     * Handle the Book "force deleted" event.
-     */
     public function forceDeleted(Book $book): void
     {
         //
     }
 }
+
+

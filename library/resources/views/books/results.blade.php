@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-6">📚 Resultados da pesquisa</h1>
+        <h1 class="text-2xl font-bold mb-6">Resultados da pesquisa</h1>
 
         @if(count($books) > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

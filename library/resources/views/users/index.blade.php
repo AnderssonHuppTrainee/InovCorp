@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -7,7 +7,8 @@
             </a>
         </div>
         <div class="container mx-auto px-4 py-4">
-            <x-resources.header title="Gestão de Utilizadores" createRoute="{{ route('users.create') }}" />
+            <x-resources.header title="Gestão de Utilizadores" createRoute="{{ route('users.create') }}"
+                exportRoute="{{ route('export.users') }}" />
 
             <!-- filtros -->
             <x-resources.filters action="{{ route('users.index') }}" clearUrl="{{ route('users.index') }}">
@@ -51,14 +52,13 @@
                                 <tr>
                                     <td><a href="{{ route('users.show', $user) }}">{{ $user->name }}</a></td>
                                     <td>
-                                        @if($user->photo)
-                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="{{ $user->name }}"
+                                        @if($user->profile_photo_path)
+                                            <img src="{{ $user->profile_photo_path }}" alt="{{ $user->name }}"
                                                 class="w-10 h-10 rounded-full object-cover">
                                         @else
-                                            <div class="avatar placeholder">
-                                                <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
-                                                    <span>{{ substr($user->name, 0, 1) }}</span>
-                                                </div>
+                                            <div class="avatar placeholder w-10 h-10">
+                                                <img src="https://avatar.iran.liara.run/public"
+                                                    class=" rounded-full object-cover">
                                             </div>
                                         @endif
                                     </td>

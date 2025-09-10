@@ -77,7 +77,7 @@ class AuthorController extends Controller
 
         return view('authors.show', [
             'author' => $author,
-            'books' => $author->books()->with('publisher')->paginate(5) // Paginação opcional
+            'books' => $author->books()->with('publisher')->paginate(5)
         ]);
     }
 

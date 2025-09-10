@@ -1,6 +1,13 @@
 <x-app-layout>
-
     <div class="container mx-auto px-4 py-8">
+
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white flex items-center">
+                <i class="fa fa-circle-check mr-3 text-xl"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i>
@@ -24,7 +31,7 @@
                     </div>
                 </x-resources.filters>
 
-                @if($requests->isEmpty())
+                @if($bookRequests->isEmpty())
                     <div class="alert alert-info m-4 sm:m-6">
                         <div>
                             <i class="fas fa-info-circle"></i>
@@ -58,42 +65,43 @@
                                             Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($requests as $request)
+                                <tbody>
+                                    @foreach ($bookRequests as $bookRequest)
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap ">
-                                                {{ $request->number }}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{ $bookRequest->number }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-wrap">
+                                            <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="flex items-center">
-                                                    @if($request->book->cover_image)
-                                                        <img src="{{  $request->book->cover_image }}"
-                                                            alt="{{ $request->book->name }}" class="w-10 h-15 mr-3 object-cover">
+                                                    @if($bookRequest->book->cover_image)
+                                                        <img src="{{  $bookRequest->book->cover_image }}"
+                                                            alt="{{ $bookRequest->book->name }}"
+                                                            class="w-12 h-15 mr-3 object-cover">
                                                     @else
-                                                        <img src="https://placehold.co/48x72" class="mr-3" />
+                                                        <img src="https://placehold.co/46x70" class="mr-3" />
                                                     @endif
                                                     <div>
-                                                        <div class="font-medium">{{ $request->book->name }}</div>
-
+                                                        <div class="font-medium">{{ $bookRequest->book->name }}</div>
                                                     </div>
-
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                {{ $request->request_date->format('d/m/Y') }}
+                                                {{ $bookRequest->request_date->format('d/m/Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                {{ $request->expected_return_date->format('d/m/Y') }}
+                                                {{ $bookRequest->expected_return_date->format('d/m/Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <x-status-badge :status="$request->status" />
+                                                <x-status-badge :status="$bookRequest->status" />
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <a href="{{ route('requests.show', $request) }}" class="btn btn-sm btn-outline">
+                                                <a href="{{ route('requests.show', $bookRequest) }}"
+                                                    class="btn btn-sm btn-outline">
+                                                    <i class="fas fa-eye"></i>
                                                     Ver
                                                 </a>
-                                                @if(auth()->user()->isAdmin() && $request->status === 'pending')
-                                                    <form class="inline" action="{{ route('requests.approve', $request) }}"
+                                                @if(auth()->user()->isAdmin() && $bookRequest->status === 'pending')
+                                                    <form class="inline" action="{{ route('requests.approve', $bookRequest) }}"
                                                         method="POST">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-success ml-2 text-white">
@@ -108,7 +116,7 @@
                             </table>
                         </div>
                         <div class="mt-4 px-4 pb-4 sm:px-6">
-                            {{ $requests->links() }}
+                            {{ $bookRequests->links() }}
                         </div>
                     </div>
                 @endif

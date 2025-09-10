@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
 
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
@@ -8,7 +8,8 @@
             </a>
         </div>
         <div class="container mx-auto px-4 py-4">
-            <x-resources.header title="Gestão de Autores" createRoute="{{ route('authors.create') }}" />
+            <x-resources.header title="Gestão de Autores" createRoute="{{ route('authors.create') }}"
+                exportRoute="{{ route('export.authors') }}" />
 
             <!-- filtros -->
             <x-resources.filters action="{{ route('authors.index') }}" clearUrl="{{ route('authors.index') }}">
@@ -68,10 +69,8 @@
                                         <img src="{{ asset('storage/' . $author->photo) }}" alt="{{ $author->name }}"
                                             class="w-10 h-10 rounded-full object-cover">
                                     @else
-                                        <div class="avatar placeholder">
-                                            <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
-                                                <span>{{ substr($author->name, 0, 1) }}</span>
-                                            </div>
+                                        <div class="avatar placeholder w-10 h-10">
+                                            <img src="https://avatar.iran.liara.run/public" class=" rounded-full object-cover">
                                         </div>
                                     @endif
                                 </td>
@@ -79,8 +78,7 @@
                                     {{ $author->books->pluck('name')->join(', ') ?: 'Nenhum livro' }}
                                 </td>
                                 <td class="flex space-x-2">
-                                    <a href="{{ route('authors.show', $author) }}"
-                                        class="btn btn-sm btn-neutral  text-white">
+                                    <a href="{{ route('authors.show', $author) }}" class="btn btn-sm btn-outline">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('authors.edit', $author) }}" class="btn btn-sm btn-info  text-white">

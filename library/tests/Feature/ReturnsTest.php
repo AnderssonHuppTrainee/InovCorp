@@ -19,7 +19,7 @@ it('pode devolver um livro', function () {
     $photo = UploadedFile::fake()->image('book.jpg');
 
     $response = $this->actingAs($user)
-        ->post(route('returns.submitReturn', $bookRequest), [
+        ->post(route('returns.store', $bookRequest), [
             'returned_date' => now(),
             'return_photo' => $photo,
         ]);

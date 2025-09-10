@@ -1,5 +1,11 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-8">
+
+        @if(session('success'))
+            <div class="alert alert-success shadow-lg mb-6 text-white">
+                <span><i class="fa fa-circle-check mr-3"></i>{{ session('success') }}</span>
+            </div>
+        @endif
 
         <div class="mb-3">
             <a href="{{ route('dashboard') }}" class="btn btn-ghost gap-2">
@@ -48,11 +54,9 @@
                 </div>
 
 
-                <form action="{{ route('returns.submitReturn', $bookRequest) }}" method="POST"
-                    enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('returns.store', $bookRequest) }}" method="POST" enctype="multipart/form-data"
+                    class="space-y-6">
                     @csrf
-
-
                     <div class="form-control">
                         <label class="label" for="return_photo">
                             <span class="label-text font-semibold">Foto do estado atual do livro*</span>
@@ -63,8 +67,6 @@
                             <span class="label-text-alt">Envie uma foto clara mostrando o estado do livro</span>
                         </label>
                     </div>
-
-
                     <div class="form-control ">
                         <label class="label" for="notes">
                             <span class="label-text font-semibold">Observações:</span>
@@ -72,9 +74,6 @@
                         <textarea name="notes" id="notes" rows="3" class="textarea textarea-bordered w-full"
                             placeholder="Algum dano ou observação importante..."></textarea>
                     </div>
-
-
-
 
                     <div class="flex flex-col sm:flex-row justify-end gap-4">
                         <a href="{{ route('dashboard') }}" class="btn btn-ghost">

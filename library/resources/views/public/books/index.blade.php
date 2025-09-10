@@ -129,7 +129,7 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                                 @auth
-                                    @if(auth()->user()->canRequestMoreBooks() && $book->isAvailable())
+                                    @if($book->isAvailable())
                                         <div class="sm:col-span-2 flex justify-end">
                                             <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
                                                 @csrf

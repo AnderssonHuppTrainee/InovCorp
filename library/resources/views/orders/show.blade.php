@@ -1,34 +1,20 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="container mx-auto px-4 py-8 ">
 
-        <!-- Voltar -->
+
         <div class="mb-3">
             <a href="{{ url()->previous() }}" class="btn btn-ghost gap-2">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>
         </div>
 
-        <!-- Resumo do Pedido -->
-        <div class="card bg-base-100  mb-6 p-4 shadow-xl">
+
+        <div class="card bg-base-200  shadow-inner mb-6 p-4 ">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold">
                         Pedido #{{ $order->id }}
-                        <span class="badge ml-2 gap-1 text-white
-                            @if($order->status === 'paid') badge-success
-                            @elseif($order->status === 'pending') badge-warning
-                            @elseif($order->status === 'shipped') badge-info
-                            @elseif($order->status === 'delivered') badge-success
-                            @elseif($order->status === 'failed') badge-error
-                            @else badge-neutral @endif">
-                            @if($order->status === 'paid') <i class="fas fa-check-circle"></i> Aprovado
-                            @elseif($order->status === 'pending') <i class="fas fa-clock"></i> Pendente
-                            @elseif($order->status === 'shipped') <i class="fas fa-truck"></i> Enviado
-                            @elseif($order->status === 'delivered') <i class="fas fa-check-circle"></i> Entregue
-                            @elseif($order->status === 'failed') <i class="fas fa-times-circle"></i> Rejeitado
-                            @elseif($order->status === 'cancelled') <i class="fas fa-ban"></i> Cancelado
-                            @else {{ ucfirst($order->status) }} @endif
-                        </span>
+                        <x-status-badge :status="$order->status"></x-status-badge>
                     </h1>
                     <p class="text-gray-500 mt-1">Criado em: {{ $order->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
                 </div>
@@ -39,7 +25,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="card bg-base-100 shadow p-4">
+            <div class="card bg-base-200 shadow-lg p-4">
                 <h2 class="card-title mb-4">Cliente</h2>
                 <div class="flex items-center gap-4">
                     <div class="avatar">
@@ -54,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="card bg-base-100 shadow p-4">
+            <div class="card bg-base-200 shadow-lg p-4">
                 <h2 class="card-title mb-4">Morada de Entrega</h2>
                 <p>{{ $order->address_line1 }}</p>
                 @if($order->address_line2)
@@ -110,7 +96,7 @@
             </div>
             <div class="flex gap-2">
 
-                <a href="{{ route('orders.invoice', $order) }}" class="btn btn-primary btn-sm text-white">
+                <a href="{{ route('orders.invoice', $order) }}" class="btn btn-primary btn-md text-white">
                     Imprimir Fatura
                 </a>
             </div>

@@ -205,6 +205,8 @@
                                 </button>
                             </form>
                         </div>
+                    @endif
+                    @if($book->isAvailable())
                         <div>
                             <form action="{{ route('cart.add', $book->id) }}" method="POST" class="inline">
                                 @csrf
@@ -213,7 +215,7 @@
                                 </button>
                             </form>
                         </div>
-                    @elseif(!$book->isAvailable())
+                    @else
                         <form method="POST" action="{{ route('books.notify', $book) }}">
                             @csrf
                             <button type="submit" class="btn btn-error text-white ">

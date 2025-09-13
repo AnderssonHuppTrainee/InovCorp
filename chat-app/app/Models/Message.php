@@ -10,6 +10,13 @@ class Message extends Model
     /** @use HasFactory<\Database\Factories\MessagesFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'room_id',
+        'sender_id',
+        'direct_conversation_id',
+        'body',
+        'meta',
+    ];
 
     public function sender()
     {

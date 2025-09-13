@@ -13,7 +13,16 @@ class RoomController extends Controller
      */
     public function index()
     {
-        return auth()->user()->rooms()->with('creator:id,name')->get();
+        $userId = auth()->id();
+
+        $rooms = Room::with('creator:id,name')
+            ->where('private', false) // salas públicas
+            ->orWhereHas('users', function ($query) use ($userId) {
+                $query->where('user_id', $userId); // salas privadas do usuário
+            })
+            ->get();
+
+        return $rooms;
     }
 
     /**

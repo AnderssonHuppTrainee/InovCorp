@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RoomController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -15,11 +17,13 @@ class RoomController extends Controller
     {
         $userId = auth()->id();
 
-        $rooms = Room::with('creator:id,name')
+        $rooms = Room::with(['creator:id,name', 'users:id,name'])
             ->where('private', false) // salas públicas
             ->orWhereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId); // salas privadas do usuário
             })
+            ->orWhere('created_by', $userId) // salas criadas pelo usuário
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $rooms;
@@ -38,6 +42,9 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
+        // Verificar autorização usando Policy
+        $this->authorize('create', Room::class);
+
         try {
             $validated = $request->validated();
 
@@ -47,7 +54,11 @@ class RoomController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
+            // Adicionar o criador como membro da sala
             $room->users()->syncWithoutDetaching([auth()->id()]);
+
+            // Carregar relacionamentos para retorno
+            $room->load(['creator:id,name', 'users:id,name']);
 
             return response()->json([
                 'room' => $room,

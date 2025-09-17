@@ -68,4 +68,50 @@ class User extends Authenticatable
         //pode ter muitas dms
         return $this->belongsToMany(DirectConversation::class, 'direct_conversation_user');
     }
+
+    /**
+     * Amizades enviadas (eu pedi amizade).
+     */
+    public function friendships()
+    {
+        return $this->hasMany(Friendship::class, 'user_id');
+    }
+
+    /**
+     * Amizades recebidas (me pediram amizade).
+     */
+    public function receivedFriendships()
+    {
+        return $this->hasMany(Friendship::class, 'friend_id');
+    }
+
+    /**
+     * Amigos aceitos (bidirecional).
+     */
+    public function friends()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'friendships',
+            'user_id',
+            'friend_id'
+        )->wherePivot('status', 'accepted')
+            ->withTimestamps();
+    }
+
+    /**
+     * Solicitações de amizade pendentes que eu enviei.
+     */
+    public function pendingFriendships()
+    {
+        return $this->friendships()->where('status', 'pending');
+    }
+
+    /**
+     * Solicitações de amizade recebidas que ainda não respondi.
+     */
+    public function friendRequests()
+    {
+        return $this->receivedFriendships()->where('status', 'pending');
+    }
 }

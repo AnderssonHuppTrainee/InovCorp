@@ -34,9 +34,17 @@ import { Head, Link } from '@inertiajs/vue3';
                 </template>
             </nav>
         </header>
-        <div class="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-        
-        </div>
+        <!-- Conteúdo central -->
+        <main class="flex max-w-2xl flex-1 flex-col items-center justify-center text-center">
+            <h1 class="mb-4 text-4xl font-bold">👋 Bem-vindo ao ChatApp</h1>
+            <p class="mb-6 text-lg text-gray-600 dark:text-gray-300">
+                Um espaço simples e intuitivo para conversar com amigos, criar salas de discussão e trocar mensagens diretas.
+            </p>
+
+            <Link v-if="$page.props.auth.user" :href="dashboard()" class="btn rounded-lg px-6 py-3 text-lg btn-primary"> Ir para o Dashboard </Link>
+            <Link v-else :href="register()" class="btn rounded-lg px-6 py-3 text-lg btn-primary"> 🚀 Get Started </Link>
+        </main>
+
         <div class="hidden h-14.5 lg:block"></div>
     </div>
 </template>

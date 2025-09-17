@@ -11,7 +11,7 @@ class StoremessagesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,19 @@ class StoremessagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'body' => 'required|string|max:1000|min:1',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'body.required' => 'A mensagem não pode estar vazia.',
+            'body.max' => 'A mensagem não pode ter mais de 1000 caracteres.',
+            'body.min' => 'A mensagem deve ter pelo menos 1 caractere.',
         ];
     }
 }

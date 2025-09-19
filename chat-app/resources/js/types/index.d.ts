@@ -7,7 +7,7 @@ export interface Auth {
 
 export interface BreadcrumbItem {
     title: string;
-    href: string;
+    href?: string;
 }
 
 export interface NavItem {
@@ -35,3 +35,11 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+// Declarações globais para Echo e Pusher
+declare global {
+    interface Window {
+        Echo: any;
+        Pusher: any;
+    }
+}

@@ -24,6 +24,10 @@ class StoreRoomRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'private' => 'boolean',
+            'invite_users' => 'nullable|array',
+            'invite_users.*' => 'exists:users,id',
+            'invite_emails' => 'nullable|array',
+            'invite_emails.*' => 'email',
         ];
     }
 }

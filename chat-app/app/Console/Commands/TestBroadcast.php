@@ -28,7 +28,7 @@ class TestBroadcast extends Command
         $roomId = $this->argument('room_id');
         $messageText = $this->argument('message');
 
-        // Criar uma mensagem de teste
+
         $message = new \App\Models\Message([
             'id' => 999999,
             'body' => $messageText,
@@ -38,7 +38,7 @@ class TestBroadcast extends Command
             'updated_at' => now(),
         ]);
 
-        // Simular o sender
+
         $message->sender = new \App\Models\User([
             'id' => 1,
             'name' => 'Test User',
@@ -48,9 +48,9 @@ class TestBroadcast extends Command
 
         try {
             broadcast(new \App\Events\MessageSent($message));
-            $this->info("✅ Broadcast enviado com sucesso!");
+            $this->info("Broadcast enviado com sucesso!");
         } catch (\Exception $e) {
-            $this->error("❌ Erro ao enviar broadcast: " . $e->getMessage());
+            $this->error("Erro ao enviar broadcast: " . $e->getMessage());
         }
     }
 }

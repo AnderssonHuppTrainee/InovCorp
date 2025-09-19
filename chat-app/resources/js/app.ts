@@ -31,15 +31,15 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.headers.common['Accept'] = 'application/json';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.withCredentials = true;
-// Usar a URL atual do navegador (importante para Herd)
+// Usar a URL atual do navegador 
 axios.defaults.baseURL = window.location.origin;
 
-// Função para obter token CSRF
+
 function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 }
 
-// Configurar token CSRF inicial
+
 const token = getCSRFToken();
 if (token) {
     axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
@@ -48,7 +48,7 @@ if (token) {
     console.error('Token CSRF não encontrado no meta tag');
 }
 
-// Interceptor para atualizar token CSRF em cada requisição
+
 axios.interceptors.request.use(
     (config) => {
         const csrfToken = getCSRFToken();

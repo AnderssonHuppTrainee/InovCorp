@@ -12,8 +12,8 @@ class DirectConversationController extends Controller
     public function index()
     {
         $user = Auth::user();
-
-        $conversations = DirectConversation::whereHas('users', function ($q) use ($user) {
+        $conversations = $user->directConversations()->with('users')->get();
+        /*$conversations = DirectConversation::whereHas('users', function ($q) use ($user) {
             $q->where('users.id', $user->id);
         })
             ->with([
@@ -22,7 +22,7 @@ class DirectConversationController extends Controller
                 },
                 'lastMessage.sender'
             ])
-            ->get();
+            ->get();*/
 
         return response()->json($conversations);
     }
@@ -38,12 +38,16 @@ class DirectConversationController extends Controller
         $otherUserId = $request->user_id;
 
         // verifica se ja existe uma conversa entre os dois
-        $conversation = DirectConversation::whereHas('users', fn($q) => $q->where('user_id', $authUser->id))
-            ->whereHas('users', fn($q) => $q->where('user_id', $otherUserId))
+        $conversation = DirectConversation::whereHas('users', fn($q)
+            => $q->where('user_id', $authUser->id))
+            ->whereHas('users', fn($q)
+                => $q->where('user_id', $otherUserId))
             ->first();
 
         if (!$conversation) {
-            $conversation = DirectConversation::create();
+            $conversation = DirectConversation::create([
+                'created_by' => $authUser->id
+            ]);
 
             $conversation->users()->attach([$authUser->id, $otherUserId]);
         }

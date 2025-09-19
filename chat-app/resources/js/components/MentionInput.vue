@@ -1,156 +1,268 @@
 <template>
-  <div class="relative">
-    <textarea
-      ref="textareaRef"
-      v-model="inputValue"
-      :placeholder="placeholder"
-      class="textarea textarea-bordered w-full resize-none"
-      @input="handleInput"
-      @keydown="handleKeydown"
-      @keyup="handleKeyup"
-    ></textarea>
-
-    <!-- Sugestões de @mentions -->
-    <div
-      v-if="showSuggestions && suggestions.length > 0"
-      class="absolute bottom-full left-0 z-50 mb-2 w-full rounded-lg border border-base-300 bg-base-100 shadow-lg"
-    >
-      <div class="max-h-40 overflow-y-auto">
+    <div class="relative">
         <div
-          v-for="(user, index) in suggestions"
-          :key="user.id"
-          @click="selectUser(user)"
-          class="flex items-center gap-3 p-3 cursor-pointer"
-          :class="{
-            'bg-primary text-primary-content': index === selectedIndex,
-            'hover:bg-base-200': index !== selectedIndex
-          }"
+            ref="inputContainer"
+            class="input-bordered input flex min-h-[2.5rem] w-full flex-wrap items-center gap-1 p-2"
+            :class="{ 'ring-2 ring-primary': showSuggestions }"
+            @click="focusInput"
         >
-          <div class="avatar">
-            <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
-              <span class="text-xs font-bold">
-                {{ user.name.charAt(0).toUpperCase() }}
-              </span>
+            <!-- Mensagem com menções -->
+            <div class="flex w-full flex-wrap gap-1">
+                <span
+                    v-for="(part, index) in messageParts"
+                    :key="index"
+                    :class="part.type === 'mention' ? 'rounded-full bg-primary px-2 py-1 text-sm text-primary-content' : ''"
+                >
+                    {{ part.text }}
+                </span>
             </div>
-          </div>
-          <div>
-            <p class="font-medium">{{ user.name }}</p>
-            <p class="text-xs opacity-70">{{ user.email }}</p>
-          </div>
+
+            <!-- Input invisível para capturar digitação-->
+            <input
+                ref="hiddenInput"
+                v-model="inputValue"
+                class="min-w-[100px] flex-1 border-none bg-transparent outline-none"
+                :placeholder="messageParts.length === 0 ? placeholder : ''"
+                @input="handleInput"
+                @keydown="handleKeydown"
+                @blur="handleBlur"
+            />
         </div>
-      </div>
+
+        <!-- Lista de sugestões -->
+        <div
+            v-if="showSuggestions && filteredUsers.length > 0"
+            class="absolute right-0 bottom-full left-0 z-50 mb-2 max-h-48 overflow-y-auto rounded-lg border border-base-300 bg-base-100 shadow-lg"
+        >
+            <div
+                v-for="(user, index) in filteredUsers"
+                :key="user.id"
+                class="flex cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-base-200"
+                :class="{ 'bg-primary text-primary-content': index === selectedIndex }"
+                @click="selectUser(user)"
+                @mouseenter="selectedIndex = index"
+            >
+                <div class="avatar">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm text-primary-content">
+                        {{ user.name.charAt(0).toUpperCase() }}
+                    </div>
+                </div>
+                <div>
+                    <p class="font-medium">{{ user.name }}</p>
+                    <p class="text-xs opacity-70">{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue';
+import axios from 'axios';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 interface User {
-  id: number;
-  name: string;
-  email: string;
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface MessagePart {
+    type: 'text' | 'mention';
+    text: string;
+    userId?: number;
 }
 
 const props = defineProps<{
-  modelValue: string;
-  placeholder?: string;
-  users?: User[];
+    modelValue: string;
+    placeholder?: string;
+    roomId?: number;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
-  'mention': [user: User];
+    'update:modelValue': [value: string];
+    mention: [user: User];
 }>();
 
-const textareaRef = ref<HTMLTextAreaElement>();
-const inputValue = ref(props.modelValue);
+const inputContainer = ref<HTMLElement>();
+const hiddenInput = ref<HTMLInputElement>();
+const inputValue = ref('');
 const showSuggestions = ref(false);
 const selectedIndex = ref(0);
-const mentionStart = ref(-1);
+const users = ref<User[]>([]);
+const currentMention = ref('');
 
-const suggestions = computed(() => {
-  if (!props.users || !showSuggestions.value) return [];
-  
-  const query = inputValue.value.substring(mentionStart.value + 1).toLowerCase();
-  return props.users.filter(user => 
-    user.name.toLowerCase().includes(query) || 
-    user.email.toLowerCase().includes(query)
-  );
+// Computed para processar a mensagem em partes
+const messageParts = computed<MessagePart[]>(() => {
+    const parts: MessagePart[] = [];
+    const text = props.modelValue;
+    let lastIndex = 0;
+
+    // Encontrar todas as menções
+    const mentionRegex = /@(\w+)/g;
+    let match;
+
+    while ((match = mentionRegex.exec(text)) !== null) {
+        // Adicionar texto antes da menção
+        if (match.index > lastIndex) {
+            parts.push({
+                type: 'text',
+                text: text.slice(lastIndex, match.index),
+            });
+        }
+
+        // Adicionar a menção
+        parts.push({
+            type: 'mention',
+            text: match[0],
+            userId: findUserIdByName(match[1]),
+        });
+
+        lastIndex = match.index + match[0].length;
+    }
+
+    // Adicionar texto restante
+    if (lastIndex < text.length) {
+        parts.push({
+            type: 'text',
+            text: text.slice(lastIndex),
+        });
+    }
+
+    return parts;
 });
 
-function handleInput() {
-  emit('update:modelValue', inputValue.value);
-  
-  const cursorPos = textareaRef.value?.selectionStart || 0;
-  const textBeforeCursor = inputValue.value.substring(0, cursorPos);
-  const lastAtIndex = textBeforeCursor.lastIndexOf('@');
-  
-  if (lastAtIndex !== -1) {
-    const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
-    const hasSpace = textAfterAt.includes(' ');
-    
-    if (!hasSpace) {
-      mentionStart.value = lastAtIndex;
-      showSuggestions.value = true;
-      selectedIndex.value = 0;
-      return;
+// Filtrar usuários baseado na menção atual
+const filteredUsers = computed(() => {
+    if (!currentMention.value) return users.value.slice(0, 5);
+
+    return users.value
+        .filter(
+            (user) =>
+                user.name.toLowerCase().includes(currentMention.value.toLowerCase()) ||
+                user.email.toLowerCase().includes(currentMention.value.toLowerCase()),
+        )
+        .slice(0, 5);
+});
+
+// Encontrar ID do usuário pelo nome
+function findUserIdByName(name: string): number | undefined {
+    const user = users.value.find((u) => u.name.toLowerCase().includes(name.toLowerCase()));
+    return user?.id;
+}
+
+// Carregar usuários da sala
+async function loadUsers() {
+    if (!props.roomId) return;
+
+    try {
+        const { data } = await axios.get(`/api/rooms/${props.roomId}/users`);
+        users.value = data;
+    } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
     }
-  }
-  
-  showSuggestions.value = false;
 }
 
+// Focar no input
+function focusInput() {
+    hiddenInput.value?.focus();
+}
+
+// Lidar com input
+function handleInput() {
+    const value = inputValue.value;
+    const cursorPos = hiddenInput.value?.selectionStart || 0;
+
+    // Encontrar menção atual
+    const beforeCursor = value.slice(0, cursorPos);
+    const mentionMatch = beforeCursor.match(/@(\w*)$/);
+
+    if (mentionMatch) {
+        currentMention.value = mentionMatch[1];
+        showSuggestions.value = true;
+        selectedIndex.value = 0;
+    } else {
+        showSuggestions.value = false;
+        currentMention.value = '';
+    }
+
+    // Atualizar valor do modelo
+    emit('update:modelValue', value);
+}
+
+// Lidar com teclas
 function handleKeydown(event: KeyboardEvent) {
-  if (!showSuggestions.value) return;
+    if (!showSuggestions.value) return;
 
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault();
-      selectedIndex.value = Math.min(selectedIndex.value + 1, suggestions.value.length - 1);
-      break;
-    case 'ArrowUp':
-      event.preventDefault();
-      selectedIndex.value = Math.max(selectedIndex.value - 1, 0);
-      break;
-    case 'Enter':
-      event.preventDefault();
-      if (suggestions.value[selectedIndex.value]) {
-        selectUser(suggestions.value[selectedIndex.value]);
-      }
-      break;
-    case 'Escape':
-      showSuggestions.value = false;
-      break;
-  }
+    switch (event.key) {
+        case 'ArrowDown':
+            event.preventDefault();
+            selectedIndex.value = Math.min(selectedIndex.value + 1, filteredUsers.value.length - 1);
+            break;
+        case 'ArrowUp':
+            event.preventDefault();
+            selectedIndex.value = Math.max(selectedIndex.value - 1, 0);
+            break;
+        case 'Enter':
+        case 'Tab':
+            event.preventDefault();
+            if (filteredUsers.value[selectedIndex.value]) {
+                selectUser(filteredUsers.value[selectedIndex.value]);
+            }
+            break;
+        case 'Escape':
+            showSuggestions.value = false;
+            break;
+    }
 }
 
-function handleKeyup(event: KeyboardEvent) {
-  if (event.key === '@' && !showSuggestions.value) {
-    nextTick(() => {
-      const cursorPos = textareaRef.value?.selectionStart || 0;
-      mentionStart.value = cursorPos - 1;
-      showSuggestions.value = true;
-      selectedIndex.value = 0;
-    });
-  }
-}
-
+// Selecionar usuário
 function selectUser(user: User) {
-  const beforeMention = inputValue.value.substring(0, mentionStart.value);
-  const afterMention = inputValue.value.substring(textareaRef.value?.selectionStart || 0);
-  
-  inputValue.value = `${beforeMention}@${user.name} ${afterMention}`;
-  emit('update:modelValue', inputValue.value);
-  emit('mention', user);
-  
-  showSuggestions.value = false;
-  
-  nextTick(() => {
-    const newCursorPos = beforeMention.length + user.name.length + 2;
-    textareaRef.value?.setSelectionRange(newCursorPos, newCursorPos);
-    textareaRef.value?.focus();
-  });
-}
-</script>
+    const value = inputValue.value;
+    const cursorPos = hiddenInput.value?.selectionStart || 0;
 
+    // Encontrar posição da menção atual
+    const beforeCursor = value.slice(0, cursorPos);
+    const mentionMatch = beforeCursor.match(/@(\w*)$/);
+
+    if (mentionMatch) {
+        const startPos = cursorPos - mentionMatch[0].length;
+        const newValue = value.slice(0, startPos) + `@${user.name} ` + value.slice(cursorPos);
+
+        inputValue.value = newValue;
+        emit('update:modelValue', newValue);
+        emit('mention', user);
+
+        showSuggestions.value = false;
+        currentMention.value = '';
+
+        nextTick(() => {
+            hiddenInput.value?.focus();
+            const newCursorPos = startPos + user.name.length + 2;
+            hiddenInput.value?.setSelectionRange(newCursorPos, newCursorPos);
+        });
+    }
+}
+
+// Lidar com blur
+function handleBlur() {
+    // Delay para permitir clique nas sugestões
+    setTimeout(() => {
+        showSuggestions.value = false;
+    }, 200);
+}
+
+// Sincronizar com modelValue
+function syncWithModelValue() {
+    if (props.modelValue !== inputValue.value) {
+        inputValue.value = props.modelValue;
+    }
+}
+
+onMounted(() => {
+    loadUsers();
+    syncWithModelValue();
+});
+
+// Observar mudanças no modelValue
+watch(() => props.modelValue, syncWithModelValue);
+</script>

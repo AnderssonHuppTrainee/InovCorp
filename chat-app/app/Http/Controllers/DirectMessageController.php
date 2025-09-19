@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreDirectMessageRequest;
 use App\Http\Requests\UpdateDirectMessageRequest;
+use App\Events\DirectMessageSent;
 
 class DirectMessageController extends Controller
 {
@@ -37,6 +38,11 @@ class DirectMessageController extends Controller
             'sender_id' => Auth::id(),
             'body' => $request->body,
         ]);
+
+        // Carregar o relacionamento sender para o broadcast
+        $message->load('sender');
+
+        broadcast(new DirectMessageSent($message))->toOthers();
 
         return response()->json([
             'message' => $message->load('sender')

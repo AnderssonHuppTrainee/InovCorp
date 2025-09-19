@@ -3,17 +3,15 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 </script>
 
 <template>
-  <div class="flex items-center space-x-2 p-2">
+    <div class="flex items-center space-x-2 p-2">
+        <div class="avatar">
+            <div class="flex h-16 w-16 items-center justify-center rounded-md bg-white text-primary-content">
+                <AppLogoIcon class="h-full w-full object-cover" />
+            </div>
+        </div>
 
-    <div class="avatar">
-      <div class="w-12 h-12 rounded-md bg-white text-primary-content flex items-center justify-center">
-        <AppLogoIcon class="w-8 h-8 object-cover" />
-      </div>
+        <div class="flex-1">
+            <span class="truncate text-lg font-semibold">ChatBubble</span>
+        </div>
     </div>
-
-    <div class="flex-1">
-      <span class="text-sm font-semibold truncate">ChatBubble</span>
-    </div>
-  </div>
 </template>
-

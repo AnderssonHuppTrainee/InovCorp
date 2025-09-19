@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Room;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RoomPolicy
 {
@@ -13,7 +12,7 @@ class RoomPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true; // Usuários autenticados podem ver a lista de salas
+        return true;
     }
 
     /**
@@ -21,13 +20,13 @@ class RoomPolicy
      */
     public function view(User $user, Room $room): bool
     {
-        // Salas públicas: qualquer usuário pode ver
-        if (!$room->private) {
-            return true;
-        }
-
-        // Salas privadas: apenas membros podem ver
-        return $room->users->contains($user) || $room->created_by === $user->id;
+        // Usuário pode ver a sala se:
+        // 1. É o criador da sala
+        // 2. É membro da sala
+        // 3. A sala é pública
+        return $room->created_by === $user->id ||
+            $room->hasUser($user) ||
+            !$room->private;
     }
 
     /**
@@ -35,7 +34,7 @@ class RoomPolicy
      */
     public function create(User $user): bool
     {
-        return true; // Usuários autenticados podem criar salas
+        return true; // Qualquer usuário autenticado pode criar salas
     }
 
     /**
@@ -43,7 +42,6 @@ class RoomPolicy
      */
     public function update(User $user, Room $room): bool
     {
-        // Apenas o criador da sala pode editá-la
         return $room->created_by === $user->id;
     }
 
@@ -52,60 +50,22 @@ class RoomPolicy
      */
     public function delete(User $user, Room $room): bool
     {
-        // Apenas o criador da sala pode deletá-la
         return $room->created_by === $user->id;
     }
 
     /**
-     * Determine whether the user can send messages to the room.
+     * Determine whether the user can manage the room (add/remove users, send invites).
+     */
+    public function manage(User $user, Room $room): bool
+    {
+        return $room->created_by === $user->id;
+    }
+
+    /**
+     * Determine whether the user can send messages in the room.
      */
     public function sendMessage(User $user, Room $room): bool
     {
-        // Carregar relacionamentos se não estiverem carregados
-        if (!$room->relationLoaded('users')) {
-            $room->load('users');
-        }
-
-        // Salas públicas: qualquer usuário pode enviar mensagens
-        if (!$room->private) {
-            return true;
-        }
-
-        // Salas privadas: apenas membros podem enviar mensagens
-        return $room->users->contains($user) || $room->created_by === $user->id;
-    }
-
-    /**
-     * Determine whether the user can add users to the room.
-     */
-    public function addUser(User $user, Room $room): bool
-    {
-        // Apenas o criador da sala pode adicionar usuários
-        return $room->created_by === $user->id;
-    }
-
-    /**
-     * Determine whether the user can remove users from the room.
-     */
-    public function removeUser(User $user, Room $room): bool
-    {
-        // Apenas o criador da sala pode remover usuários
-        return $room->created_by === $user->id;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Room $room): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Room $room): bool
-    {
-        return false;
+        return $room->hasUser($user);
     }
 }

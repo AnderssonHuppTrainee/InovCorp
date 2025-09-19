@@ -32,4 +32,14 @@ class Message extends Model
     {
         return $this->belongsTo(DirectConversation::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
+
+    public function reactions()
+    {
+        return $this->hasMany(MessageReaction::class);
+    }
 }

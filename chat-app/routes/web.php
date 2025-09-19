@@ -7,6 +7,10 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DirectConversationController;
 use App\Http\Controllers\DirectMessageController;
 use App\Http\Controllers\FriendshipController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\UserStatusController;
+use App\Http\Controllers\MessageReactionController;
 use App\Models\Room;
 
 
@@ -33,6 +37,14 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('rooms.index');
 
+    // Rota para acessar uma sala específica (usando Main.vue com sala pré-selecionada)
+    Route::get('/rooms/{room}', function (Room $room) {
+        return Inertia::render('Rooms/Main', [
+            'user' => auth()->user(),
+            'initialRoom' => $room,
+        ]);
+    })->name('rooms.show');
+
     // API para buscar salas
     Route::get('/api/rooms', [RoomController::class, 'index'])
         ->name('rooms.api.index');
@@ -49,8 +61,24 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('rooms.chat');
 
+    // Gerenciamento de usuários da sala
     Route::post('/rooms/{room}/add-user', [RoomController::class, 'addUser']);
     Route::delete('/rooms/{room}/remove-user/{user}', [RoomController::class, 'removeUser']);
+    Route::get('/api/rooms/{room}/users', [RoomController::class, 'users']);
+
+    // Sistema de convites
+    Route::post('/rooms/{room}/invite', [RoomController::class, 'inviteUser']);
+    Route::get('/api/rooms/{room}/invites', [RoomController::class, 'invites']);
+    Route::delete('/rooms/{room}/invites/{invite}', [RoomController::class, 'cancelInvite']);
+
+    // Aceitar/rejeitar convites por token (público)
+    Route::post('/room/invite/{token}/accept', [RoomController::class, 'acceptInvite'])->name('room.invite.accept');
+    Route::post('/room/invite/{token}/reject', [RoomController::class, 'rejectInvite'])->name('room.invite.reject');
+
+    // Busca global de usuários e sistema de amizades
+    Route::get('/api/users/search', [App\Http\Controllers\FriendshipController::class, 'searchUsers']);
+    Route::get('/api/users/handle/{handle}', [App\Http\Controllers\FriendshipController::class, 'findByHandle']);
+    Route::post('/api/users/invite-by-handle', [App\Http\Controllers\FriendshipController::class, 'inviteByHandle']);
 
     // Endpoint para obter token CSRF
     Route::get('/api/csrf-token', function () {
@@ -72,6 +100,7 @@ Route::middleware(['auth'])->group(function () {
             'user' => auth()->user(),
         ]);
     })->name('dm.index');
+
     // Conversas diretas (DMs)
     Route::prefix('api/dm')->group(function () {
         Route::get('/', [DirectConversationController::class, 'index']); // listar DMs
@@ -84,15 +113,38 @@ Route::middleware(['auth'])->group(function () {
     //friendships
 
     Route::get('/friends', function () {
-        return Inertia::render('Friendships/Index');
+        return Inertia::render('Friendships/Index', [
+            'user' => Auth::user(),
+        ]);
     })->name('friends.index');
 
     Route::prefix('/api')->group(function () {
         Route::get('/friends', [FriendshipController::class, 'index']); // lista de amigos
         Route::get('/friends/requests', [FriendshipController::class, 'requests']); // solicitações recebidas
-        Route::post('/friends/{user}', [FriendshipController::class, 'sendRequest']); // enviar pedido
+        Route::get('/friends/search-users', [FriendshipController::class, 'searchUsers']); // buscar usuários
+        Route::post('/friends/{user}/send-request', [FriendshipController::class, 'sendRequest']); // enviar pedido
         Route::post('/friends/{friendship}/accept', [FriendshipController::class, 'accept']); // aceitar pedido
         Route::post('/friends/{friendship}/reject', [FriendshipController::class, 'reject']); // rejeitar pedido
         Route::delete('/friends/{friendship}', [FriendshipController::class, 'remove']); // remover amizade
+
+        // Notificações
+        Route::get('/notifications', [NotificationController::class, 'index']); // lista de notificações
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']); // contador de não lidas
+        Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']); // marcar como lida
+        Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']); // marcar todas como lidas
+        Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']); // deletar notificação
+
+        // Upload de arquivos
+        Route::post('/files/upload', [FileUploadController::class, 'store']); // upload de arquivo
+        Route::get('/files/{fileUpload}', [FileUploadController::class, 'show']); // visualizar arquivo
+        Route::delete('/files/{fileUpload}', [FileUploadController::class, 'destroy']); // deletar arquivo
+
+        // Status de usuário
+        Route::get('/users/{user}/status', [UserStatusController::class, 'show']); // status de usuário
+        Route::post('/users/status/batch', [UserStatusController::class, 'batch']); // status em lote
+
+        // Reações de mensagens
+        Route::get('/messages/{message}/reactions', [MessageReactionController::class, 'index']); // obter reações
+        Route::post('/messages/{message}/reactions', [MessageReactionController::class, 'toggle']); // alternar reação
     });
 });

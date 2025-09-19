@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'avatar',
         'permission',
+        'handle',
     ];
 
     /**
@@ -69,49 +70,92 @@ class User extends Authenticatable
         return $this->belongsToMany(DirectConversation::class, 'direct_conversation_user');
     }
 
-    /**
-     * Amizades enviadas (eu pedi amizade).
-     */
+
+    public function roomInvites()
+    {
+        return $this->hasMany(RoomInvite::class, 'invited_user_id');
+    }
+
+
+    public function sentRoomInvites()
+    {
+        return $this->hasMany(RoomInvite::class, 'invited_by');
+    }
+
+
+
     public function friendships()
     {
         return $this->hasMany(Friendship::class, 'user_id');
     }
 
-    /**
-     * Amizades recebidas (me pediram amizade).
-     */
+
     public function receivedFriendships()
     {
         return $this->hasMany(Friendship::class, 'friend_id');
     }
 
-    /**
-     * Amigos aceitos (bidirecional).
-     */
+
     public function friends()
     {
-        return $this->belongsToMany(
-            User::class,
-            'friendships',
-            'user_id',
-            'friend_id'
-        )->wherePivot('status', 'accepted')
-            ->withTimestamps();
+        return User::where(function ($query) {
+            $query->whereExists(function ($subQuery) {
+                $subQuery->select(\DB::raw(1))
+                    ->from('friendships')
+                    ->where('status', 'accepted')
+                    ->where(function ($q) {
+                        $q->where('user_id', $this->id)
+                            ->whereColumn('friend_id', 'users.id');
+                    });
+            })->orWhereExists(function ($subQuery) {
+                $subQuery->select(\DB::raw(1))
+                    ->from('friendships')
+                    ->where('status', 'accepted')
+                    ->where(function ($q) {
+                        $q->where('friend_id', $this->id)
+                            ->whereColumn('user_id', 'users.id');
+                    });
+            });
+        })->where('id', '!=', $this->id);
     }
 
-    /**
-     * Solicitações de amizade pendentes que eu enviei.
-     */
+
     public function pendingFriendships()
     {
         return $this->friendships()->where('status', 'pending');
     }
 
-    /**
-     * Solicitações de amizade recebidas que ainda não respondi.
-     */
     public function friendRequests()
     {
         return $this->receivedFriendships()->where('status', 'pending');
+    }
+
+
+    public function notifications()
+    {
+        return $this->hasMany(AppNotification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->notifications()->unread();
+    }
+
+    public function isOnline()
+    {
+        return \Cache::has('user-online-' . $this->id);
+    }
+
+
+    public function markAsOnline()
+    {
+        \Cache::put('user-online-' . $this->id, true, now()->addMinutes(5));
+        \Cache::put('user-last-activity-' . $this->id, now(), now()->addDays(7));
+    }
+
+
+    public function markAsOffline()
+    {
+        \Cache::forget('user-online-' . $this->id);
     }
 }

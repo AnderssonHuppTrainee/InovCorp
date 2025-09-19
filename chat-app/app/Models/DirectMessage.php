@@ -11,15 +11,15 @@ class DirectMessage extends Model
     use HasFactory;
 
 
-    protected $fillable = ['conversation_id', 'sender_id', 'body'];
+    protected $fillable = ['direct_conversation_id', 'sender_id', 'body'];
 
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    public function conversation()
+    public function directConversation()
     {
-        return $this->belongsTo(DirectConversation::class, 'conversation_id');
+        return $this->belongsTo(DirectConversation::class, 'direct_conversation_id');
     }
 }

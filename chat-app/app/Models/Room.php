@@ -33,4 +33,29 @@ class Room extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    // convites da sala
+    public function invites()
+    {
+        return $this->hasMany(RoomInvite::class);
+    }
+
+    // convites pendentes
+    public function pendingInvites()
+    {
+        return $this->hasMany(RoomInvite::class)->pending();
+    }
+
+
+    public function hasUser(User $user): bool
+    {
+        return $this->users()->where('user_id', $user->id)->exists() ||
+            $this->created_by === $user->id;
+    }
+
+
+    public function canManage(User $user): bool
+    {
+        return $this->created_by === $user->id;
+    }
 }

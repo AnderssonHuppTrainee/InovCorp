@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class DirectConversation extends Model
 {
+    protected $fillable = [
+        'created_by'
+    ];
     public function users()
     {
         return $this->belongsToMany(User::class, 'direct_conversation_user');
@@ -13,7 +16,7 @@ class DirectConversation extends Model
 
     public function messages()
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(DirectMessage::class, 'direct_conversation_id');
     }
 
     public function creator()

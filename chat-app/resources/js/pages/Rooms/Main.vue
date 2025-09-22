@@ -2,13 +2,13 @@
 import ConnectionStatus from '@/components/ConnectionStatus.vue';
 import FileUpload from '@/components/FileUpload.vue';
 import MentionInput from '@/components/MentionInput.vue';
+import RoomInfo from '@/components/RoomInfo.vue';
 import RoomMembers from '@/components/RoomMembers.vue';
 import TypingIndicator from '@/components/TypingIndicator.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Users } from 'lucide-vue-next';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 // Props
 const props = defineProps({
@@ -25,9 +25,11 @@ const newRoomName = ref('');
 const isPrivate = ref(false);
 const isConnected = ref(true);
 const isTyping = ref(false);
+const typingUsers = ref([]);
 const searchQuery = ref('');
 const attachedFiles = ref([]);
 const friends = ref([]);
+const showInfo = ref(false);
 
 // controle de WebSocket
 const echoChannels = ref(new Map());
@@ -49,15 +51,6 @@ const unreadCount = computed(() => {
     return rooms.value.reduce((total, room) => total + (room.unread_count || 0), 0);
 });
 
-// Watcher para debug
-watch(
-    selectedRoom,
-    (newRoom, oldRoom) => {
-        console.log('selectedRoom mudou de:', oldRoom, 'para:', newRoom);
-    },
-    { deep: true },
-);
-
 // carregar salas
 async function loadRooms() {
     try {
@@ -73,7 +66,8 @@ async function loadRooms() {
 async function loadFriends() {
     try {
         const { data } = await axios.get('/api/friends');
-        friends.value = data.friends || [];
+        friends.value = data || [];
+        console.log('Amigos carregados:', friends.value);
     } catch (error) {
         console.error('Erro ao carregar amigos:', error);
     }
@@ -81,7 +75,7 @@ async function loadFriends() {
 
 async function loadMessages(roomId, page = 1, append = false) {
     if (!roomId || typeof roomId !== 'number') {
-        console.warn('⚠️ loadMessages chamado com roomId inválido:', roomId);
+        console.warn('roomId inválido:', roomId);
         return;
     }
 
@@ -148,7 +142,7 @@ async function sendMessage() {
         if (data.message) {
             const messageExists = messages.value.some((msg) => msg.id === data.message.id);
             if (!messageExists) {
-                console.log('✅ Adicionando mensagem localmente:', data.message);
+                console.log('Adicionando mensagem localmente:', data.message);
                 messages.value.push(data.message);
                 scrollToBottom();
             }
@@ -211,8 +205,18 @@ function selectRoom(room) {
 
 function handleTyping() {
     isTyping.value = true;
+    
+    // Simular usuários digitando (para demonstração)
+    // Em um sistema real, isso viria do backend via WebSocket
+    if (typingUsers.value.length === 0) {
+        typingUsers.value = [
+            { id: 2, name: 'João Silva', email: 'joao@example.com' }
+        ];
+    }
+    
     setTimeout(() => {
         isTyping.value = false;
+        typingUsers.value = [];
     }, 2000);
 }
 
@@ -277,9 +281,9 @@ function setupEchoListeners() {
         return;
     }
 
-    console.log('🔧 Configurando listeners do Echo para', rooms.value.length, 'salas');
-    console.log('🔍 Echo disponível:', window.Echo);
-    console.log('🔍 Pusher disponível:', window.Pusher);
+    console.log('Configurando listeners do Echo para', rooms.value.length, 'salas');
+    console.log('Echo disponível:', window.Echo);
+    console.log('Pusher disponível:', window.Pusher);
 
     cleanupEchoListeners();
 
@@ -290,7 +294,7 @@ function setupEchoListeners() {
 
         try {
             const channel = window.Echo.channel(channelName);
-            console.log('📡 Canal criado:', channel);
+            console.log(' Canal criado:', channel);
 
             echoChannels.value.set(room.id, channel);
 
@@ -367,12 +371,10 @@ const breadcrumbs = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-screen bg-base-100">
-            <div class="flex w-80 flex-col border-r border-base-300 bg-base-200">
+            <div class="flex w-70 flex-col border-r border-base-300 bg-base-200">
                 <div class="border-b border-base-300 p-4">
                     <div class="mb-4 flex items-center justify-between">
-                        <h2>
-                            <Users />
-                        </h2>
+                        <h2 class="text-xl font-bold">Salas</h2>
                         <div class="flex items-center gap-2">
                             <ConnectionStatus :is-connected="isConnected" />
                             <div v-if="unreadCount > 0" class="badge badge-sm badge-error">
@@ -385,10 +387,8 @@ const breadcrumbs = [
                         <input v-model="searchQuery" type="text" placeholder="Buscar salas..." class="input-bordered input input-sm w-full" />
                     </div>
 
-                    <button @click="$refs.createRoomModal.showModal()" class="btn w-full btn-sm btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
+                    <button @click="$refs.createRoomModal.showModal()" class="btn w-full text-white btn-sm btn-primary">
+                        <i class="fa fa-plus"></i>
                         Nova Sala
                     </button>
                 </div>
@@ -408,8 +408,8 @@ const breadcrumbs = [
                         >
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-2">
-                                    <div v-if="room.private" class="badge badge-xs badge-warning">🔒</div>
-                                    <div v-else class="badge badge-xs badge-success">🌐</div>
+                                    <div v-if="room.private" class="badge badge-md badge-warning"><i class="fa fa-lock"></i></div>
+                                    <div v-else class="badge badge-md badge-success"><i class="fa fa-globe"></i></div>
                                 </div>
                                 <div>
                                     <p class="font-medium">{{ room.name }}</p>
@@ -444,8 +444,12 @@ const breadcrumbs = [
                                 @members-updated="loadRooms"
                                 @invites-updated="loadRooms"
                             />
-                            <div class="badge" :class="selectedRoom.private ? 'badge-warning' : 'badge-success'">
-                                {{ selectedRoom.private ? '🔒 Privada' : '🌐 Pública' }}
+
+                            <div>
+                                <button class="btn text-white btn-sm btn-info" @click="showInfo = !showInfo">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                </button>
+                                <RoomInfo v-model="showInfo" :room-id="selectedRoom?.id" />
                             </div>
                         </div>
                     </div>
@@ -457,7 +461,6 @@ const breadcrumbs = [
                 <div ref="messagesContainer" @scroll="checkScrollPosition" class="bg-base-50 relative flex-1 overflow-y-auto p-4">
                     <div v-if="!selectedRoom" class="flex h-full items-center justify-center">
                         <div class="text-center">
-                            <div class="mb-4 text-6xl">💬</div>
                             <h3 class="mb-2 text-xl font-semibold text-base-content/70">Bem-vindo ao Chat!</h3>
                             <p class="text-base-content/50">Selecione uma sala à esquerda para começar a conversar</p>
                         </div>
@@ -500,7 +503,7 @@ const breadcrumbs = [
                                         {{ message.sender?.name || 'Usuário Desconhecido' }}
                                     </div>
                                     <div class="rounded-2xl rounded-bl-md bg-base-300 px-4 py-2 shadow-sm">
-                                        <p class="text-sm">{{ message.body }}</p>
+                                        <p class="text-sm break-words">{{ message.body }}</p>
                                     </div>
                                     <div class="mt-1 text-xs text-base-content/50">
                                         {{ new Date(message.created_at).toLocaleTimeString() }}
@@ -510,7 +513,7 @@ const breadcrumbs = [
 
                             <div v-else class="flex max-w-[70%] flex-row-reverse items-end gap-2">
                                 <div class="avatar">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs text-primary-content">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full">
                                         <span class="font-bold">
                                             <img src="https://avatar.iran.liara.run/public" />
                                         </span>
@@ -519,7 +522,7 @@ const breadcrumbs = [
                                 <div class="flex flex-col items-end">
                                     <div class="mb-1 text-xs text-base-content/60">Você</div>
                                     <div class="rounded-2xl rounded-br-md bg-primary px-4 py-2 text-primary-content shadow-sm">
-                                        <p class="text-sm">{{ message.body }}</p>
+                                        <p class="text-sm break-words">{{ message.body }}</p>
                                     </div>
                                     <div class="mt-1 text-xs text-base-content/50">
                                         {{ new Date(message.created_at).toLocaleTimeString() }}
@@ -528,7 +531,10 @@ const breadcrumbs = [
                             </div>
                         </div>
 
-                        <TypingIndicator :is-typing="isTyping" />
+                        <TypingIndicator 
+                            :typing-users="typingUsers" 
+                            :current-user-id="user?.id || 0" 
+                        />
                     </div>
 
                     <div v-if="showScrollButton" class="absolute right-4 bottom-4">
@@ -557,9 +563,8 @@ const breadcrumbs = [
                             />
                         </div>
                         <button @click="sendMessage" :disabled="!newMessage.trim() && attachedFiles.length === 0" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
+                            Enviar
+                            <i class="fa fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>

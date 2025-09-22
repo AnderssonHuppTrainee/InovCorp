@@ -6,29 +6,85 @@ use App\Models\Friendship;
 use App\Http\Requests\StoreFriendshipRequest;
 use App\Http\Requests\UpdateFriendshipRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\CacheService;
 
 
 
 class FriendshipController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
     {
-        $friends = Auth::user()->friends()->get();
-        return response()->json($friends);
+        $this->cacheService = $cacheService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function index()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não autenticado'], 401);
+            }
+
+            // tenta usar cache primeiro
+            try {
+                $friends = $this->cacheService->getUserFriends($user->id);
+                return response()->json($friends);
+            } catch (\Exception $cacheError) {
+                Log::warning('Erro ao obter amigos do cache, buscando diretamente', [
+                    'error' => $cacheError->getMessage(),
+                    'user_id' => $user->id
+                ]);
+
+                // Fallback: busca no banco
+                $friends = $user->friends()
+                    ->select('id', 'name', 'email', 'avatar', 'handle')
+                    ->orderBy('name')
+                    ->get();
+
+                return response()->json($friends);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao obter lista de amigos', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
+        }
+    }
+
+
     public function requests()
     {
-        $requests = Auth::user()->friendRequests()->with('user')->get();
-        return response()->json($requests);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não autenticado'], 401);
+            }
+
+
+            $requests = Friendship::where('friend_id', $user->id)
+                ->where('status', 'pending')
+                ->with(['user:id,name,email,avatar'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json($requests);
+        } catch (\Exception $e) {
+            Log::error('Erro ao obter solicitações de amizade', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
+        }
     }
 
     public function sendRequest(User $user)
@@ -39,7 +95,7 @@ class FriendshipController extends Controller
             return response()->json(['message' => 'Você não pode adicionar a si mesmo.'], 400);
         }
 
-        // Verificar se já existe uma relação
+
         $exists = Friendship::where(function ($q) use ($authUser, $user) {
             $q->where('user_id', $authUser)->where('friend_id', $user->id);
         })->orWhere(function ($q) use ($authUser, $user) {
@@ -59,9 +115,7 @@ class FriendshipController extends Controller
         return response()->json(['message' => 'Pedido de amizade enviado.', 'friendship' => $friendship]);
     }
 
-    /**
-     * Aceitar amizade.
-     */
+
     public function accept(Friendship $friendship)
     {
         if ($friendship->friend_id !== Auth::id()) {
@@ -69,12 +123,22 @@ class FriendshipController extends Controller
         }
 
         $friendship->update(['status' => 'accepted']);
+
+
+        try {
+            $this->cacheService->clearFriendshipCache($friendship->user_id);
+            $this->cacheService->clearFriendshipCache($friendship->friend_id);
+        } catch (\Exception $cacheError) {
+            Log::warning('Erro ao limpar cache de amizade', [
+                'error' => $cacheError->getMessage(),
+                'user_id' => $friendship->user_id,
+                'friend_id' => $friendship->friend_id
+            ]);
+        }
+
         return response()->json(['message' => 'Amizade aceita.', 'friendship' => $friendship]);
     }
 
-    /**
-     * Rejeitar amizade.
-     */
     public function reject(Friendship $friendship)
     {
         if ($friendship->friend_id !== Auth::id()) {
@@ -85,22 +149,33 @@ class FriendshipController extends Controller
         return response()->json(['message' => 'Pedido de amizade rejeitado.']);
     }
 
-    /**
-     * Remover amizade (tanto quem enviou quanto quem recebeu pode remover).
-     */
+
     public function remove(Friendship $friendship)
     {
         if ($friendship->user_id !== Auth::id() && $friendship->friend_id !== Auth::id()) {
             return response()->json(['message' => 'Não autorizado.'], 403);
         }
 
+        $userId = $friendship->user_id;
+        $friendId = $friendship->friend_id;
+
         $friendship->delete();
+
+        try {
+            $this->cacheService->clearFriendshipCache($userId);
+            $this->cacheService->clearFriendshipCache($friendId);
+        } catch (\Exception $cacheError) {
+            Log::warning('Erro ao limpar cache de amizade', [
+                'error' => $cacheError->getMessage(),
+                'user_id' => $userId,
+                'friend_id' => $friendId
+            ]);
+        }
+
         return response()->json(['message' => 'Amizade removida.']);
     }
 
-    /**
-     * Buscar usuários para adicionar como amigos.
-     */
+
     public function searchUsers(Request $request)
     {
         $query = $request->get('q', '');
@@ -110,7 +185,7 @@ class FriendshipController extends Controller
             return response()->json([]);
         }
 
-        // Buscar usuários que não são amigos e não é o próprio usuário
+
         $users = User::where('id', '!=', $currentUserId)
             ->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
@@ -133,7 +208,7 @@ class FriendshipController extends Controller
             ->limit(20)
             ->get();
 
-        // Adicionar informações sobre solicitações pendentes
+
         $users->each(function ($user) use ($currentUserId) {
             $user->has_pending_request = $this->hasPendingRequest($currentUserId, $user->id);
             $user->has_sent_request = $this->hasSentRequest($currentUserId, $user->id);
@@ -142,9 +217,7 @@ class FriendshipController extends Controller
         return response()->json($users);
     }
 
-    /**
-     * Buscar usuário por handle específico.
-     */
+
     public function findByHandle(string $handle)
     {
         $currentUserId = Auth::id();
@@ -160,7 +233,7 @@ class FriendshipController extends Controller
             ], 404);
         }
 
-        // Verificar se já são amigos
+
         $isFriend = Friendship::where(function ($q) use ($currentUserId, $user) {
             $q->where('user_id', $currentUserId)
                 ->where('friend_id', $user->id)
@@ -178,9 +251,7 @@ class FriendshipController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Convidar usuário por handle.
-     */
+
     public function inviteByHandle(Request $request)
     {
         $request->validate([
@@ -200,9 +271,7 @@ class FriendshipController extends Controller
         return $this->sendRequest($user);
     }
 
-    /**
-     * Verificar se existe solicitação pendente do usuário atual para outro usuário.
-     */
+
     private function hasSentRequest(int $currentUserId, int $targetUserId): bool
     {
         return Friendship::where('user_id', $currentUserId)
@@ -211,9 +280,7 @@ class FriendshipController extends Controller
             ->exists();
     }
 
-    /**
-     * Verificar se existe solicitação pendente de outro usuário para o usuário atual.
-     */
+
     private function hasPendingRequest(int $currentUserId, int $targetUserId): bool
     {
         return Friendship::where('user_id', $targetUserId)

@@ -13,22 +13,6 @@ declare global {
     }
 }
 
-interface DirectMessageEvent {
-    message?: {
-        id: number;
-        direct_conversation_id: number;
-        body: string;
-        sender_id: number;
-        created_at: string;
-        updated_at: string;
-        sender: {
-            id: number;
-            name: string;
-        };
-    };
-    [key: string]: any; // permitir outras propriedades
-}
-
 const props = defineProps<{
     user?: User;
 }>();
@@ -46,10 +30,7 @@ interface User {
 interface DirectConversation {
     id: number;
     users: User[];
-    last_message?: {
-        body: string;
-        created_at: string;
-    };
+    last_message?: DirectMessage;
     unread_count: number;
 }
 
@@ -69,8 +50,9 @@ const searchQuery = ref('');
 const isTyping = ref(false);
 const currentChannel = ref<string | null>(null);
 const friends = ref<User[]>([]);
-const showFriendsSearch = ref(false);
+const showFriendsModal = ref(false);
 const friendsSearchQuery = ref('');
+const availableFriends = ref<User[]>([]);
 
 const messagesContainer = ref<HTMLElement | null>(null);
 
@@ -91,18 +73,28 @@ const filteredDMs = computed(() => {
     });
 });
 
-const filteredFriends = computed(() => {
-    if (!friends.value) return [];
-    if (!friendsSearchQuery.value) return friends.value;
-    return friends.value.filter((friend) => {
+const filteredAvailableFriends = computed(() => {
+    if (!availableFriends.value) return [];
+    if (!friendsSearchQuery.value) return availableFriends.value;
+    return availableFriends.value.filter((friend) => {
         return friend.name.toLowerCase().includes(friendsSearchQuery.value.toLowerCase());
     });
 });
 
-async function loadFriends() {
+async function loadAvailableFriends() {
     try {
         const { data } = await axios.get<User[]>('/api/friends');
         friends.value = data;
+
+        // Filtrar amigos que não possuem conversas ativas
+        const friendsWithActiveConversations = conversations.value
+            .map((dm) => {
+                const otherUser = getOtherUser(dm);
+                return otherUser?.id;
+            })
+            .filter(Boolean);
+
+        availableFriends.value = friends.value.filter((friend) => !friendsWithActiveConversations.includes(friend.id));
     } catch (error) {
         console.error('Erro ao carregar amigos:', error);
     }
@@ -120,9 +112,12 @@ async function startConversationWithFriend(friend: User) {
         // seleciona a conversa
         selectDm(data.conversation);
 
-        // fecha busca de amigos
-        showFriendsSearch.value = false;
+        // fecha modal e limpa busca
+        showFriendsModal.value = false;
         friendsSearchQuery.value = '';
+
+        // Remove o amigo da lista de disponíveis
+        availableFriends.value = availableFriends.value.filter((f) => f.id !== friend.id);
 
         console.log('Conversa iniciada com:', friend.name);
     } catch (error) {
@@ -147,14 +142,17 @@ function checkScrollPosition() {
     }
 }
 
-// Alternar busca de amigos
-function toggleFriendsSearch() {
-    showFriendsSearch.value = !showFriendsSearch.value;
-    if (showFriendsSearch.value) {
-        loadFriends();
-    } else {
-        friendsSearchQuery.value = '';
-    }
+// Abrir modal de busca de amigos
+function openFriendsModal() {
+    showFriendsModal.value = true;
+    friendsSearchQuery.value = '';
+    loadAvailableFriends();
+}
+
+// Fechar modal de busca de amigos
+function closeFriendsModal() {
+    showFriendsModal.value = false;
+    friendsSearchQuery.value = '';
 }
 
 async function loadMessages(conversationId: number) {
@@ -302,33 +300,34 @@ onUnmounted(() => {
     console.log('Componente sendo desmontado, limpando recursos...');
     cleanupEchoListeners();
 });
+
+const breadcrumbs = [
+    {
+        title: 'Mensagens Diretas',
+        href: '#',
+    },
+];
 </script>
 
 <template>
     <Head title="Mensagens Diretas" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-screen bg-base-100">
             <!--list de dms-->
-            <div class="flex w-80 flex-col border-r border-base-300 bg-base-200">
+            <div class="flex w-70 flex-col border-r border-base-300 bg-base-200">
                 <div class="border-b border-base-300 p-4">
                     <div class="mb-4 flex items-center justify-between">
                         <h2 class="text-xl font-bold text-base-content">Mensagens Diretas</h2>
-                        <button @click="toggleFriendsSearch" class="btn btn-sm btn-primary" :class="{ 'btn-outline': !showFriendsSearch }">
-                            {{ showFriendsSearch ? 'Conversas' : 'Novo Chat' }}
-                        </button>
+                        <button @click="openFriendsModal" class="btn text-white btn-sm btn-success">Novo Chat</button>
                     </div>
 
-                    <div v-if="!showFriendsSearch" class="form-control mb-4">
+                    <div class="form-control mb-4">
                         <input v-model="searchQuery" type="text" placeholder="Buscar conversas..." class="input-bordered input input-sm w-full" />
-                    </div>
-
-                    <div v-else class="form-control mb-4">
-                        <input v-model="friendsSearchQuery" type="text" placeholder="Buscar amigos..." class="input-bordered input input-sm w-full" />
                     </div>
                 </div>
 
-                <div v-if="!showFriendsSearch" class="flex-1 overflow-y-auto">
+                <div class="flex-1 overflow-y-auto">
                     <div v-if="filteredDMs.length === 0" class="p-4 text-center text-base-content/50">
                         <p>Nenhuma conversa encontrada</p>
                     </div>
@@ -357,31 +356,6 @@ onUnmounted(() => {
 
                             <div v-if="dm.unread_count > 0" class="badge badge-sm badge-error">
                                 {{ dm.unread_count }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-else class="flex-1 overflow-y-auto">
-                    <div v-if="filteredFriends.length === 0" class="p-4 text-center text-base-content/50">
-                        <p>Nenhum amigo encontrado</p>
-                    </div>
-
-                    <div v-else class="space-y-1 p-2">
-                        <div
-                            v-for="friend in filteredFriends"
-                            :key="friend.id"
-                            @click="startConversationWithFriend(friend)"
-                            class="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-base-300"
-                        >
-                            <div class="avatar">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-full">
-                                    <img src="https://avatar.iran.liara.run/public/boy" />
-                                </div>
-                            </div>
-                            <div>
-                                <p class="font-medium">{{ friend.name }}</p>
-                                <p class="text-xs opacity-70">{{ friend.email }}</p>
                             </div>
                         </div>
                     </div>
@@ -416,17 +390,49 @@ onUnmounted(() => {
 
                     <div v-else class="space-y-4">
                         <div
-                            v-for="msg in messages"
-                            :key="msg.id"
-                            class="chat"
-                            :class="msg.sender?.id === currentUser?.id ? 'chat-end' : 'chat-start'"
+                            v-for="message in messages"
+                            :key="message.id"
+                            class="flex"
+                            :class="message.sender?.id === props.user?.id ? 'justify-end' : 'justify-start'"
                         >
-                            <div class="chat-header">
-                                <span class="font-semibold">{{ msg.sender.name }}</span>
-                                <time class="text-xs opacity-50">{{ new Date(msg.created_at).toLocaleTimeString() }}</time>
+                            <div v-if="message.sender?.id !== props.user?.id" class="flex max-w-[70%] items-end gap-2">
+                                <div class="avatar">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs text-primary-content">
+                                        <span class="font-bold">
+                                            <img src="https://avatar.iran.liara.run/public" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="mb-1 text-xs text-base-content/60">
+                                        {{ message.sender?.name || 'Usuário Desconhecido' }}
+                                    </div>
+                                    <div class="rounded-2xl rounded-bl-md bg-base-300 px-4 py-2 shadow-sm">
+                                        <p class="text-sm">{{ message.body }}</p>
+                                    </div>
+                                    <div class="mt-1 text-xs text-base-content/50">
+                                        {{ new Date(message.created_at).toLocaleTimeString() }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="chat-bubble" :class="msg.sender?.id === currentUser?.id ? 'chat-bubble-primary' : 'chat-bubble-base-300'">
-                                {{ msg.body }}
+
+                            <div v-else class="flex max-w-[70%] flex-row-reverse items-end gap-2">
+                                <div class="avatar">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full">
+                                        <span class="font-bold">
+                                            <img src="https://avatar.iran.liara.run/public" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <div class="mb-1 text-xs text-base-content/60">Você</div>
+                                    <div class="rounded-2xl rounded-br-md bg-primary px-4 py-2 text-primary-content shadow-sm">
+                                        <p class="text-sm">{{ message.body }}</p>
+                                    </div>
+                                    <div class="mt-1 text-xs text-base-content/50">
+                                        {{ new Date(message.created_at).toLocaleTimeString() }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -453,6 +459,49 @@ onUnmounted(() => {
                         />
                         <button @click="sendMessage" :disabled="!newMessage.trim()" class="btn btn-primary">Enviar</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para busca de amigos -->
+        <div v-if="showFriendsModal" class="modal-open modal">
+            <div class="modal-box w-11/12 max-w-md">
+                <div class="mb-4 flex items-center justify-between">
+                    <h3 class="text-lg font-bold">Nova Conversa</h3>
+                    <button @click="closeFriendsModal" class="btn btn-circle btn-ghost btn-sm">✕</button>
+                </div>
+
+                <div class="form-control mb-4 border">
+                    <input v-model="friendsSearchQuery" type="text" placeholder="Buscar amigos..." class="input-bordered input input-sm w-full" />
+                </div>
+
+                <div class="max-h-96 overflow-y-auto">
+                    <div v-if="filteredAvailableFriends.length === 0" class="p-4 text-center text-base-content/50">
+                        <p>{{ friendsSearchQuery ? 'Nenhum amigo encontrado' : 'Nenhum amigo disponível para nova conversa' }}</p>
+                    </div>
+
+                    <div v-else class="space-y-2">
+                        <div
+                            v-for="friend in filteredAvailableFriends"
+                            :key="friend.id"
+                            @click="startConversationWithFriend(friend)"
+                            class="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-base-200"
+                        >
+                            <div class="avatar">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full">
+                                    <img src="https://avatar.iran.liara.run/public/boy" />
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-medium">{{ friend.name }}</p>
+                                <p class="text-xs opacity-70">{{ friend.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button @click="closeFriendsModal" class="btn btn-ghost">Cancelar</button>
                 </div>
             </div>
         </div>

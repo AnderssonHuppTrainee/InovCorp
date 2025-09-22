@@ -9,10 +9,17 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreDirectMessageRequest;
 use App\Http\Requests\UpdateDirectMessageRequest;
 use App\Events\DirectMessageSent;
+use App\Services\CacheService;
 
 class DirectMessageController extends Controller
 {
-    // Lista mensagens de uma conversa
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     public function index(DirectConversation $conversation)
     {
         $this->authorizeAccess($conversation);
@@ -25,7 +32,7 @@ class DirectMessageController extends Controller
         return response()->json($messages);
     }
 
-    // Enviar mensagem em uma conversa
+
     public function store(Request $request, DirectConversation $conversation)
     {
         $this->authorizeAccess($conversation);
@@ -39,8 +46,11 @@ class DirectMessageController extends Controller
             'body' => $request->body,
         ]);
 
-        // Carregar o relacionamento sender para o broadcast
+        // carregar o relacionamento sender para o broadcast
         $message->load('sender');
+
+        // limpar cache 
+        $this->cacheService->clearDirectConversationCache($conversation->id);
 
         broadcast(new DirectMessageSent($message))->toOthers();
 
@@ -49,7 +59,6 @@ class DirectMessageController extends Controller
         ]);
     }
 
-    // Garante que o usuário autenticado faz parte da conversa
     protected function authorizeAccess(DirectConversation $conversation)
     {
         if (!$conversation->users->contains(Auth::id())) {

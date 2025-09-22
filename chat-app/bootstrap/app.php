@@ -4,6 +4,8 @@ use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\DebugCSRF;
 use App\Http\Middleware\TrackUserActivity;
+use App\Http\Middleware\GlobalRateLimit;
+use App\Http\Middleware\MessageRateLimit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +27,19 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
             DebugCSRF::class,
             TrackUserActivity::class,
+            GlobalRateLimit::class,
+        ]);
+
+        // Adicionar middleware CSRF para rotas web
+        $middleware->validateCsrfTokens(except: [
+            'api/csrf-token',
+            'broadcasting/auth'
+        ]);
+
+        // Register rate limiting middleware aliases
+        $middleware->alias([
+            'rate.limit' => GlobalRateLimit::class,
+            'message.rate.limit' => MessageRateLimit::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

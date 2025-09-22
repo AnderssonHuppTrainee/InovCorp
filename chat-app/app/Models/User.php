@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
@@ -100,7 +102,7 @@ class User extends Authenticatable
     {
         return User::where(function ($query) {
             $query->whereExists(function ($subQuery) {
-                $subQuery->select(\DB::raw(1))
+                $subQuery->select(DB::raw(1))
                     ->from('friendships')
                     ->where('status', 'accepted')
                     ->where(function ($q) {
@@ -108,7 +110,7 @@ class User extends Authenticatable
                             ->whereColumn('friend_id', 'users.id');
                     });
             })->orWhereExists(function ($subQuery) {
-                $subQuery->select(\DB::raw(1))
+                $subQuery->select(DB::raw(1))
                     ->from('friendships')
                     ->where('status', 'accepted')
                     ->where(function ($q) {
@@ -143,19 +145,19 @@ class User extends Authenticatable
 
     public function isOnline()
     {
-        return \Cache::has('user-online-' . $this->id);
+        return Cache::has('user-online-' . $this->id);
     }
 
 
     public function markAsOnline()
     {
-        \Cache::put('user-online-' . $this->id, true, now()->addMinutes(5));
-        \Cache::put('user-last-activity-' . $this->id, now(), now()->addDays(7));
+        Cache::put('user-online-' . $this->id, true, now()->addMinutes(5));
+        Cache::put('user-last-activity-' . $this->id, now(), now()->addDays(7));
     }
 
 
     public function markAsOffline()
     {
-        \Cache::forget('user-online-' . $this->id);
+        Cache::forget('user-online-' . $this->id);
     }
 }

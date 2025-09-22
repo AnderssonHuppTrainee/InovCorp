@@ -6,23 +6,22 @@ use App\Models\DirectConversation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CacheService;
 
 class DirectConversationController extends Controller
 {
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
     public function index()
     {
-        $user = Auth::user();
-        $conversations = $user->directConversations()->with('users')->get();
-        /*$conversations = DirectConversation::whereHas('users', function ($q) use ($user) {
-            $q->where('users.id', $user->id);
-        })
-            ->with([
-                'users' => function ($q) use ($user) {
-                    $q->where('users.id', '!=', $user->id); // traz só o "outro" usuário
-                },
-                'lastMessage.sender'
-            ])
-            ->get();*/
+        $userId = Auth::id();
+
+        // uso do cache service for better performance
+        $conversations = $this->cacheService->getUserDirectConversations($userId);
 
         return response()->json($conversations);
     }

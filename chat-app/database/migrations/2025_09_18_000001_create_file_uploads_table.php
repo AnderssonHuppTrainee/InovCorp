@@ -21,8 +21,8 @@ return new class extends Migration {
             $table->string('path');
             $table->string('mime_type');
             $table->unsignedBigInteger('size');
-            $table->string('type')->default('attachment'); // 'image', 'document', 'attachment'
-            $table->json('metadata')->nullable(); // dimensões da imagem, etc.
+            $table->string('type')->default('attachment');
+            $table->json('metadata')->nullable();
             $table->timestamps();
 
             $table->index(['user_id', 'created_at']);
@@ -38,4 +38,5 @@ return new class extends Migration {
         Schema::dropIfExists('file_uploads');
     }
 };
+
 

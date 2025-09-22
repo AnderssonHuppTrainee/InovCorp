@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\AppNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
-    /**
-     * Listar notificações do usuário.
-     */
+
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -33,9 +32,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    /**
-     * Marcar notificação como lida.
-     */
+
     public function markAsRead(AppNotification $notification)
     {
         if ($notification->user_id !== Auth::id()) {
@@ -47,9 +44,7 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notificação marcada como lida.']);
     }
 
-    /**
-     * Marcar todas as notificações como lidas.
-     */
+
     public function markAllAsRead()
     {
         Auth::user()
@@ -63,19 +58,33 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Todas as notificações foram marcadas como lidas.']);
     }
 
-    /**
-     * Contar notificações não lidas.
-     */
+
     public function unreadCount()
     {
-        $count = Auth::user()->unreadNotifications()->count();
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não autenticado'], 401);
+            }
 
-        return response()->json(['count' => $count]);
+
+            $notifications = $user->notifications();
+            $unreadNotifications = $notifications->where('read', false);
+            $count = $unreadNotifications->count();
+
+            return response()->json(['count' => $count]);
+        } catch (\Exception $e) {
+            Log::error('Erro ao obter contagem de notificações não lidas', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
+        }
     }
 
-    /**
-     * Deletar notificação.
-     */
+
     public function destroy(AppNotification $notification)
     {
         if ($notification->user_id !== Auth::id()) {

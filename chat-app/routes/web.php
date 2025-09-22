@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\MessageController;
@@ -28,9 +29,9 @@ require __DIR__ . '/auth.php';
 
 
 // Rotas  
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Rota principal para listar salas (usando Main.vue como layout principal)
+
     Route::get('/rooms', function () {
         return Inertia::render('Rooms/Main', [
             'user' => auth()->user(),
@@ -55,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para chat individual (manter para compatibilidade)
     Route::get('/rooms/{room}/chat', function (Room $room) {
-        return Inertia::render('Rooms/Chat', [
+        return Inertia::render('Rooms/Main', [
             'room' => $room,
             'user' => auth()->user(),
         ]);
@@ -64,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     // Gerenciamento de usuários da sala
     Route::post('/rooms/{room}/add-user', [RoomController::class, 'addUser']);
     Route::delete('/rooms/{room}/remove-user/{user}', [RoomController::class, 'removeUser']);
+    Route::post('/api/rooms/{room}/users/{user}/make-admin', [RoomController::class, 'makeAdmin']);
     Route::get('/api/rooms/{room}/users', [RoomController::class, 'users']);
 
     // Sistema de convites
@@ -93,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('messages.api.index');
 
     Route::post('/rooms/{room}/messages', [MessageController::class, 'store'])
+        ->middleware('message.rate.limit:10,1')
         ->name('messages.store');
 
     Route::get('/dm', function () {
@@ -106,7 +109,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [DirectConversationController::class, 'index']); // listar DMs
         Route::post('/', [DirectConversationController::class, 'store']); // criar nova DM
         Route::get('{conversation}/messages', [DirectMessageController::class, 'index']); // mensagens
-        Route::post('{conversation}/messages', [DirectMessageController::class, 'store']); // enviar mensagem
+        Route::post('{conversation}/messages', [DirectMessageController::class, 'store'])
+            ->middleware('message.rate.limit:10,1'); // enviar mensagem
     });
 
 
@@ -117,6 +121,19 @@ Route::middleware(['auth'])->group(function () {
             'user' => Auth::user(),
         ]);
     })->name('friends.index');
+    //notifications
+    Route::get('/notifications', function () {
+        return Inertia::render('Notifications/Index', [
+            'user' => auth()->user(),
+        ]);
+    })->name('notifications.index');
+    Route::prefix('/api')->group(function () {
+        Route::get('/notifications', [NotificationController::class, 'index']); // lista de notificações
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']); // contador de não lidas
+        Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']); // marcar como lida
+        Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']); // marcar todas como lidas
+        Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']); // deletar notificação
+    });
 
     Route::prefix('/api')->group(function () {
         Route::get('/friends', [FriendshipController::class, 'index']); // lista de amigos
@@ -127,12 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/friends/{friendship}/reject', [FriendshipController::class, 'reject']); // rejeitar pedido
         Route::delete('/friends/{friendship}', [FriendshipController::class, 'remove']); // remover amizade
 
-        // Notificações
-        Route::get('/notifications', [NotificationController::class, 'index']); // lista de notificações
-        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']); // contador de não lidas
-        Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']); // marcar como lida
-        Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']); // marcar todas como lidas
-        Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']); // deletar notificação
+
 
         // Upload de arquivos
         Route::post('/files/upload', [FileUploadController::class, 'store']); // upload de arquivo
@@ -143,8 +155,5 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users/{user}/status', [UserStatusController::class, 'show']); // status de usuário
         Route::post('/users/status/batch', [UserStatusController::class, 'batch']); // status em lote
 
-        // Reações de mensagens
-        Route::get('/messages/{message}/reactions', [MessageReactionController::class, 'index']); // obter reações
-        Route::post('/messages/{message}/reactions', [MessageReactionController::class, 'toggle']); // alternar reação
     });
 });

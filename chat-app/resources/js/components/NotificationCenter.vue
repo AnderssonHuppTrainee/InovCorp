@@ -12,7 +12,7 @@
         <!-- Dropdown de notificações -->
         <div
             v-if="showNotifications"
-            class="absolute top-full right-0 z-50 mt-2 max-h-96 w-80 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-lg"
+            class="absolute top-full right-0 z-50 mt-2 max-h-150 w-80 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-lg"
         >
             <!-- Header -->
             <div class="flex items-center justify-between border-b border-base-300 p-4">
@@ -64,6 +64,12 @@
                                         {{ notification.data.room_name }}
                                     </span>
                                 </div>
+
+                                <!-- Ações para convites de sala -->
+                                <div v-if="notification.type === 'room_invite' && notification.data?.invite_token" class="mt-2 flex gap-2">
+                                    <button @click.stop="acceptRoomInvite(notification)" class="btn btn-xs btn-primary">Aceitar</button>
+                                    <button @click.stop="rejectRoomInvite(notification)" class="btn btn-outline btn-xs">Rejeitar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,6 +85,7 @@
 </template>
 
 <script setup lang="ts">
+import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Bell } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -103,7 +110,6 @@ const unreadCount = ref(0);
 
 const hasUnreadNotifications = computed(() => unreadCount.value > 0);
 
-// Carregar notificações
 async function loadNotifications() {
     try {
         const { data } = await axios.get('/api/notifications', {
@@ -115,7 +121,6 @@ async function loadNotifications() {
     }
 }
 
-// Carregar contador de não lidas
 async function loadUnreadCount() {
     try {
         const { data } = await axios.get('/api/notifications/unread-count');
@@ -125,7 +130,6 @@ async function loadUnreadCount() {
     }
 }
 
-// Alternar exibição de notificações
 function toggleNotifications() {
     showNotifications.value = !showNotifications.value;
     if (showNotifications.value) {
@@ -133,7 +137,6 @@ function toggleNotifications() {
     }
 }
 
-// Marcar notificação como lida
 async function markAsRead(notification: Notification) {
     try {
         await axios.post(`/api/notifications/${notification.id}/mark-as-read`);
@@ -144,7 +147,6 @@ async function markAsRead(notification: Notification) {
     }
 }
 
-// Marcar todas como lidas
 async function markAllAsRead() {
     try {
         await axios.post('/api/notifications/mark-all-as-read');
@@ -155,28 +157,60 @@ async function markAllAsRead() {
     }
 }
 
-// Lidar com clique na notificação
 function handleNotificationClick(notification: Notification) {
     if (!notification.read) {
         markAsRead(notification);
     }
 
-    // Navegar baseado no tipo de notificação
     if (notification.data?.room_id) {
-        window.location.href = `/rooms/${notification.data.room_id}/chat`;
+        window.location.href = `/rooms/${notification.data.room_id}`;
     }
 
     showNotifications.value = false;
 }
 
-// Ver todas as notificações
 function viewAllNotifications() {
-    // Implementar página de todas as notificações
-    console.log('Ver todas as notificações');
+    router.visit('/notifications');
     showNotifications.value = false;
 }
 
-// Formatar tempo
+async function acceptRoomInvite(notification: Notification) {
+    try {
+        const response = await axios.post(`/room/invite/${notification.data.invite_token}/accept`);
+
+        // Marcar  como lida
+        await markAsRead(notification);
+
+        // Atualizar lista de
+        await loadNotifications();
+
+        // redireciona para a sala se a URL foi fornecida
+        if (response.data.redirect_url) {
+            window.location.href = response.data.redirect_url;
+        } else {
+            alert('Convite aceito com sucesso!');
+        }
+    } catch (error) {
+        console.error('Erro ao aceitar convite:', error);
+        alert('Erro ao aceitar convite');
+    }
+}
+
+async function rejectRoomInvite(notification: Notification) {
+    try {
+        await axios.post(`/room/invite/${notification.data.invite_token}/reject`);
+
+        await markAsRead(notification);
+
+        await loadNotifications();
+
+        alert('Convite rejeitado');
+    } catch (error) {
+        console.error('Erro ao rejeitar convite:', error);
+        alert('Erro ao rejeitar convite');
+    }
+}
+
 function formatTime(dateString: string) {
     const date = new Date(dateString);
     const now = new Date();
@@ -194,7 +228,6 @@ function formatTime(dateString: string) {
     return date.toLocaleDateString();
 }
 
-// Fechar ao clicar fora
 function handleClickOutside(event: Event) {
     const target = event.target as HTMLElement;
     if (!target.closest('.relative')) {
@@ -206,7 +239,6 @@ onMounted(() => {
     loadUnreadCount();
     document.addEventListener('click', handleClickOutside);
 
-    // Atualizar contador a cada 30 segundos
     const interval = setInterval(loadUnreadCount, 30000);
 
     onUnmounted(() => {

@@ -1,19 +1,13 @@
 <template>
     <div class="room-members">
-        <!-- Botão para abrir modal -->
-        <button @click="showModal = true" class="btn btn-outline btn-sm btn-primary" v-if="canManage">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Gerenciar Membros
+        <button @click="showModal = true" class="btn text-white btn-sm btn-primary" v-if="canManage">
+            <i class="fa fa-user-plus"></i>
         </button>
 
-        <!-- Modal -->
         <div v-if="showModal" class="modal-open modal">
             <div class="modal-box max-w-4xl">
-                <h3 class="mb-4 text-lg font-bold">Gerenciar Membros - {{ room.name }}</h3>
+                <h3 class="mb-4 text-lg font-bold">Adicionar Membros - {{ room.name }}</h3>
 
-                <!-- Tabs -->
                 <div class="tabs-bordered mb-4 tabs">
                     <button @click="activeTab = 'members'" class="tab" :class="{ 'tab-active': activeTab === 'members' }">
                         Membros ({{ members.length }})
@@ -24,13 +18,12 @@
                     <button @click="activeTab = 'invite'" class="tab" :class="{ 'tab-active': activeTab === 'invite' }">Convidar</button>
                 </div>
 
-                <!-- Tab: Membros -->
                 <div v-if="activeTab === 'members'" class="space-y-3">
                     <div v-for="member in members" :key="member.id" class="flex items-center justify-between rounded-lg bg-base-200 p-3">
                         <div class="flex items-center gap-3">
                             <div class="placeholder avatar">
                                 <div class="w-8 rounded-full bg-neutral text-neutral-content">
-                                    <span class="text-xs">{{ member.name.charAt(0).toUpperCase() }}</span>
+                                    <img :src="member.avatar || 'https://avatar.iran.liara.run/public/boy'" />
                                 </div>
                             </div>
                             <div>
@@ -51,14 +44,13 @@
                     </div>
                 </div>
 
-                <!-- Tab: Convites -->
                 <div v-if="activeTab === 'invites'" class="space-y-3">
                     <div v-for="invite in invites" :key="invite.id" class="flex items-center justify-between rounded-lg bg-base-200 p-3">
                         <div class="flex items-center gap-3">
                             <div class="placeholder avatar">
                                 <div class="w-8 rounded-full bg-neutral text-neutral-content">
                                     <span class="text-xs">
-                                        {{ (invite.invited_user?.name || invite.email).charAt(0).toUpperCase() }}
+                                        <img :src="invite.invited_user?.avatar || 'https://avatar.iran.liara.run/public/boy'" />
                                     </span>
                                 </div>
                             </div>
@@ -97,28 +89,38 @@
                     </div>
                 </div>
 
-                <!-- Tab: Convidar -->
                 <div v-if="activeTab === 'invite'" class="space-y-4">
-                    <!-- Convidar por usuário -->
                     <div>
                         <label class="label">
                             <span class="label-text">Convidar amigo</span>
                         </label>
                         <div class="flex gap-2">
-                            <select v-model="selectedFriendId" class="select-bordered select flex-1" :disabled="loading">
-                                <option value="">Selecione um amigo</option>
+                            <select
+                                v-model="selectedFriendId"
+                                class="select-bordered select flex-1"
+                                :disabled="loading || availableFriends.length === 0"
+                            >
+                                <option value="">
+                                    {{ availableFriends.length === 0 ? 'Nenhum amigo disponível' : 'Selecione um amigo' }}
+                                </option>
                                 <option v-for="friend in availableFriends" :key="friend.id" :value="friend.id">
                                     {{ friend.name }} ({{ friend.email }})
                                 </option>
                             </select>
-                            <button @click="inviteFriend" class="btn btn-primary" :disabled="!selectedFriendId || loading">
+                            <button
+                                @click="inviteFriend"
+                                class="btn btn-primary"
+                                :disabled="!selectedFriendId || loading || availableFriends.length === 0"
+                            >
                                 <span v-if="loading" class="loading loading-xs loading-spinner"></span>
                                 Convidar
                             </button>
                         </div>
+                        <div v-if="availableFriends.length === 0" class="mt-2 text-sm text-base-content/70">
+                            Todos os seus amigos já são membros desta sala.
+                        </div>
                     </div>
 
-                    <!-- Convidar por email -->
                     <div class="divider">OU</div>
 
                     <div>
@@ -179,6 +181,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 interface User {
     id: number;
+    avatar: string;
     name: string;
     email: string;
 }
@@ -273,7 +276,7 @@ async function inviteFriend() {
 
     loading.value = true;
     try {
-        await axios.post(`/rooms/${props.room.id}/invite`, {
+        const response = await axios.post(`/rooms/${props.room.id}/invite`, {
             user_id: selectedFriendId.value,
         });
 
@@ -283,7 +286,14 @@ async function inviteFriend() {
         alert('Convite enviado com sucesso!');
     } catch (error) {
         console.error('Erro ao enviar convite:', error);
-        alert('Erro ao enviar convite');
+
+        // Mostrar mensagem de erro específica
+        let errorMessage = 'Erro ao enviar convite';
+        if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+        }
+
+        alert(errorMessage);
     } finally {
         loading.value = false;
     }
@@ -380,6 +390,15 @@ watch(showModal, (newValue) => {
     }
 });
 
+// Watcher para atualizar amigos disponíveis quando membros mudam
+watch(
+    members,
+    () => {
+        // Força a reatualização da computed property
+    },
+    { deep: true },
+);
+
 // Lifecycle
 onMounted(() => {
     if (showModal.value) {
@@ -388,4 +407,3 @@ onMounted(() => {
     }
 });
 </script>
-

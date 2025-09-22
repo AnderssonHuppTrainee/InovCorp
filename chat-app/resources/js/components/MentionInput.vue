@@ -6,23 +6,12 @@
             :class="{ 'ring-2 ring-primary': showSuggestions }"
             @click="focusInput"
         >
-            <!-- Mensagem com menções -->
-            <div class="flex w-full flex-wrap gap-1">
-                <span
-                    v-for="(part, index) in messageParts"
-                    :key="index"
-                    :class="part.type === 'mention' ? 'rounded-full bg-primary px-2 py-1 text-sm text-primary-content' : ''"
-                >
-                    {{ part.text }}
-                </span>
-            </div>
-
-            <!-- Input invisível para capturar digitação-->
+            <!-- Input principal -->
             <input
                 ref="hiddenInput"
                 v-model="inputValue"
                 class="min-w-[100px] flex-1 border-none bg-transparent outline-none"
-                :placeholder="messageParts.length === 0 ? placeholder : ''"
+                :placeholder="placeholder"
                 @input="handleInput"
                 @keydown="handleKeydown"
                 @blur="handleBlur"
@@ -91,7 +80,7 @@ const selectedIndex = ref(0);
 const users = ref<User[]>([]);
 const currentMention = ref('');
 
-// Computed para processar a mensagem em partes
+// Computed para processar a mensagem em partes (para análise de menções)
 const messageParts = computed<MessagePart[]>(() => {
     const parts: MessagePart[] = [];
     const text = props.modelValue;

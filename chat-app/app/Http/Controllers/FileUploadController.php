@@ -10,9 +10,7 @@ use Illuminate\Support\Str;
 
 class FileUploadController extends Controller
 {
-    /**
-     * Upload de arquivo.
-     */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -25,23 +23,21 @@ class FileUploadController extends Controller
         $mimeType = $file->getMimeType();
         $size = $file->getSize();
 
-        // Gerar nome único para o arquivo
+
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
         $path = 'uploads/' . date('Y/m/d') . '/' . $filename;
 
-        // Determinar tipo do arquivo
         $type = $this->determineFileType($mimeType);
 
-        // Processar imagem se necessário
         $metadata = null;
         if (str_starts_with($mimeType, 'image/')) {
             $metadata = $this->processImage($file, $path);
         }
 
-        // Salvar arquivo
+        // salva arquivo
         Storage::putFileAs('public/' . dirname($path), $file, basename($path));
 
-        // Salvar no banco de dados
+        // salva na bd
         $fileUpload = FileUpload::create([
             'user_id' => auth()->id(),
             'message_id' => $request->message_id,
@@ -60,12 +56,10 @@ class FileUploadController extends Controller
         ]);
     }
 
-    /**
-     * Deletar arquivo.
-     */
+
     public function destroy(FileUpload $fileUpload)
     {
-        // Verificar se o usuário pode deletar o arquivo
+
         if ($fileUpload->user_id !== auth()->id()) {
             return response()->json(['message' => 'Não autorizado.'], 403);
         }
@@ -75,9 +69,7 @@ class FileUploadController extends Controller
         return response()->json(['message' => 'Arquivo deletado com sucesso.']);
     }
 
-    /**
-     * Obter arquivo.
-     */
+
     public function show(FileUpload $fileUpload)
     {
         if (!Storage::exists('public/' . $fileUpload->path)) {
@@ -87,9 +79,7 @@ class FileUploadController extends Controller
         return Storage::response('public/' . $fileUpload->path, $fileUpload->original_name);
     }
 
-    /**
-     * Determinar tipo do arquivo.
-     */
+
     private function determineFileType(string $mimeType): string
     {
         if (str_starts_with($mimeType, 'image/')) {
@@ -112,9 +102,7 @@ class FileUploadController extends Controller
         return 'attachment';
     }
 
-    /**
-     * Processar imagem (obter dimensões).
-     */
+
     private function processImage($file, string $path): ?array
     {
         try {

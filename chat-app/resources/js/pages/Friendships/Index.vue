@@ -104,7 +104,7 @@ async function searchUsers() {
 
 async function sendFriendRequest(user: User) {
     try {
-        await axios.post(`/api/friends/${user.id}`);
+        await axios.post(`/api/friends/${user.id}/send-request`);
         searchQuery.value = '';
         searchResults.value = [];
         showSearchResults.value = false;
@@ -143,14 +143,20 @@ onMounted(() => {
     loadFriends();
     loadRequests();
 });
+const breadcrumbs = [
+    {
+        title: 'Amigos',
+        href: '#',
+    },
+];
 </script>
 
 <template>
     <Head title="Amigos" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-screen bg-base-100">
-            <div class="flex w-72 flex-col border-r border-base-300 bg-base-200">
+            <div class="flex w-70 flex-col border-r border-base-300 bg-base-200">
                 <div class="border-b border-base-300 p-4">
                     <div class="mb-4 flex items-center justify-between">
                         <h2 class="text-xl font-bold">Meus Amigos</h2>
@@ -212,16 +218,21 @@ onMounted(() => {
                 <div class="border-b border-base-300 p-4">
                     <div v-if="selectedFriend">
                         <UserStatus :user="selectedFriend" :show-last-seen="true" />
-                        <div class="mt-4 flex gap-2">
-                            <button class="btn btn-sm btn-primary" @click="startDirectMessage(selectedFriend)">💬 Iniciar Conversa</button>
-                            <button class="btn btn-sm btn-error" @click="removeFriend(selectedFriend.id)">Remover Amigo</button>
+                        <div class="whitespace-wrap mt-4 flex gap-2">
+                            <button class="btn text-white btn-sm btn-primary" @click="startDirectMessage(selectedFriend)">
+                                <i class="fa fa-comment"></i>
+                                Iniciar Conversa
+                            </button>
+                            <button class="btn text-white btn-sm btn-error" @click="removeFriend(selectedFriend.id)">
+                                <i class="fa fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                     <div v-else class="text-center text-base-content/50">Selecione um amigo para ver detalhes</div>
                 </div>
             </div>
 
-            <div class="flex w-80 flex-col border-l border-base-300 bg-base-200">
+            <div class="flex w-60 flex-col border-l border-base-300 bg-base-200">
                 <div class="border-b border-base-300 p-4">
                     <h2 class="text-xl font-bold">Solicitações</h2>
                 </div>
@@ -238,8 +249,12 @@ onMounted(() => {
                                 <p class="text-xs opacity-70">Pedido de amizade</p>
                             </div>
                             <div class="flex gap-2">
-                                <button class="btn btn-xs btn-success" @click="acceptRequest(req.id)">Aceitar</button>
-                                <button class="btn btn-xs btn-error" @click="rejectRequest(req.id)">Recusar</button>
+                                <button class="btn text-white btn-xs btn-success" @click="acceptRequest(req.id)">
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button class="btn text-white btn-xs btn-error" @click="rejectRequest(req.id)">
+                                    <i class="fa fa-cancel"></i>
+                                </button>
                             </div>
                         </div>
                     </div>

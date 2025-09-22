@@ -9,9 +9,7 @@ use App\Models\Room;
 
 class NotificationService
 {
-    /**
-     * Criar notificação de menção.
-     */
+    //mencao notificacao
     public function createMentionNotification(User $mentionedUser, User $fromUser, Message $message, Room $room)
     {
         return AppNotification::create([
@@ -29,9 +27,7 @@ class NotificationService
         ]);
     }
 
-    /**
-     * Criar notificação de nova mensagem.
-     */
+    //mençao de nova msg
     public function createMessageNotification(User $user, User $fromUser, Message $message, Room $room)
     {
         return AppNotification::create([
@@ -48,9 +44,7 @@ class NotificationService
         ]);
     }
 
-    /**
-     * Criar notificação de solicitação de amizade.
-     */
+    //mencao de friend request
     public function createFriendshipRequestNotification(User $user, User $fromUser)
     {
         return AppNotification::create([
@@ -65,9 +59,7 @@ class NotificationService
         ]);
     }
 
-    /**
-     * Criar notificação de amizade aceita.
-     */
+    //accept notificacation
     public function createFriendshipAcceptedNotification(User $user, User $fromUser)
     {
         return AppNotification::create([
@@ -82,15 +74,31 @@ class NotificationService
         ]);
     }
 
-    /**
-     * Processar menções em uma mensagem.
-     */
+
+    public function createRoomInviteNotification(User $user, User $fromUser, Room $room, $invite)
+    {
+        return AppNotification::create([
+            'user_id' => $user->id,
+            'from_user_id' => $fromUser->id,
+            'type' => 'room_invite',
+            'title' => 'Convite para sala',
+            'message' => "{$fromUser->name} convidou você para a sala {$room->name}",
+            'data' => [
+                'room_id' => $room->id,
+                'room_name' => $room->name,
+                'invite_id' => $invite->id,
+                'invite_token' => $invite->invite_token,
+            ],
+        ]);
+    }
+
+
     public function processMentions(Message $message, Room $room)
     {
         $body = $message->body;
         $mentionedUsers = [];
 
-        // Encontrar menções no formato @username
+        // encontra  mencoes no formato @username
         preg_match_all('/@(\w+)/', $body, $matches);
 
         if (!empty($matches[1])) {
@@ -100,7 +108,7 @@ class NotificationService
                     ->first();
 
                 if ($user && $user->id !== $message->sender_id) {
-                    // Verificar se o usuário tem acesso à sala
+
                     if ($room->users()->where('user_id', $user->id)->exists() || $room->created_by === $user->id) {
                         $this->createMentionNotification($user, $message->sender, $message, $room);
                         $mentionedUsers[] = $user;
@@ -112,9 +120,7 @@ class NotificationService
         return $mentionedUsers;
     }
 
-    /**
-     * Enviar notificação para todos os membros da sala (exceto o remetente).
-     */
+
     public function notifyRoomMembers(Message $message, Room $room, array $excludeUsers = [])
     {
         $excludeUsers[] = $message->sender_id;

@@ -1,24 +1,18 @@
 <template>
     <div class="global-user-search">
-        <!-- Botão para abrir modal -->
-        <button @click="showModal = true" class="btn btn-outline btn-sm btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            Buscar Usuários
+        <button @click="showModal = true" class="btn text-white btn-sm btn-success">
+            <i class="fa fa-plus"></i>
         </button>
 
-        <!-- Modal -->
         <div v-if="showModal" class="modal-open modal">
             <div class="modal-box max-w-2xl">
                 <h3 class="mb-4 text-lg font-bold">Buscar e Convidar Usuários</h3>
 
-                <!-- Busca -->
                 <div class="mb-4">
                     <label class="label">
                         <span class="label-text">Buscar por nome, email ou @handle</span>
                     </label>
-                    <div class="flex gap-2">
+                    <div class="mt-2 flex gap-2">
                         <input
                             v-model="searchQuery"
                             type="text"
@@ -28,25 +22,27 @@
                         />
                         <button @click="searchUsers" class="btn btn-primary" :disabled="searchQuery.length < 2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
                             </svg>
                         </button>
                     </div>
                 </div>
 
-                <!-- Resultados da busca -->
                 <div v-if="searchResults.length > 0" class="mb-4">
                     <h4 class="mb-2 font-semibold">Resultados da busca:</h4>
-                    <div class="space-y-2 max-h-60 overflow-y-auto">
-                        <div
-                            v-for="user in searchResults"
-                            :key="user.id"
-                            class="flex items-center justify-between rounded-lg bg-base-200 p-3"
-                        >
+                    <div class="max-h-60 space-y-2 overflow-y-auto">
+                        <div v-for="user in searchResults" :key="user.id" class="flex items-center justify-between rounded-lg bg-base-200 p-3">
                             <div class="flex items-center gap-3">
                                 <div class="placeholder avatar">
                                     <div class="w-10 rounded-full bg-neutral text-neutral-content">
-                                        <span class="text-sm">{{ user.name.charAt(0).toUpperCase() }}</span>
+                                        <span class="text-sm">
+                                            <img src="https://avatar.iran.liara.run/public" />
+                                        </span>
                                     </div>
                                 </div>
                                 <div>
@@ -58,12 +54,7 @@
                             <div class="flex items-center gap-2">
                                 <div v-if="user.has_sent_request" class="badge badge-warning">Solicitação Enviada</div>
                                 <div v-else-if="user.has_pending_request" class="badge badge-info">Solicitação Recebida</div>
-                                <button
-                                    v-else
-                                    @click="inviteUser(user)"
-                                    class="btn btn-primary btn-sm"
-                                    :disabled="inviting === user.id"
-                                >
+                                <button v-else @click="inviteUser(user)" class="btn btn-sm btn-primary" :disabled="inviting === user.id">
                                     <span v-if="inviting === user.id" class="loading loading-xs loading-spinner"></span>
                                     Convidar
                                 </button>
@@ -72,42 +63,18 @@
                     </div>
                 </div>
 
-                <!-- Mensagem quando não há resultados -->
                 <div v-else-if="searchQuery.length >= 2 && !searching" class="mb-4 text-center text-base-content/50">
                     <div class="mb-2 text-4xl">🔍</div>
                     <p>Nenhum usuário encontrado</p>
                 </div>
 
-                <!-- Convidar por handle específico -->
-                <div class="divider">OU</div>
-
-                <div class="mb-4">
-                    <label class="label">
-                        <span class="label-text">Convidar por @handle específico</span>
-                    </label>
-                    <div class="flex gap-2">
-                        <input
-                            v-model="specificHandle"
-                            type="text"
-                            placeholder="@handle"
-                            class="input-bordered input flex-1"
-                            @keyup.enter="inviteByHandle"
-                        />
-                        <button @click="inviteByHandle" class="btn btn-primary" :disabled="!specificHandle || invitingHandle">
-                            <span v-if="invitingHandle" class="loading loading-xs loading-spinner"></span>
-                            Convidar
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Convidar por email -->
                 <div class="divider">OU</div>
 
                 <div class="mb-4">
                     <label class="label">
                         <span class="label-text">Convidar por email</span>
                     </label>
-                    <div class="flex gap-2">
+                    <div class="mt-2 flex gap-2">
                         <input
                             v-model="inviteEmail"
                             type="email"
@@ -122,16 +89,15 @@
                     </div>
                 </div>
 
-                <!-- Link de convite público -->
                 <div class="divider">OU</div>
 
                 <div class="mb-4">
                     <label class="label">
                         <span class="label-text">Seu link de convite de amizade</span>
                     </label>
-                    <div class="flex gap-2">
-                        <input v-model="publicInviteLink" type="text" readonly class="input-bordered input flex-1" />
-                        <button @click="copyPublicLink" class="btn btn-outline">
+                    <div class="mt-2 flex gap-2">
+                        <input v-model="publicInviteLink" type="text" readonly class="input-bordered input flex-1 border" />
+                        <button @click="copyPublicLink" class="btn btn-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -145,9 +111,8 @@
                     <div class="mt-1 text-xs text-base-content/70">Compartilhe este link para que outros possam se tornar seus amigos</div>
                 </div>
 
-                <!-- Modal actions -->
                 <div class="modal-action">
-                    <button @click="showModal = false" class="btn btn-outline">Fechar</button>
+                    <button @click="showModal = false" class="btn btn-ghost">Fechar</button>
                 </div>
             </div>
         </div>
@@ -156,7 +121,7 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 interface User {
     id: number;
@@ -180,15 +145,12 @@ const inviting = ref<number | null>(null);
 const invitingHandle = ref(false);
 const invitingEmail = ref(false);
 
-// Formulários específicos
 const specificHandle = ref('');
 const inviteEmail = ref('');
 const publicInviteLink = ref('');
 
-// Debounce para busca
 let searchTimeout: number | null = null;
 
-// Métodos
 async function searchUsers() {
     if (searchQuery.value.length < 2) {
         searchResults.value = [];
@@ -198,7 +160,7 @@ async function searchUsers() {
     searching.value = true;
     try {
         const { data } = await axios.get('/api/users/search', {
-            params: { q: searchQuery.value }
+            params: { q: searchQuery.value },
         });
         searchResults.value = data;
     } catch (error) {
@@ -223,9 +185,9 @@ async function inviteUser(user: User) {
     try {
         const { data } = await axios.post(`/api/friends/${user.id}/send-request`);
 
-        // Atualizar status do usuário
+        // Atualiza status do usuário
         user.has_sent_request = true;
-        
+
         emit('friend-invited');
         alert('Solicitação de amizade enviada com sucesso!');
     } catch (error) {
@@ -246,7 +208,7 @@ async function inviteByHandle() {
     invitingHandle.value = true;
     try {
         const { data } = await axios.post('/api/users/invite-by-handle', {
-            handle: specificHandle.value.replace('@', '')
+            handle: specificHandle.value.replace('@', ''),
         });
 
         specificHandle.value = '';
@@ -267,12 +229,10 @@ async function inviteByHandle() {
 async function inviteByEmail() {
     if (!inviteEmail.value) return;
 
-    // Para emails, vamos buscar o usuário primeiro
     invitingEmail.value = true;
     try {
-        // Buscar usuário por email
         const { data: users } = await axios.get('/api/users/search', {
-            params: { q: inviteEmail.value }
+            params: { q: inviteEmail.value },
         });
 
         if (users.length === 0) {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+        }
+
+        .text-red {
+            color: red;
+        }
+
+        .text-green {
+            color: green
+        }
+    </style>
+</head>
+
+<body>
+    <!--ex-02-->
+
+    <div id="app">
+        <!--v-bind:--> <!--v-on:-->
+        <button :class="acive ? 'text-red' : 'text-green'" @click=" toogle">
+            Click me
+        </button>
+    </div>
+
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    acive: false,
+                };
+            },
+
+            methods: {
+                toogle() {
+                    this.acive = !this.acive; //on of 
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

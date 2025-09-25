@@ -205,15 +205,11 @@ function selectRoom(room) {
 
 function handleTyping() {
     isTyping.value = true;
-    
-    // Simular usuários digitando (para demonstração)
-    // Em um sistema real, isso viria do backend via WebSocket
+
     if (typingUsers.value.length === 0) {
-        typingUsers.value = [
-            { id: 2, name: 'João Silva', email: 'joao@example.com' }
-        ];
+        typingUsers.value = [{ id: 2, name: 'João Silva', email: 'joao@example.com' }];
     }
-    
+
     setTimeout(() => {
         isTyping.value = false;
         typingUsers.value = [];
@@ -531,10 +527,7 @@ const breadcrumbs = [
                             </div>
                         </div>
 
-                        <TypingIndicator 
-                            :typing-users="typingUsers" 
-                            :current-user-id="user?.id || 0" 
-                        />
+                        <TypingIndicator :typing-users="typingUsers" :current-user-id="user?.id || 0" />
                     </div>
 
                     <div v-if="showScrollButton" class="absolute right-4 bottom-4">

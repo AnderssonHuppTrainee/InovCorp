@@ -1,0 +1,23 @@
+<script setup lang="ts">
+import TaskForm from '@/components/tasks/TaskForm.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+</script>
+
+<template>
+    <AppLayout>
+        <div
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+        >
+            <!-- Navbar -->
+            <header
+                class="flex items-center justify-between bg-gray-600 px-4 py-3 shadow"
+            >
+                <h1 class="text-xl font-bold">Criar Nova Tarefa</h1>
+            </header>
+
+            <div>
+                <TaskForm />
+            </div>
+        </div>
+    </AppLayout>
+</template>

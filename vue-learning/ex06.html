@@ -9,18 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="h-full grid place-items-center">
+<body class="h-full grid place-items-center bg-gray-800 text-white">
     <div id="app">
+        <!--basicamente faz oque o v-model faz: bind e listen the value
+        <input type="text" :value="name" @input="name = $event">-->
 
     </div>
 
 
-
     <script type="module">
-        import App from './js/componenets/App.js'
-
-
-
+        import App from './js/components/App.js'
 
         Vue.createApp(App).mount('#app');
     </script>

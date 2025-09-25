@@ -1,0 +1,33 @@
+{
+
+    "assignments": [
+
+        { 
+            "name": "Finish project", 
+            "complete": false, "id": 1, 
+            "tag": "programming"
+        },
+
+        { 
+            "name": "Work out", 
+            "complete": true, 
+            "id": 2, 
+            "tag":"health" 
+        },
+
+        { 
+            "name": "Make dinner", 
+            "complete": false, 
+            "id": 3, 
+            "tag":"home" 
+        },
+
+         { 
+            "name": "Read ", 
+            "complete": true, 
+            "id": 4, 
+            "tag":"hobbie" 
+        }
+
+    ]
+}

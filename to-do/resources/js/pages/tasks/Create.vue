@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import TaskForm from '@/components/tasks/TaskForm.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useFlashMessages } from '@/composables/useFlashMessages';
+
+// Inicializar flash messages
+useFlashMessages();
 </script>
 
 <template>
@@ -12,7 +16,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
             <header
                 class="flex items-center justify-between bg-gray-600 px-4 py-3 shadow"
             >
-                <h1 class="text-xl font-bold">Criar Nova Tarefa</h1>
+                <h1 class="text-xl font-bold text-white">Criar Nova Tarefa</h1>
             </header>
 
             <div>

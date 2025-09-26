@@ -1,41 +1,53 @@
 <script setup lang="ts">
 import TaskList from '@/components/tasks/TaskList.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Task } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import routeTasks from '@/routes/tasks';
+import { Task, type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { useFlashMessages } from '@/composables/useFlashMessages';
 
-const tasks = ref<Task[]>([
+defineProps<{
+    tasks: Task[];
+}>();
+
+// Inicializar flash messages
+useFlashMessages();
+
+const breadcrumbs: BreadcrumbItem[] = [
     {
-        id: 1,
-        title: 'Estudar Vue',
-        description: 'Finalizar CRUD com Laravel',
-        priority: 'high',
-        status: 'pending',
+        title: 'Tarefas',
+        href: routeTasks.index().url,
     },
-    {
-        id: 2,
-        title: 'Revisar Tailwind',
-        description: 'Criar layout responsivo',
-        priority: 'high',
-        status: 'pending',
-    },
-]);
+];
 
-const createTask = ref(false);
-
-const completeTask = (id: number) => {
-    const task = tasks.value.find((t) => t.id === id);
-    if (task) task.status = 'completed';
+const handleComplete = (taskId: number) => {
+    router.patch(
+        routeTasks.complete(taskId).url,
+        {
+            status: 'completed',
+        },
+        {
+            onSuccess: () => {
+                console.log('Tarefa completada!');
+            },
+        },
+    );
 };
 
-const deleteTask = (id: number) => {
-    tasks.value = tasks.value.filter((t) => t.id !== id);
+const handleDelete = (taskId: number) => {
+    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+        router.delete(routeTasks.destroy(taskId).url, {
+            onSuccess: () => {
+                console.log('Tarefa excluída!');
+            },
+        });
+    }
 };
 </script>
 
 <template>
-    <AppLayout>
+    <Head title="Tarefas" />
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -45,7 +57,7 @@ const deleteTask = (id: number) => {
                 <h1 class="text-xl font-bold text-white">Gestão de Tarefas</h1>
                 <Link
                     class="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-                    href="route('tasks.create')"
+                    :href="routeTasks.create().url"
                 >
                     Nova Tarefa
                 </Link>
@@ -53,8 +65,8 @@ const deleteTask = (id: number) => {
             <main class="flex-1 p-4">
                 <TaskList
                     :tasks="tasks"
-                    @complete="completeTask"
-                    @delete="deleteTask"
+                    @complete="handleComplete"
+                    @delete="handleDelete"
                 />
             </main>
         </div>

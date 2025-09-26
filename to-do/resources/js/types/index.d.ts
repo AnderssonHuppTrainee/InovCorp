@@ -37,14 +37,14 @@ export interface User {
 }
 //tipar task
 export interface Task {
-  id: number
-  title: string
-  description?: string
-  priority: 'low' | 'medium' | 'high'
-  due_date?: string
-  status: 'pending' | 'completed'
-  created_at?: string
-  updated_at?: string
+  id: number;
+  title: string;
+  description: string | null;
+  priority: 'low' | 'medium' | 'high';
+  due_date: string | null;
+  status: 'pending' | 'completed';
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

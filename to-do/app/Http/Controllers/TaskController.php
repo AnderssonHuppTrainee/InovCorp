@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
@@ -14,22 +15,16 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         //listar tarefas
-        $query = Task::query(); //faz uma new query
+        $tasks = Task::all(); // ou Task::where('user_id', auth()->id())->get() para filtrar por usuário
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status); //filtro por status
-        }
-        if ($request->has('priority')) {
-            $query->where('priority', $request->priority);//prority
-        }
+        return Inertia::render('tasks/Index', [
+            'tasks' => $tasks, // Passa as tasks para o frontend
+        ]);
+    }
 
-        if ($request->has('due_date')) {
-            $query->whereDate('due_date', $request->due_date);//data de vencimento
-        }
-
-        $query->orderBy('due_date', 'asc')->get();
-
-        return response()->json($query); //data pra api
+    public function create()
+    {
+        return Inertia::render('tasks/Create');
     }
 
     /**
@@ -41,16 +36,18 @@ class TaskController extends Controller
 
         $task = Task::create($validated);
 
-        return response()->json($task, 201); //envia o http status
-
+        return redirect()->route('tasks.index')->with('success', 'Tarefa criada com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Task $task)
+    public function edit(Task $task)
     {
-        return response()->json($task);
+
+        return Inertia::render('tasks/Edit', [
+            'task' => $task,
+        ]);
     }
 
     /**
@@ -62,13 +59,14 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return response()->json($task);
+        return redirect()->route('tasks.index')->with('success', 'Tarefa atualizada com sucesso!');
     }
+
     //marca como complete
     public function complete(Task $task)
     {
         $task->update(['status' => 'completed']);
-        return response()->json($task);
+        return back()->with('success', 'Tarefa completada!');
     }
 
     /**
@@ -77,7 +75,8 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return response()->json(null, 204);
+        return redirect()->route('tasks.index')->with('success', 'Tarefa deletada com sucesso!');
+
     }
 
 }

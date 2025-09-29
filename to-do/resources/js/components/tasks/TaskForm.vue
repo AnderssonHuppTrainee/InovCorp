@@ -101,7 +101,7 @@ import { useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
 const props = defineProps<{
-    task: Task;
+    task?: Task;
 }>();
 
 const form = useForm({

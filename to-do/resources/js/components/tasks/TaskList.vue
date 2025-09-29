@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col">
+
         <div>
-            <ul class="space-y-2">
+            <ul class="space-y-4">
                 <TaskItem
                     v-for="task in tasks"
                     :key="task.id"

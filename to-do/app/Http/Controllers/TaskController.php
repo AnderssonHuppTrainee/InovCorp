@@ -14,11 +14,20 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+        $search = $request->input('search');
         //listar tarefas
-        $tasks = Task::all(); // ou Task::where('user_id', auth()->id())->get() para filtrar por usuário
+        $tasks = Task::query()
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->orderBy('due_date', 'asc')
+            ->paginate(3)
+            ->withQueryString();
 
         return Inertia::render('tasks/Index', [
-            'tasks' => $tasks, // Passa as tasks para o frontend
+            'tasks' => $tasks,
+            'filters' => $request->only('search')
         ]);
     }
 

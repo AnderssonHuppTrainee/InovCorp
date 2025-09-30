@@ -1,91 +1,94 @@
 <template>
-    <div class="rounded bg-white p-6">
-        <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="title">Título</Label>
-                    <Input
-                        id="title"
-                        type="text"
-                        v-model="form.title"
-                        required
-                        autofocus
-                        autocomplete="title"
-                        name="title"
-                        placeholder="Study English"
-                    />
-                    <span v-if="form.errors.title" class="text-sm text-red-500">
-                        {{ form.errors.title }}
-                    </span>
-                </div>
+    <div class="mx-auto max-w-2xl rounded-2xl bg-white p-6 shadow-md sm:p-8">
+        <form
+            @submit.prevent="handleSubmit"
+            enctype="multipart/form-data"
+            class="space-y-6"
+        >
+            <!-- Título -->
+            <div class="space-y-2">
+                <Label for="title">Título</Label>
+                <Input
+                    id="title"
+                    type="text"
+                    v-model="form.title"
+                    required
+                    autofocus
+                    autocomplete="title"
+                    placeholder="Ex: Estudar inglês"
+                />
+                <p v-if="form.errors.title" class="text-sm text-red-500">
+                    {{ form.errors.title }}
+                </p>
+            </div>
 
-                <div class="grid gap-2">
-                    <Label for="description">Descrição</Label>
-                    <textarea
-                        id="description"
-                        v-model="form.description"
-                        placeholder="Descrição (opcional)"
-                        class="w-full rounded border px-3 py-2"
-                    ></textarea>
-                    <span
-                        v-if="form.errors.description"
-                        class="text-sm text-red-500"
-                    >
-                        {{ form.errors.description }}
-                    </span>
-                </div>
+            <!-- Descrição -->
+            <div class="space-y-2">
+                <Label for="description">Descrição</Label>
+                <textarea
+                    id="description"
+                    v-model="form.description"
+                    placeholder="Descrição (opcional)"
+                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    rows="4"
+                ></textarea>
+                <p v-if="form.errors.description" class="text-sm text-red-500">
+                    {{ form.errors.description }}
+                </p>
+            </div>
 
-                <div class="grid gap-2">
+            <!-- Prioridade e Data -->
+            <div class="grid gap-6 sm:grid-cols-2">
+                <div class="space-y-2">
                     <Label for="priority">Prioridade</Label>
                     <select
                         id="priority"
                         v-model="form.priority"
-                        class="w-full rounded border px-3 py-2"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="low">Baixa</option>
                         <option value="medium">Média</option>
                         <option value="high">Alta</option>
                     </select>
-                    <span
-                        v-if="form.errors.priority"
-                        class="text-sm text-red-500"
-                    >
+                    <p v-if="form.errors.priority" class="text-sm text-red-500">
                         {{ form.errors.priority }}
-                    </span>
+                    </p>
                 </div>
 
-                <div class="grid gap-2">
+                <div class="space-y-2">
                     <Label for="due_date">Data Limite</Label>
                     <Input
                         id="due_date"
                         type="date"
                         v-model="form.due_date"
                         autocomplete="due_date"
-                        name="due_date"
                     />
-                    <span
-                        v-if="form.errors.due_date"
-                        class="text-sm text-red-500"
-                    >
+                    <p v-if="form.errors.due_date" class="text-sm text-red-500">
                         {{ form.errors.due_date }}
-                    </span>
+                    </p>
                 </div>
+            </div>
 
-                <div class="flex justify-end gap-2">
-                    <Button type="submit" class="mt-2 w-50" tabindex="5">
-                        <LoaderCircle
-                            v-if="form.processing"
-                            class="mr-2 h-4 w-4 animate-spin"
-                        />
-                        Salvar
-                    </Button>
+            <!-- Ações -->
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <a
+                    :href="routeTasks.index().url"
+                    class="flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-100"
+                >
+                    Cancelar
+                </a>
 
-                    <div
-                        class="mt-2 flex w-50 items-center justify-center rounded hover:bg-gray-300"
-                    >
-                        <a :href="routeTasks.index().url"> Cancelar </a>
-                    </div>
-                </div>
+                <Button
+                    type="submit"
+                    class="flex items-center justify-center gap-2 bg-green-500 text-white hover:bg-green-600"
+                    :disabled="form.processing"
+                >
+                    <LoaderCircle
+                        v-if="form.processing"
+                        class="h-4 w-4 animate-spin"
+                    />
+                    Salvar
+                </Button>
             </div>
         </form>
     </div>
@@ -113,10 +116,8 @@ const form = useForm({
 
 function handleSubmit() {
     if (props.task) {
-        //update
         form.patch(routeTasks.update(props.task.id).url);
     } else {
-        // create
         form.post(routeTasks.store().url);
     }
 }

@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import TaskForm from '@/components/tasks/TaskForm.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import TaskHeader from '@/components/tasks/TaskHeader.vue';
 import { useFlashMessages } from '@/composables/useFlashMessages';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Nova Tarefa',
+        href: '/tasks',
+    },
+];
 
 // Inicializar flash messages
 useFlashMessages();
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-            <!-- Navbar -->
-            <header
-                class="flex items-center justify-between bg-gray-600 px-4 py-3 shadow"
-            >
-                <h1 class="text-xl font-bold text-white">Criar Nova Tarefa</h1>
-            </header>
+            <TaskHeader title="Criar Nova Tarefa" />
 
             <div>
                 <TaskForm />

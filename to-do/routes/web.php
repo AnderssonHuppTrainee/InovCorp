@@ -25,16 +25,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tasks', [TaskController::class, 'store'])
         ->name('tasks.store');
 
+    Route::get('/tasks/{task}', [TaskController::class, 'show'])
+        ->whereNumber('task')
+        ->name('tasks.show');
+
     Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])
+        ->whereNumber('task')
         ->name('tasks.edit');
 
     Route::patch('tasks/{task}', [TaskController::class, 'update'])
+        ->whereNumber('task')
         ->name('tasks.update');
 
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])
+        ->whereNumber('task')
         ->name('tasks.complete');
 
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
+        ->whereNumber('task')
         ->name('tasks.destroy');
 
 

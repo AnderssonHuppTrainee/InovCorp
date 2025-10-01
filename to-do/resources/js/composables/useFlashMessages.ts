@@ -13,9 +13,9 @@ export function useFlashMessages() {
     const page = usePage();
     
     onMounted(() => {
-        console.log('🔍 useFlashMessages montado');
-        console.log('📄 Props atuais:', page.props);
-        console.log('💬 Flash messages:', page.props.flash);
+        console.log('useFlashMessages montado');
+        console.log('Props atuais:', page.props);
+        console.log('Flash messages:', page.props.flash);
         
         // Verificar flash messages imediatamente
         const flash = page.props.flash as FlashMessages;

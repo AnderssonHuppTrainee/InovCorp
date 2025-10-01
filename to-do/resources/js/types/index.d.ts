@@ -47,4 +47,17 @@ export interface Task {
   updated_at?: string;
 }
 
+// typar filtros
+export type Filters = {
+  search?: string;
+  status?: ''|'pending' | 'completed';
+  priority?:''| 'low' | 'medium' | 'high';
+  due_from?: string;
+  due_to?: string;
+  sort_by?: 'due_date' | 'priority' | 'title' | 'created_at';
+  sort_dir?: 'asc' | 'desc';
+  per_page?: number;
+};
+
+
 export type BreadcrumbItemType = BreadcrumbItem;

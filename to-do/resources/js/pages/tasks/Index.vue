@@ -81,8 +81,6 @@ const handleDelete = (taskId: number) => {
             </TaskHeader>
             <TaskFilters :filters="filters" :pushFilters="pushFilters" />
 
-            <!--<TaskFilters :filters="filtersApi" />-->
-
             <main class="flex-1">
                 <TaskList
                     :tasks="tasks.data"

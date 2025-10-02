@@ -32,8 +32,7 @@ class TaskController extends Controller
             })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
+                    $q->where('title', 'like', "%{$search}%");
                 });
             })
             ->when($status, function ($query) use ($status) {

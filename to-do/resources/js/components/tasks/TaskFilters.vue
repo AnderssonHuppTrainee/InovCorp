@@ -18,7 +18,7 @@ const props = defineProps<{
                 <input
                     type="text"
                     v-model="props.filters.search"
-                    placeholder="Buscar por título ou descrição..."
+                    placeholder="Buscar por título..."
                     class="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
             </div>
@@ -54,30 +54,34 @@ const props = defineProps<{
         </div>
 
         <div
-            class="mt-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
+            class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1fr_2fr_auto]"
         >
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div
+                class="flex w-full flex-wrap gap-2 sm:flex-nowrap sm:items-center"
+            >
                 <input
                     type="date"
                     v-model="props.filters.due_from"
                     @update:modelValue="props.pushFilters"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    class="min-w-[140px] flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     placeholder="De"
                 />
                 <input
                     type="date"
                     v-model="props.filters.due_to"
                     @update:modelValue="props.pushFilters"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    class="min-w-[140px] flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     placeholder="Até"
                 />
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+            <div
+                class="flex flex-col justify-center gap-2 sm:flex-row sm:items-center"
+            >
                 <label class="mr-1 block text-sm text-gray-600"
                     >Ordenar por</label
                 >
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <select
                         v-model="props.filters.sort_by"
                         @update:modelValue="props.pushFilters"
@@ -99,10 +103,10 @@ const props = defineProps<{
                 </div>
             </div>
 
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
-                <label class="mr-1 block text-sm text-gray-600"
-                    >Por página</label
-                >
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <label class="mr-1 block text-sm text-gray-600">
+                    Por página
+                </label>
                 <select
                     v-model.number="props.filters.per_page"
                     @update:modelValue="props.pushFilters"

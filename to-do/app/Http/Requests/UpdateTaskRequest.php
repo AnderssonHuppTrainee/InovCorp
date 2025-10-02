@@ -25,8 +25,18 @@ class UpdateTaskRequest extends FormRequest
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'priority' => 'in:low,medium,high',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:today',
             'status' => 'in:pending,completed',
+        ];
+    }
+
+    /**
+     * Get custom error messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'due_date.after_or_equal' => 'A data limite não pode ser anterior a hoje.',
         ];
     }
 }

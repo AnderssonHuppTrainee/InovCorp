@@ -5,7 +5,6 @@
             enctype="multipart/form-data"
             class="space-y-6"
         >
-            <!-- Título -->
             <div class="space-y-2">
                 <Label for="title">Título</Label>
                 <Input
@@ -22,7 +21,6 @@
                 </p>
             </div>
 
-            <!-- Descrição -->
             <div class="space-y-2">
                 <Label for="description">Descrição</Label>
                 <textarea
@@ -37,7 +35,6 @@
                 </p>
             </div>
 
-            <!-- Prioridade e Data -->
             <div class="grid gap-6 sm:grid-cols-2">
                 <div class="space-y-2">
                     <Label for="priority">Prioridade</Label>
@@ -61,6 +58,7 @@
                         id="due_date"
                         type="date"
                         v-model="form.due_date"
+                        :min="today"
                         autocomplete="due_date"
                     />
                     <p v-if="form.errors.due_date" class="text-sm text-red-500">
@@ -69,7 +67,6 @@
                 </div>
             </div>
 
-            <!-- Ações -->
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <a
                     :href="routeTasks.index().url"
@@ -114,7 +111,28 @@ const form = useForm({
     due_date: props.task?.due_date || '',
 });
 
+function getTodayLocal(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+const today = getTodayLocal();
+
 function handleSubmit() {
+    //impedir datas anteriores a hoje
+    if (form.due_date) {
+        // limpar erro anterior do campo
+        // @ts-ignore - clearErrors aceita nome do campo em runtime
+        form.clearErrors?.('due_date');
+        if (String(form.due_date) < today) {
+            // @ts-ignore - setError existe no useForm do Inertia
+            form.setError?.('due_date', 'A data não pode ser anterior a hoje.');
+            return;
+        }
+    }
     if (props.task) {
         form.patch(routeTasks.update(props.task.id).url);
     } else {

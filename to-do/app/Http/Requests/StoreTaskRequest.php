@@ -25,7 +25,17 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'priority' => 'in:low,medium,high',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:today',
+        ];
+    }
+
+    /**
+     * Get custom error messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'due_date.after_or_equal' => 'A data limite não pode ser anterior a hoje.',
         ];
     }
 }

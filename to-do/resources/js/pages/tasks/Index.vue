@@ -34,8 +34,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-console.log('filters raw:', props.filters);
-console.log('filters.search type:', typeof props.filters.search);
 const { filters, pushFilters } = useTaskFilters(props.filters);
 
 const handleComplete = (taskId: number) => {

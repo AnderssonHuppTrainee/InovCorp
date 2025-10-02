@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue';
 import { dashboard, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Welcome">
+    <Head title="TaskFlow - Seu Gerenciador de Tarefas">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
@@ -15,6 +16,7 @@ import { Head, Link } from '@inertiajs/vue3';
             class="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl"
         >
             <nav class="flex items-center justify-end gap-4">
+                <AppLogo />
                 <Link
                     v-if="$page.props.auth.user"
                     :href="dashboard()"
@@ -44,7 +46,100 @@ import { Head, Link } from '@inertiajs/vue3';
             <main
                 class="flex w-full max-w-[335px] flex-col-reverse justify-center overflow-hidden rounded-lg lg:max-w-4xl lg:flex-row"
             >
-                <p>Bem vindo ao To-do app</p>
+                <div class="flex flex-1 flex-col justify-center p-4 lg:p-8">
+                    <h1
+                        class="mb-4 text-3xl font-bold lg:text-4xl dark:text-[#EDEDEC]"
+                    >
+                        Organize sua vida com o
+                        <span class="text-[#1976D2]">TaskFlow</span>
+                    </h1>
+                    <p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
+                        O aplicativo de tarefas que simplifica seu dia a dia.
+                        Crie, organize e acompanhe suas tarefas de forma
+                        intuitiva e eficiente.
+                    </p>
+
+                    <div class="mb-8 flex flex-col gap-4 sm:flex-row">
+                        <Link
+                            :href="register()"
+                            class="inline-flex items-center justify-center rounded-md bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+                        >
+                            Começar Agora
+                        </Link>
+                        <Link
+                            :href="login()"
+                            class="inline-flex items-center justify-center rounded-md border border-[#19140035] px-6 py-3 text-sm font-medium text-[#1b1b18] transition-colors hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                        >
+                            Saiba Mais
+                        </Link>
+                    </div>
+                </div>
+                <div class="flex flex-1 items-center justify-center p-4 lg:p-8">
+                    <div class="relative w-full max-w-md">
+                        <div
+                            class="rounded-2xl bg-gradient-to-br from-[#1976D2] to-[#42A5F5] p-8 shadow-xl"
+                        >
+                            <div
+                                class="mb-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                            >
+                                <div class="mb-3 flex items-center gap-3">
+                                    <div
+                                        class="h-3 w-3 rounded-full bg-green-500"
+                                    ></div>
+                                    <div
+                                        class="text-sm font-medium dark:text-white"
+                                    >
+                                        Reunião com equipe
+                                    </div>
+                                </div>
+                                <div class="mb-3 flex items-center gap-3">
+                                    <div
+                                        class="h-3 w-3 rounded-full bg-yellow-500"
+                                    ></div>
+                                    <div
+                                        class="text-sm font-medium dark:text-white"
+                                    >
+                                        Relatório mensal
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="h-3 w-3 rounded-full bg-red-500"
+                                    ></div>
+                                    <div
+                                        class="text-sm font-medium dark:text-white"
+                                    >
+                                        Entregar projeto
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                            >
+                                <div
+                                    class="mb-2 flex items-center justify-between"
+                                >
+                                    <span
+                                        class="text-sm font-medium dark:text-white"
+                                        >Progresso do dia</span
+                                    >
+                                    <span
+                                        class="text-sm text-gray-500 dark:text-gray-400"
+                                        >75%</span
+                                    >
+                                </div>
+                                <div
+                                    class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700"
+                                >
+                                    <div
+                                        class="h-2 rounded-full bg-green-500"
+                                        style="width: 75%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
         <div class="hidden h-14.5 lg:block"></div>

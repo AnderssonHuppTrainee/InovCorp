@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <li
-            class="rounded-lg bg-white p-6 shadow-md transition hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-500"
+            class="rounded-lg bg-white p-6 shadow-md transition focus-within:ring-2 focus-within:ring-blue-500 hover:shadow-lg"
             :class="{
                 'line-through opacity-60': props.task.status === 'completed',
             }"
@@ -19,16 +19,17 @@
                     </Link>
                 </h3>
                 <span
-                    class="mt-2 inline-block rounded-full px-3 py-1 text-xs font-semibold text-white sm:mt-0"
-                    :class="{
-                        'bg-red-500': props.task.priority === 'high',
-                        'bg-yellow-500': props.task.priority === 'medium',
-                        'bg-green-500': props.task.priority === 'low',
-                    }"
-                    :aria-label="`Prioridade ${props.task.priority}`"
+                    v-if="priorityConfig[props.task.priority]"
+                    class="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white sm:mt-0"
+                    :class="priorityConfig[props.task.priority].color"
+                    :aria-label="`Prioridade ${priorityConfig[props.task.priority].label}`"
                     role="status"
                 >
-                    {{ props.task.priority }}
+                    <component
+                        :is="priorityConfig[props.task.priority].icon"
+                        class="h-3 w-3"
+                    />
+                    {{ priorityConfig[props.task.priority].label }}
                 </span>
             </div>
 
@@ -41,7 +42,9 @@
                     <label class="font-medium text-gray-700"
                         >Data Limite:</label
                     >
-                    <p class="mt-1 text-gray-800">{{ props.task.due_date || '—' }}</p>
+                    <p class="mt-1 text-gray-800">
+                        {{ props.task.due_date || '—' }}
+                    </p>
                 </div>
                 <div>
                     <Link
@@ -52,6 +55,24 @@
                     >
                         <Eye />
                     </Link>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div v-if="props.task.status === 'completed'">
+                    <span
+                        class="mt-2 inline-block rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white sm:mt-0"
+                        :aria-label="`Status ${props.task.status}`"
+                        role="status"
+                    >
+                        {{ statusLabels[props.task.status] }}
+                    </span>
+                </div>
+                <div v-if="isOverdue(props.task)">
+                    <span
+                        class="mt-2 inline-block rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white sm:mt-0"
+                    >
+                        Atrasado
+                    </span>
                 </div>
             </div>
 
@@ -68,6 +89,7 @@
                 </button>
 
                 <Link
+                    v-if="props.task.status !== 'completed'"
                     :href="routeTasks.edit(props.task.id).url"
                     class="flex items-center gap-1 text-yellow-600 transition hover:text-yellow-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-600"
                     title="Editar tarefa"
@@ -95,9 +117,51 @@
 import routeTasks from '@/routes/tasks';
 import { Task } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Eye, SquareCheck, SquarePen, Trash2 } from 'lucide-vue-next';
+import {
+    AlertTriangle,
+    ArrowDown,
+    Eye,
+    Flag,
+    SquareCheck,
+    SquarePen,
+    Trash2,
+} from 'lucide-vue-next';
 
 const props = defineProps<{
     task: Task; //array de tasks
 }>();
+
+const priorityConfig: Record<
+    string,
+    { label: string; icon: any; color: string }
+> = {
+    high: {
+        label: 'Alta',
+        icon: Flag,
+        color: 'bg-red-500',
+    },
+    medium: {
+        label: 'Média',
+        icon: AlertTriangle,
+        color: 'bg-yellow-500',
+    },
+    low: {
+        label: 'Baixa',
+        icon: ArrowDown,
+        color: 'bg-green-500',
+    },
+};
+const statusLabels: Record<string, string> = {
+    completed: 'Concluído',
+    pending: 'Pendente',
+};
+
+function isOverdue(task: { status: string; due_date?: string | null }) {
+    if (task.status !== 'pending' || !task.due_date) return false;
+
+    const today = new Date();
+    const dueDate = new Date(task.due_date);
+
+    return dueDate < new Date(today.toISOString().split('T')[0]);
+}
 </script>

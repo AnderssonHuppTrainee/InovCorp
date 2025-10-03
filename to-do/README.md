@@ -89,15 +89,16 @@ Observação: este watcher evita o problema de toasts não aparecerem após cria
 - `app/Models`: modelos `Task` e `User`.
 - `resources/js`: front-end (layouts, páginas, componentes, composables, types, rotas helpers).
 - `routes`: arquivos de rotas web, auth e settings.
-- `database`: migrations, seeds e SQLite.
+- `database`: migrations, seeds e MySQL.
 - `tests`: feature tests para auth, dashboard, settings e tarefas.
 
 ### Como Executar
 
-1. Requisitos: PHP 8.2+, Composer, Node 18+, SQLite.
+1. Requisitos: PHP 8.2+, Composer, Node 18+, MySQL.
 2. Backend
     - Instalar deps: `composer install`
-    - Copiar `.env` e ajustar se necessário; garantir `DB_CONNECTION=sqlite` e arquivo `database/database.sqlite` existente
+    - Copiar `.env` e ajustar se necessário; garantir `DB_CONNECTION=mysql`
+    - Configurar o MySQL user e password no env
     - Migrar e popular: `php artisan migrate --seed`
     - Servir: `php artisan serve`
 3. Frontend
@@ -123,7 +124,3 @@ Observação: este watcher evita o problema de toasts não aparecerem após cria
 - Melhorias de UX no modal (ex.: foco, reset de formulário ao abrir/fechar, mensagens inline).
 - Evitar toasts duplicados adicionando guarda simples no composable (memorizar último `flash` processado) ou limpando flash após exibição no front.
 - Filtros adicionais (texto livre por descrição, intervalo de criação) e views salvas.
-
-### Licença
-
-Este projeto segue a licença do repositório onde estiver hospedado (defina conforme necessário).

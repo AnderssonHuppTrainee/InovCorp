@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col">
-
         <div>
             <ul class="space-y-4">
                 <TaskItem
                     v-for="task in tasks"
                     :key="task.id"
                     :task="task"
+                    @edit="$emit('edit', $event)"
                     @complete="$emit('complete', task.id)"
                     @delete="$emit('delete', task.id)"
                 />

@@ -88,16 +88,17 @@
                     Concluir
                 </button>
 
-                <Link
+                <button
+                    type="button"
                     v-if="props.task.status !== 'completed'"
-                    :href="routeTasks.edit(props.task.id).url"
+                    @click="$emit('edit', props.task)"
                     class="flex items-center gap-1 text-yellow-600 transition hover:text-yellow-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-600"
                     title="Editar tarefa"
                     aria-label="Editar tarefa"
                 >
                     <SquarePen />
                     Editar
-                </Link>
+                </button>
 
                 <button
                     class="flex items-center gap-1 text-red-600 transition hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
@@ -118,8 +119,8 @@ import routeTasks from '@/routes/tasks';
 import { Task } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
-    AlertTriangle,
     ArrowDown,
+    CircleAlert,
     Eye,
     Flag,
     SquareCheck,
@@ -138,17 +139,17 @@ const priorityConfig: Record<
     high: {
         label: 'Alta',
         icon: Flag,
-        color: 'bg-red-500',
+        color: 'bg-red-500 text-white dark:bg-red-900/30 dark:text-red-300',
     },
     medium: {
         label: 'Média',
-        icon: AlertTriangle,
-        color: 'bg-yellow-500',
+        icon: CircleAlert,
+        color: 'bg-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
     },
     low: {
         label: 'Baixa',
         icon: ArrowDown,
-        color: 'bg-green-500',
+        color: 'bg-green-500 text-white dark:bg-green-900/30 dark:text-green-300',
     },
 };
 const statusLabels: Record<string, string> = {

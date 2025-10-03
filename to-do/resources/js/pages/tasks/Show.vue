@@ -120,6 +120,15 @@ function isOverdue(task: { status: string; due_date?: string | null }) {
                                     {{ statusLabels[props.task.status] }}
                                 </span>
                             </div>
+                            <div v-if="props.task.status === 'pending'">
+                                <span
+                                    class="mt-2 inline-block rounded-full bg-yellow-500 px-3 py-1 text-xs font-semibold text-white sm:mt-0"
+                                    :aria-label="`Status ${props.task.status}`"
+                                    role="status"
+                                >
+                                    {{ statusLabels[props.task.status] }}
+                                </span>
+                            </div>
                             <div v-if="isOverdue(props.task)">
                                 <span
                                     class="mt-2 inline-block rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white sm:mt-0"

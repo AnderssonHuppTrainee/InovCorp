@@ -84,7 +84,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 
                 <Button
                     type="submit"
-                    class="mt-2 w-full bg-[#4f46e5] text-white transition-colors hover:bg-[#4338ca]"
+                    class="mt-2 w-full bg-blue-500 text-white transition-colors hover:bg-blue-600"
                     tabindex="5"
                     :disabled="processing"
                     data-test="register-user-button"

@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto max-w-2xl rounded-2xl bg-white p-6 shadow-md sm:p-8">
+    <div class="p-6 sm:p-8">
         <form
             @submit.prevent="handleSubmit"
             enctype="multipart/form-data"
@@ -69,7 +69,7 @@
 
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <a
-                    :href="routeTasks.index().url"
+                    @click="$emit('cancel')"
                     class="flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-100"
                 >
                     Cancelar
@@ -120,23 +120,26 @@ function getTodayLocal(): string {
 }
 
 const today = getTodayLocal();
-
+const emit = defineEmits<{
+    (e: 'saved'): void;
+    (e: 'cancel'): void;
+}>();
 function handleSubmit() {
-    //impedir datas anteriores a hoje
     if (form.due_date) {
-        // limpar erro anterior do campo
-        // @ts-ignore - clearErrors aceita nome do campo em runtime
         form.clearErrors?.('due_date');
         if (String(form.due_date) < today) {
-            // @ts-ignore - setError existe no useForm do Inertia
             form.setError?.('due_date', 'A data não pode ser anterior a hoje.');
             return;
         }
     }
     if (props.task) {
-        form.patch(routeTasks.update(props.task.id).url);
+        form.patch(routeTasks.update(props.task.id).url, {
+            onSuccess: () => emit('saved'),
+        });
     } else {
-        form.post(routeTasks.store().url);
+        form.post(routeTasks.store().url, {
+            onSuccess: () => emit('saved'),
+        });
     }
 }
 </script>

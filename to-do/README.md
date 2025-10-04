@@ -1,4 +1,4 @@
-## To‑Do App (Laravel + Inertia + Vue 3)
+## Task Flow (Laravel + Inertia + Vue 3)
 
 ### Visão Geral
 

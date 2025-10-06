@@ -11,11 +11,13 @@ use App\Models\PermissionGroup;
 use App\Models\WorkOrder;
 use App\Models\CalendarEvent;
 use App\Models\DigitalArchive;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -51,10 +53,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function permissionGroups()
-    {
-        return $this->belongsToMany(PermissionGroup::class, 'user_permission_groups');
-    }
 
     public function workOrders()
     {

@@ -30,7 +30,6 @@ return new class extends Migration {
                 ['pending', 'in_progress', 'completed', 'cancelled']
             )->default('pending');
             $table->timestamps();
-            $table->softDeletes();
 
             $table->index(['client_id', 'status']);
             $table->index('assigned_to');

@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FinancialTransaction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Symfony\Component\Routing\Loader\Configurator\Traits\AddTrait;
 
 class BankAccount extends Model
 {
     /** @use HasFactory<\Database\Factories\BankAccountFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

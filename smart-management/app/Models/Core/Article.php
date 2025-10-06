@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProposalItem;
+use App\Models\TaxRate;
+use App\Models\OrderItem;
 
 class Article extends Model
 {
@@ -32,7 +34,15 @@ class Article extends Model
         'observations' => 'string',
         'encrypted',
     ];
+    public function taxRate()
+    {
+        return $this->belongsTo(TaxRate::class);
+    }
 
+    public function ordersItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
     public function proposalItems()
     {
         return $this->hasMany(ProposalItem::class);

@@ -35,21 +35,7 @@ return new class extends Migration {
             $table->index('entity_id');
         });
 
-        Schema::create('calendar_event_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('color')->default('#3b82f6');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
 
-        Schema::create('calendar_actions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
     }
 
     /**

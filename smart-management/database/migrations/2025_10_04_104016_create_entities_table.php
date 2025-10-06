@@ -35,7 +35,7 @@ return new class extends Migration {
             // indexes
             $table->index('tax_number');
             $table->index('status');
-            $table->index(['types'], 'entities_types_index');
+
         });
     }
 

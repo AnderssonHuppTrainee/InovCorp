@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Entity;
 use App\Models\Proposal;
 use App\Models\OrderItem;
-
+use App\Models\DigitalArchive;
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'number',
@@ -40,6 +42,15 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+    public function supplierOrders()
+    {
+        return $this->hasMany(SupplierOrder::class);
+    }
+    public function documents()
+    {
+        return $this->morphMany(DigitalArchive::class, 'archivable')
+            ->where('document_type', 'order_pdf');
     }
 
 }

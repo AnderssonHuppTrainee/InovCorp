@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Entity;
 use App\Models\Order;
 use App\Models\SupplierInvoice;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupplierOrder extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'number',
         'order_date',

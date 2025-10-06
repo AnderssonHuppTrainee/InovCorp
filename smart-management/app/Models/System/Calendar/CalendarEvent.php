@@ -8,11 +8,13 @@ use App\Models\Entity;
 use App\Models\CalendarEventType;
 use App\Models\CalendarAction;
 use App\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CalendarEvent extends Model
 {
     /** @use HasFactory<\Database\Factories\CalendarFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'event_date',

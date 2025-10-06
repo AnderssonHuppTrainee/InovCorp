@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DigitalArchive extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'name',
         'file_name',
@@ -29,7 +31,7 @@ class DigitalArchive extends Model
 
     public function archivable()
     {
-        return $this->morphTo();
+        return $this->morphTo(); //relação oplimofica pode prtecener a qualquer model
     }
 
     public function uploadedBy()

@@ -33,6 +33,7 @@ class WorkOrder extends Model
     {
         return $this->belongsTo(Entity::class, 'client_id');
     }
+    //pertecem a um user
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');

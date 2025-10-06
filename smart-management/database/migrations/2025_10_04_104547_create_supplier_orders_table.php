@@ -10,15 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('supplier_orders', function (Blueprint $table) {
             $table->id();
             $table->string('number')->unique();
-            $table->date('proposal_date');
-            $table->foreignId('client_id')
+            $table->date('order_date');
+            $table->foreignId('supplier_id')
                 ->constrained('entities')
-                ->onDelete('restrict'); // aenas clientes
-            $table->foreignId('proposal_id')->nullable()->constrained()
-                ->onDelete('set null'); // pode vir de proposta
+                ->onDelete('restrict'); // apenas fornecedores
+            $table->foreignId('order_id')->constrained()
+                ->onDelete('cascade'); // order primaria
             $table->decimal('total_amount', 10, 2)
                 ->default(0);
             $table->enum('status', ['draft', 'closed'])
@@ -26,11 +26,8 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('number');
-            $table->index(['client_id', 'status']);
-
+            $table->index(['supplier_id', 'status']);
         });
-
     }
 
     /**
@@ -38,6 +35,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('supplier_orders');
     }
 };

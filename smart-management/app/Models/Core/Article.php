@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProposalItem;
 
 class Article extends Model
 {
@@ -27,6 +28,13 @@ class Article extends Model
         'name' => 'string',
         'encrypted',
         'description' => 'string',
-        'tax_rate_id' => 'encrypted',
+        'encrypted',
+        'observations' => 'string',
+        'encrypted',
     ];
+
+    public function proposalItems()
+    {
+        return $this->hasMany(ProposalItem::class);
+    }
 }

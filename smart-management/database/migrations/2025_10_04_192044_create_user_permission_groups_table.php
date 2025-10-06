@@ -10,15 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('user_permission_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('type')->default('article'); // article, document, other
-            $table->boolean('is_active')->default(true);
+            $table->foreignId('user_id')->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('permission_group_id')->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
 
-            $table->index(['type', 'is_active']);
+            $table->unique(['user_id', 'permission_group_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('user_permission_groups');
     }
 };

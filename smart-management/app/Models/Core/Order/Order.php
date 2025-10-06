@@ -4,9 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Entity;
+use App\Models\Proposal;
+use App\Models\OrderItem;
 
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'number',
+        'proposal_date',
+        'client_id',
+        'proposal_id',
+        'total_amount',
+        'status'
+    ];
+
+    protected $casts = [
+        'number',
+        'proposal_date' => 'date',
+    ];
+
+    public function client()
+    {
+        return $this->belongsTo(Entity::class, 'client_id');
+    }
+
+    public function proposal()
+    {
+        return $this->belongsTo(Proposal::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
 }

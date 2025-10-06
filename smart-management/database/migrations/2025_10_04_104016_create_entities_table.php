@@ -10,26 +10,32 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('contacts', function (Blueprint $table) {
+        Schema::create('entities', function (Blueprint $table) {
             $table->id();
             $table->string('number')->unique();
-            $table->foreignId('entity_id')->constrained()->onDelete('cascade');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->foreignId('contact_role_id')->constrained()
+            $table->string('tax_number')->unique();
+            $table->json('types');
+            $table->string('name');
+            $table->text('address');
+            $table->string('postal_code');
+            $table->string('city');
+            $table->foreignId('country_id')->constrained()
                 ->onDelete('restrict');
             $table->string('phone')->nullable();
             $table->string('mobile')->nullable();
+            $table->string('website')->nullable();
             $table->string('email')->nullable();
             $table->boolean('gdpr_consent')->default(false);
             $table->text('observations')->nullable();
             $table->enum('status', ['active', 'inactive'])
                 ->default('active');
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->index(['entity_id', 'status']);
-            $table->index('contact_role_id');
-
+            // indexes
+            $table->index('tax_number');
+            $table->index('status');
+            $table->index(['types'], 'entities_types_index');
         });
     }
 
@@ -38,6 +44,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('contacts');
+        Schema::dropIfExists('entities');
     }
 };

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\PermissionGroup;
+use App\Models\WorkOrder;
+use App\Models\CalendarEvent;
+use App\Models\DigitalArchive;
 
 class User extends Authenticatable
 {
@@ -45,5 +49,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function permissionGroups()
+    {
+        return $this->belongsToMany(PermissionGroup::class, 'user_permission_groups');
+    }
+
+    public function workOrders()
+    {
+        return $this->hasMany(WorkOrder::class, 'assigned_to');
+    }
+
+    public function calendarEvents()
+    {
+        return $this->hasMany(CalendarEvent::class);
+    }
+
+    public function uploadedDocuments()
+    {
+        return $this->hasMany(DigitalArchive::class, 'uploaded_by');
     }
 }

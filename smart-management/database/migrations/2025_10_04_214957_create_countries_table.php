@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code', 3)->unique(); // Código ISO
-            $table->string('phone_code', 5); // Código telefónico
+            $table->string('code', 3)->unique();
+            $table->string('phone_code', 5);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

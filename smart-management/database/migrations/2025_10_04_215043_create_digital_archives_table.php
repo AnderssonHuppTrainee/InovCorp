@@ -18,9 +18,8 @@ return new class extends Migration {
             $table->string('mime_type');
             $table->integer('file_size');
             $table->text('description')->nullable();
-            $table->string('document_type'); // proposal_pdf, order_pdf, invoice, payment_proof, etc.
-
-            // Relação polimórfica
+            $table->string('document_type');
+            //relação polimorgica
             $table->unsignedBigInteger('archivable_id')->nullable();
             $table->string('archivable_type')->nullable();
 

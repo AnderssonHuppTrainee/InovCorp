@@ -15,9 +15,11 @@ return new class extends Migration {
             $table->string('number')->unique();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('client_id')->constrained('entities')
+            $table->foreignId('client_id')
+                ->constrained('entities')
                 ->onDelete('restrict');
-            $table->foreignId('assigned_to')->constrained('users')
+            $table->foreignId('assigned_to')
+                ->constrained('users')
                 ->onDelete('restrict');
             $table->enum('priority', ['low', 'medium', 'high', 'urgent'])
                 ->default('medium');

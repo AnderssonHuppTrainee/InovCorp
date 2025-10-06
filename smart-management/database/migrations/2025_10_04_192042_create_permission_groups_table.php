@@ -20,15 +20,7 @@ return new class extends Migration {
             $table->softDeletes();
         });
 
-        Schema::create('user_permission_groups', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('permission_group_id')->constrained()
-                ->onDelete('cascade');
-            $table->timestamps();
 
-            $table->unique(['user_id', 'permission_group_id']);
-        });
     }
 
     /**
@@ -37,6 +29,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('permission_groups');
-        Schema::dropIfExists('user_permission_groups');
+
     }
 };

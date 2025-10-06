@@ -45,4 +45,6 @@ class Contact extends Model
         return $this->belongsTo(ContactRole::class, 'contact_role_id');
     }
 
+
+
 }

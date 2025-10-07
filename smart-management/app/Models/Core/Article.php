@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ProposalItem;
-use App\Models\TaxRate;
-use App\Models\OrderItem;
+use App\Models\Core\Proposal\ProposalItem;
+use App\Models\Financial\TaxRate;
+use App\Models\Core\Order\OrderItem;
 
 class Article extends Model
 {

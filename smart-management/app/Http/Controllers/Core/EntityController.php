@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Core;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEntityRequest;
 use App\Http\Requests\UpdateEntityRequest;
-use App\Models\Entity;
+use App\Models\Core\Entity;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Country;
+use App\Models\Catalog\Country;
 use Illuminate\Support\Facades\DB;
 
 class EntityController extends Controller
@@ -32,12 +33,16 @@ class EntityController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return Inertia::render('entities/Index', [
-            'entities' => $entities,
-            'filters' => $request->only(['search', 'status', 'country_id']),
-            'type' => $type,
-            'countries' => Country::active()->get(['id', 'name', 'code'])
-        ]);
+        return Inertia::render(
+            'entities/Index',
+            [
+                'entities' => $entities,
+                'filters' => $request->only(['search', 'status', 'country_id']),
+                'type' => $type,
+                'countries' => Country::active()->get(['id', 'name', 'code'])
+
+            ]
+        );
     }
 
     /**
@@ -47,11 +52,15 @@ class EntityController extends Controller
     {
         $type = $request->query('type', 'client');
 
-        return Inertia::render('entities/Create.vue', [
-            'type' => $type,
-            'countries' => Country::active()->get(['id', 'name', 'code']),
 
-        ]);
+        return Inertia::render(
+            'entities/Create',
+            [
+                'type' => $type,
+                'countries' => Country::active()->get(['id', 'name', 'code']),
+            ]
+        );
+
     }
 
     /**

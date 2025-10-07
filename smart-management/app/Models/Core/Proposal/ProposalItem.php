@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core\Proposal;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Proposal;
-use App\Models\Article;
-use App\Models\Entity;
+use App\Models\Core\Proposal\Proposal;
+use App\Models\Core\Article;
+use App\Models\Core\Entity;
 
 class ProposalItem extends Model
 {

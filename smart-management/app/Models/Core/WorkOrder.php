@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Entity;
+use App\Models\System\User;
+use App\Models\Core\Entity;
 
 class WorkOrder extends Model
 {

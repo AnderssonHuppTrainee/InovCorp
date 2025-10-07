@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalog;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Contact;
+use App\Models\Core\Contact;
 
 class ContactRole extends Model
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Financial;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FinancialTransaction;
+use App\Models\Financial\FinancialTransaction;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Symfony\Component\Routing\Loader\Configurator\Traits\AddTrait;
 

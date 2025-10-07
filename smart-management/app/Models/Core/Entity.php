@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core;
 
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Contact;
-use App\Models\Country;
-use App\Models\Proposal;
-use App\Models\Order;
-use App\Models\SupplierOrder;
-use App\Models\SupplierInvoice;
-use App\Models\WorkOrder;
-use App\Models\CalendarEvent;
+use App\Models\Core\Contact;
+use App\Models\Catalog\Country;
+use App\Models\Core\Proposal\Proposal;
+use App\Models\Core\Order\Order;
+use App\Models\Core\Order\SupplierOrder;
+use App\Models\Financial\Invoice\SupplierInvoice;
+use App\Models\Core\WorkOrder;
+use App\Models\System\Calendar\CalendarEvent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 

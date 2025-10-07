@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\System\Calendar;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Entity;
-use App\Models\CalendarEventType;
-use App\Models\CalendarAction;
-use App\Models\User;
+use App\Models\Core\Entity;
+use App\Models\System\Calendar\CalendarEventType;
+use App\Models\System\Calendar\CalendarAction;
+use App\Models\System\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CalendarEvent extends Model

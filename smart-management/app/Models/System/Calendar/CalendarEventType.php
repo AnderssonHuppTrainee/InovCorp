@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\System\Calendar;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CalendarEvent;
+use App\Models\System\Calendar\CalendarEvent;
 
 class CalendarEventType extends Model
 {

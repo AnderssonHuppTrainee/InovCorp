@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core\Order;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Order;
-use App\Models\Article;
-use App\Models\Entity;
+use App\Models\Core\Order\Order;
+use App\Models\Core\Article;
+use App\Models\Core\Entity;
 
 class OrderItem extends Model
 {

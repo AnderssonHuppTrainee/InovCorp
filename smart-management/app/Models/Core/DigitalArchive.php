@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\Models\System\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DigitalArchive extends Model

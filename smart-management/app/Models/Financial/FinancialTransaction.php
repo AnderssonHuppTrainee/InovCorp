@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Financial;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\BankAccount;
+use App\Models\Financial\BankAccount;
 
 class FinancialTransaction extends Model
 {

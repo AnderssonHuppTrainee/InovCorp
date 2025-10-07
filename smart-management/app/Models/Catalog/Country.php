@@ -1,13 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalog;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Entity;
+use App\Models\Core\Entity;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Country extends Model
 {
+    /** @use HasFactory<\Database\Factories\CountryFactory> */
+    use HasFactory;
     protected $fillable = ['name', 'code', 'phone_code', 'is_active'];
 
     protected $casts = [

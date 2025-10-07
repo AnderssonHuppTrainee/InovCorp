@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\EntityController;
+use App\Http\Controllers\Core\EntityController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,5 +14,14 @@ Route::get('dashboard', function () {
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/entities', [EntityController::class, 'create'])->name('entities.create');
+    Route::get('/entities', [EntityController::class, 'index'])
+        ->name('entities.index');
+    Route::get('/entities/create', [EntityController::class, 'create'])
+        ->name('entities.create');
+    Route::post('/entities', [EntityController::class, 'store'])
+        ->name('entities.store');
+    Route::get('/entities/{entity}/update', [EntityController::class, 'update'])
+        ->name('entities.update');
+});

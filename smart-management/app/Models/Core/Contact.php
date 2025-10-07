@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ContactRole;
-use App\Models\Entity;
+use App\Models\Catalog\ContactRole;
+use App\Models\Core\Entity;
 
 class Contact extends Model
 {

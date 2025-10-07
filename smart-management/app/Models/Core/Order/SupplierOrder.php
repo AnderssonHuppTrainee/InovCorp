@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Core\Order;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Entity;
-use App\Models\Order;
-use App\Models\SupplierInvoice;
+use App\Models\Core\Entity;
+use App\Models\Core\Order\Order;
+use App\Models\Financial\Invoice\SupplierInvoice;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupplierOrder extends Model

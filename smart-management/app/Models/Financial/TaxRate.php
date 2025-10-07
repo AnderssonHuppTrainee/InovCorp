@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Financial;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Article;
+use App\Models\Core\Article;
 
 class TaxRate extends Model
 {

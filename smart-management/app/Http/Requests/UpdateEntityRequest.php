@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Entity;
+use App\Models\Core\Entity;
 
 class UpdateEntityRequest extends FormRequest
 {

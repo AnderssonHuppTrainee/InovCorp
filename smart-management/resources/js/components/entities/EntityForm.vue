@@ -1,12 +1,12 @@
 <template>
     <Card>
         <CardContent class="p-6">
-            <Form @submit="onSubmit">
+            <Form @submit="form.handleSubmit(handleFormSubmit)">
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <!-- Coluna 1 -->
                     <div class="space-y-6">
                         <EntityVatField
-                            v-model="form.tax_number"
+                            v-model="form.values.tax_number"
                             @vat-data="fillFromVat"
                         />
 
@@ -17,7 +17,7 @@
                                 <FormControl>
                                     <Input
                                         placeholder="Nome da entidade"
-                                        v-model="form.name"
+                                        v-model="form.values.name"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -31,7 +31,7 @@
                                 <FormControl>
                                     <Textarea
                                         placeholder="Morada completa"
-                                        v-model="form.address"
+                                        v-model="form.values.address"
                                         rows="3"
                                     />
                                 </FormControl>
@@ -47,7 +47,7 @@
                                     <FormControl>
                                         <Input
                                             placeholder="1234-567"
-                                            v-model="form.postal_code"
+                                            v-model="form.values.postal_code"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -60,7 +60,7 @@
                                     <FormControl>
                                         <Input
                                             placeholder="Cidade"
-                                            v-model="form.city"
+                                            v-model="form.values.city"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -95,6 +95,7 @@
                                 <FormMessage />
                             </FormItem>
                         </FormField>
+
                         <EntityTypeSelector />
                     </div>
 
@@ -111,15 +112,14 @@
                         type="button"
                         variant="outline"
                         @click="$emit('cancel')"
-                        >Cancelar</Button
                     >
-                    <Button type="submit" :disabled="isSubmitting">
-                        <LoaderIcon
-                            v-if="isSubmitting"
-                            class="mr-2 h-4 w-4 animate-spin"
-                        />
-                        <SaveIcon v-else class="mr-2 h-4 w-4" />
-                        {{ isSubmitting ? 'A guardar...' : submitLabel }}
+                        Cancelar
+                    </Button>
+
+                    <Button type="submit" :disabled="submitting">
+                        <SaveIcon v-if="!submitting" class="mr-2 h-4 w-4" />
+                        <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
+                        {{ submitting ? 'A guardar...' : 'Guardar Entidade' }}
                     </Button>
                 </div>
             </Form>
@@ -127,7 +127,7 @@
     </Card>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -138,7 +138,6 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -147,45 +146,79 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { entitySchema } from '@/schemas/entitySchema';
 import { toTypedSchema } from '@vee-validate/zod';
 import { LoaderIcon, SaveIcon } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
+import { ref } from 'vue';
 import EntityContactField from './EntityContactField.vue';
 import EntityStatusField from './EntityStatusField.vue';
 import EntityTypeSelector from './EntityTypeSelector.vue';
 import EntityVatField from './EntityVatField.vue';
 
-const props = defineProps({
-    countries: Array,
-    type: String,
-    submitLabel: {
-        type: String,
-        default: 'Guardar Entidade',
-    },
-    onSubmit: Function,
-    initialData: {
-        type: Object,
-        default: () => ({}),
-    },
-});
+interface Country {
+    id: number | string;
+    name: string;
+}
+interface EntityFormValues {
+    tax_number: string;
+    name: string;
+    address: string;
+    postal_code: string;
+    city: string;
+    country_id: string;
+}
 
-const form = useForm({
-    tax_number: '',
-    name: '',
-    address: '',
-    postal_code: '',
-    city: '',
-});
+const props = defineProps<{
+    countries: Country[];
+    submitLabel?: string;
+    initialData?: Partial<{
+        tax_number: string;
+        name: string;
+        address: string;
+        postal_code: string;
+        city: string;
+        country_id: string;
+    }>;
+    onSubmit?: (values: any) => void;
+}>();
+
 const emit = defineEmits(['cancel']);
 
-// Schema de validação
+// Schema
 const schema = toTypedSchema(entitySchema);
 
-// Handler de submissão
-const onSubmit = handleSubmit((values) => {
-    if (props.onSubmit) {
-        props.onSubmit(values);
-    }
+// Formulário
+const form = useForm<EntityFormValues>({
+    validationSchema: schema,
+    initialValues: {
+        tax_number: '',
+        name: '',
+        address: '',
+        postal_code: '',
+        city: '',
+        country_id: '',
+        ...props.initialData,
+    },
 });
+
+const submitting = ref(false);
+
+const handleFormSubmit = async (values: typeof form.values) => {
+    submitting.value = true;
+    try {
+        if (props.onSubmit) await props.onSubmit(values);
+    } finally {
+        submitting.value = false;
+    }
+};
+
+// Handler VAT
+const fillFromVat = (data: any) => {
+    if (data.name) form.setFieldValue('name', data.name);
+    if (data.address) form.setFieldValue('address', data.address);
+    if (data.postal_code) form.setFieldValue('postal_code', data.postal_code);
+    if (data.city) form.setFieldValue('city', data.city);
+};
 </script>

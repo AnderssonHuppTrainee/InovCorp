@@ -15,9 +15,7 @@
                 <CardContent class="p-6">
                     <Form @submit="submitForm">
                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <!-- Coluna 1: Dados Básicos -->
                             <div class="space-y-6">
-                                <!-- Tipo (hidden mas necessário) -->
                                 <FormField
                                     v-slot="{ componentField }"
                                     name="types"
@@ -214,6 +212,76 @@
                                         <FormMessage />
                                     </FormItem>
                                 </FormField>
+
+                                <FormField
+                                    v-slot="{ componentField }"
+                                    name="types"
+                                >
+                                    <FormItem>
+                                        <FormLabel
+                                            >Tipo de Entidade *</FormLabel
+                                        >
+                                        <div class="space-y-2">
+                                            <FormItem
+                                                class="flex flex-row items-start space-y-0 space-x-3"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        :checked="isClient"
+                                                        @update:checked="
+                                                            (value) =>
+                                                                toggleType(
+                                                                    'client',
+                                                                    value,
+                                                                )
+                                                        "
+                                                    />
+                                                </FormControl>
+                                                <div
+                                                    class="space-y-1 leading-none"
+                                                >
+                                                    <FormLabel
+                                                        >Cliente</FormLabel
+                                                    >
+                                                    <FormDescription>
+                                                        Esta entidade pode
+                                                        receber propostas e
+                                                        encomendas
+                                                    </FormDescription>
+                                                </div>
+                                            </FormItem>
+                                            <FormItem
+                                                class="flex flex-row items-start space-y-0 space-x-3"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        :checked="isSupplier"
+                                                        @update:checked="
+                                                            (value) =>
+                                                                toggleType(
+                                                                    'supplier',
+                                                                    value,
+                                                                )
+                                                        "
+                                                    />
+                                                </FormControl>
+                                                <div
+                                                    class="space-y-1 leading-none"
+                                                >
+                                                    <FormLabel
+                                                        >Fornecedor</FormLabel
+                                                    >
+                                                    <FormDescription>
+                                                        Esta entidade pode
+                                                        fornecer
+                                                        produtos/serviços
+                                                    </FormDescription>
+                                                </div>
+                                            </FormItem>
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                </FormField>
                             </div>
 
                             <!-- Coluna 2: Contactos e Outros -->
@@ -287,82 +355,12 @@
                                     </FormItem>
                                 </FormField>
 
-                                <!-- Tipo de Entidade -->
-                                <FormField
-                                    v-slot="{ componentField }"
-                                    name="types"
-                                >
-                                    <FormItem>
-                                        <FormLabel
-                                            >Tipo de Entidade *</FormLabel
-                                        >
-                                        <div class="space-y-2">
-                                            <FormItem
-                                                class="flex flex-row items-start space-y-0 space-x-3"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        :checked="isClient"
-                                                        @update:checked="
-                                                            (value) =>
-                                                                toggleType(
-                                                                    'client',
-                                                                    value,
-                                                                )
-                                                        "
-                                                    />
-                                                </FormControl>
-                                                <div
-                                                    class="space-y-1 leading-none"
-                                                >
-                                                    <FormLabel
-                                                        >Cliente</FormLabel
-                                                    >
-                                                    <FormDescription>
-                                                        Esta entidade pode
-                                                        receber propostas e
-                                                        encomendas
-                                                    </FormDescription>
-                                                </div>
-                                            </FormItem>
-                                            <FormItem
-                                                class="flex flex-row items-start space-y-0 space-x-3"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        :checked="isSupplier"
-                                                        @update:checked="
-                                                            (value) =>
-                                                                toggleType(
-                                                                    'supplier',
-                                                                    value,
-                                                                )
-                                                        "
-                                                    />
-                                                </FormControl>
-                                                <div
-                                                    class="space-y-1 leading-none"
-                                                >
-                                                    <FormLabel
-                                                        >Fornecedor</FormLabel
-                                                    >
-                                                    <FormDescription>
-                                                        Esta entidade pode
-                                                        fornecer
-                                                        produtos/serviços
-                                                    </FormDescription>
-                                                </div>
-                                            </FormItem>
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                </FormField>
-
                                 <!-- Consentimento RGPD -->
                                 <FormField
                                     v-slot="{ componentField }"
                                     name="gdpr_consent"
                                 >
+                                    <FormLabel>Autorização</FormLabel>
                                     <FormItem
                                         class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
                                     >

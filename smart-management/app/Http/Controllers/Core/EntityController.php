@@ -54,7 +54,7 @@ class EntityController extends Controller
 
 
         return Inertia::render(
-            'entities/Create',
+            'entities/Create2',
             [
                 'type' => $type,
                 'countries' => Country::active()->get(['id', 'name', 'code']),

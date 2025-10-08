@@ -5,10 +5,15 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <!-- Coluna 1 -->
                     <div class="space-y-6">
-                        <EntityVatField
-                            v-model="form.values.tax_number"
-                            @vat-data="fillFromVat"
-                        />
+                        <FormField
+                            v-slot="{ componentField }"
+                            name="tax_number"
+                        >
+                            <EntityVatField
+                                v-bind="componentField"
+                                @vat-data="fillFromVat"
+                            />
+                        </FormField>
 
                         <!-- Nome -->
                         <FormField name="name">
@@ -119,7 +124,7 @@
                     <Button type="submit" :disabled="submitting">
                         <SaveIcon v-if="!submitting" class="mr-2 h-4 w-4" />
                         <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ submitting ? 'A guardar...' : 'Guardar Entidade' }}
+                        {{ submitting ? 'A guardar...' : submitLabel }}
                     </Button>
                 </div>
             </Form>
@@ -173,14 +178,7 @@ interface EntityFormValues {
 const props = defineProps<{
     countries: Country[];
     submitLabel?: string;
-    initialData?: Partial<{
-        tax_number: string;
-        name: string;
-        address: string;
-        postal_code: string;
-        city: string;
-        country_id: string;
-    }>;
+    initialData?: Partial<EntityFormValues>;
     onSubmit?: (values: any) => void;
 }>();
 
@@ -205,7 +203,7 @@ const form = useForm<EntityFormValues>({
 
 const submitting = ref(false);
 
-const handleFormSubmit = async (values: typeof form.values) => {
+const handleFormSubmit = async (values: EntityFormValues) => {
     submitting.value = true;
     try {
         if (props.onSubmit) await props.onSubmit(values);

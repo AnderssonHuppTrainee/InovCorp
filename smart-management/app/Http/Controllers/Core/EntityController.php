@@ -52,12 +52,15 @@ class EntityController extends Controller
     {
         $type = $request->query('type', 'client');
 
+        // Define os tipos padrão baseado na URL
+        $defaultTypes = [$type];
 
         return Inertia::render(
             'entities/Create2',
             [
                 'type' => $type,
                 'countries' => Country::active()->get(['id', 'name', 'code']),
+                'defaultTypes' => $defaultTypes,
             ]
         );
 
@@ -119,7 +122,8 @@ class EntityController extends Controller
     public function update(UpdateEntityRequest $request, Entity $entity)
     {
         try {
-            $entity->update($request->validated());
+            $validated = $request->validated();
+            $entity->update($validated);
 
             $redirectType = $validated['types'][0] ?? 'client';
 

@@ -39,8 +39,7 @@ export const entitySchema = z.object({
     .optional()
     .or(z.literal('')),
   
-  gdpr_consent: z.boolean()
-    .refine(val => val === true, 'Deve aceitar o consentimento RGPD'),
+  gdpr_consent: z.boolean().optional().default(false),
   
   observations: z.string().optional(),
   
@@ -48,3 +47,4 @@ export const entitySchema = z.object({
 })
 
 export type EntityFormData = z.infer<typeof entitySchema>
+

@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('entities.create');
     Route::post('/entities', [EntityController::class, 'store'])
         ->name('entities.store');
+    Route::get('/entities/{entity}/show', [EntityController::class, 'show'])
+        ->name('entities.show');
     Route::get('/entities/{entity}/edit', [EntityController::class, 'edit'])
         ->name('entities.edit');
     Route::patch('/entities/{entity}', [EntityController::class, 'update'])

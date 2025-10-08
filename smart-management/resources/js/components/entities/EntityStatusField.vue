@@ -16,17 +16,13 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-
-defineProps({
-    form: Object,
-});
 </script>
 
 <template>
     <FormField v-slot="{ componentField }" name="status">
         <FormItem>
             <FormLabel>Estado *</FormLabel>
-            <Select v-model="form.status" v-bind="componentField">
+            <Select v-bind="componentField">
                 <FormControl>
                     <SelectTrigger>
                         <SelectValue placeholder="Selecione o estado" />
@@ -50,7 +46,6 @@ defineProps({
             <FormControl>
                 <Textarea
                     placeholder="Notas internas sobre a entidade"
-                    v-model="form.observations"
                     v-bind="componentField"
                     rows="3"
                 />
@@ -65,7 +60,7 @@ defineProps({
             class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
         >
             <FormControl>
-                <Checkbox v-bind="componentField" v-model="form.gdpr_consent" />
+                <Checkbox v-bind="componentField" />
             </FormControl>
             <div class="space-y-1 leading-none">
                 <FormLabel>Consentimento RGPD</FormLabel>

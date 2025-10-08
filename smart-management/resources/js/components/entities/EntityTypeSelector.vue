@@ -6,10 +6,6 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-
-defineProps({
-    form: Object,
-});
 </script>
 
 <template>
@@ -23,7 +19,6 @@ defineProps({
                             <input
                                 type="checkbox"
                                 value="client"
-                                v-model="form.types"
                                 v-bind="componentField"
                             />
                             Cliente
@@ -32,7 +27,6 @@ defineProps({
                             <input
                                 type="checkbox"
                                 value="supplier"
-                                v-model="form.types"
                                 v-bind="componentField"
                             />
                             Fornecedor

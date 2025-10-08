@@ -15,7 +15,9 @@
                 <CardContent class="p-6">
                     <Form @submit="submitForm">
                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            <!-- Coluna 1: Dados Básicos -->
                             <div class="space-y-6">
+                                <!-- Tipo (hidden mas necessário) -->
                                 <FormField
                                     v-slot="{ componentField }"
                                     name="types"
@@ -41,7 +43,7 @@
                                             <div class="flex gap-2">
                                                 <Input
                                                     placeholder="PT123456789"
-                                                    v-bind="componentField"
+                                                    v-model="form.tax_number"
                                                     @blur="validateVat"
                                                     :class="{
                                                         'border-green-500':
@@ -123,16 +125,13 @@
                                 </FormField>
 
                                 <!-- Nome -->
-                                <FormField
-                                    v-slot="{ componentField }"
-                                    name="name"
-                                >
+                                <FormField name="name">
                                     <FormItem>
                                         <FormLabel>Nome *</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Nome"
-                                                v-bind="componentField"
+                                                placeholder="Nome da empresa"
+                                                v-model="form.name"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -140,16 +139,13 @@
                                 </FormField>
 
                                 <!-- Morada -->
-                                <FormField
-                                    v-slot="{ componentField }"
-                                    name="address"
-                                >
+                                <FormField name="address">
                                     <FormItem>
                                         <FormLabel>Morada *</FormLabel>
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Morada completa"
-                                                v-bind="componentField"
+                                                v-model="form.address"
                                                 rows="3"
                                             />
                                         </FormControl>
@@ -159,10 +155,7 @@
 
                                 <!-- Código Postal e Localidade -->
                                 <div class="grid grid-cols-2 gap-4">
-                                    <FormField
-                                        v-slot="{ componentField }"
-                                        name="postal_code"
-                                    >
+                                    <FormField name="postal_code">
                                         <FormItem>
                                             <FormLabel
                                                 >Código Postal *</FormLabel
@@ -170,24 +163,20 @@
                                             <FormControl>
                                                 <Input
                                                     placeholder="1234-567"
-                                                    v-bind="componentField"
-                                                    v-mask="'####-###'"
+                                                    v-model="form.postal_code"
                                                 />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     </FormField>
 
-                                    <FormField
-                                        v-slot="{ componentField }"
-                                        name="city"
-                                    >
+                                    <FormField name="city">
                                         <FormItem>
                                             <FormLabel>Localidade *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Cidade"
-                                                    v-bind="componentField"
+                                                    v-model="form.city"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -195,6 +184,7 @@
                                     </FormField>
                                 </div>
 
+                                <!-- País -->
                                 <FormField
                                     v-slot="{ componentField }"
                                     name="country_id"
@@ -215,92 +205,20 @@
                                                     :key="country.id"
                                                     :value="country.id"
                                                 >
-                                                    {{ country.name }}
+                                                    {{ country.name }} ({{
+                                                        country.code
+                                                    }})
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
                                 </FormField>
-
-                                <!--tipo-->
-                                <div>
-                                    <FormField
-                                        v-slot="{ componentField }"
-                                        name="types"
-                                    >
-                                        <FormItem>
-                                            <FormLabel
-                                                >Tipo de Entidade *</FormLabel
-                                            >
-                                            <div class="mt-5 space-y-2">
-                                                <FormItem
-                                                    class="flex flex-row items-start space-y-0 space-x-3"
-                                                >
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            :checked="isClient"
-                                                            @update:checked="
-                                                                (value) =>
-                                                                    toggleType(
-                                                                        'client',
-                                                                        value,
-                                                                    )
-                                                            "
-                                                        />
-                                                    </FormControl>
-                                                    <div
-                                                        class="space-y-1 leading-none"
-                                                    >
-                                                        <FormLabel
-                                                            >Cliente</FormLabel
-                                                        >
-                                                        <FormDescription>
-                                                            Esta entidade pode
-                                                            receber propostas e
-                                                            encomendas
-                                                        </FormDescription>
-                                                    </div>
-                                                </FormItem>
-                                                <FormItem
-                                                    class="flex flex-row items-start space-y-0 space-x-3"
-                                                >
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            :checked="
-                                                                isSupplier
-                                                            "
-                                                            @update:checked="
-                                                                (value) =>
-                                                                    toggleType(
-                                                                        'supplier',
-                                                                        value,
-                                                                    )
-                                                            "
-                                                        />
-                                                    </FormControl>
-                                                    <div
-                                                        class="space-y-1 leading-none"
-                                                    >
-                                                        <FormLabel
-                                                            >Fornecedor</FormLabel
-                                                        >
-                                                        <FormDescription>
-                                                            Esta entidade pode
-                                                            fornecer
-                                                            produtos/serviços
-                                                        </FormDescription>
-                                                    </div>
-                                                </FormItem>
-                                            </div>
-                                            <FormMessage />
-                                        </FormItem>
-                                    </FormField>
-                                </div>
                             </div>
 
-                            <!--  Contactos -->
+                            <!-- Coluna 2: Contactos e Outros -->
                             <div class="space-y-6">
+                                <!-- Contactos -->
                                 <div class="grid grid-cols-2 gap-4">
                                     <FormField
                                         v-slot="{ componentField }"
@@ -335,6 +253,7 @@
                                     </FormField>
                                 </div>
 
+                                <!-- Website e Email -->
                                 <FormField
                                     v-slot="{ componentField }"
                                     name="website"
@@ -366,6 +285,101 @@
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
+                                </FormField>
+
+                                <!-- Tipo de Entidade -->
+                                <FormField
+                                    v-slot="{ componentField }"
+                                    name="types"
+                                >
+                                    <FormItem>
+                                        <FormLabel
+                                            >Tipo de Entidade *</FormLabel
+                                        >
+                                        <div class="space-y-2">
+                                            <FormItem
+                                                class="flex flex-row items-start space-y-0 space-x-3"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        :checked="isClient"
+                                                        @update:checked="
+                                                            (value) =>
+                                                                toggleType(
+                                                                    'client',
+                                                                    value,
+                                                                )
+                                                        "
+                                                    />
+                                                </FormControl>
+                                                <div
+                                                    class="space-y-1 leading-none"
+                                                >
+                                                    <FormLabel
+                                                        >Cliente</FormLabel
+                                                    >
+                                                    <FormDescription>
+                                                        Esta entidade pode
+                                                        receber propostas e
+                                                        encomendas
+                                                    </FormDescription>
+                                                </div>
+                                            </FormItem>
+                                            <FormItem
+                                                class="flex flex-row items-start space-y-0 space-x-3"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        :checked="isSupplier"
+                                                        @update:checked="
+                                                            (value) =>
+                                                                toggleType(
+                                                                    'supplier',
+                                                                    value,
+                                                                )
+                                                        "
+                                                    />
+                                                </FormControl>
+                                                <div
+                                                    class="space-y-1 leading-none"
+                                                >
+                                                    <FormLabel
+                                                        >Fornecedor</FormLabel
+                                                    >
+                                                    <FormDescription>
+                                                        Esta entidade pode
+                                                        fornecer
+                                                        produtos/serviços
+                                                    </FormDescription>
+                                                </div>
+                                            </FormItem>
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                </FormField>
+
+                                <!-- Consentimento RGPD -->
+                                <FormField
+                                    v-slot="{ componentField }"
+                                    name="gdpr_consent"
+                                >
+                                    <FormItem
+                                        class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
+                                    >
+                                        <FormControl>
+                                            <Checkbox v-bind="componentField" />
+                                        </FormControl>
+                                        <div class="space-y-1 leading-none">
+                                            <FormLabel
+                                                >Consentimento RGPD</FormLabel
+                                            >
+                                            <FormDescription>
+                                                Autoriza o tratamento dos dados
+                                                pessoais de acordo com o RGPD
+                                            </FormDescription>
+                                        </div>
+                                    </FormItem>
+                                    <FormMessage />
                                 </FormField>
 
                                 <!-- Estado -->
@@ -417,30 +431,6 @@
                                         <FormMessage />
                                     </FormItem>
                                 </FormField>
-
-                                <!-- Consentimento RGPD -->
-                                <FormField
-                                    v-slot="{ componentField }"
-                                    name="gdpr_consent"
-                                >
-                                    <FormItem
-                                        class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
-                                    >
-                                        <FormControl>
-                                            <Checkbox v-bind="componentField" />
-                                        </FormControl>
-                                        <div class="space-y-1 leading-none">
-                                            <FormLabel
-                                                >Consentimento RGPD</FormLabel
-                                            >
-                                            <FormDescription>
-                                                Autoriza o tratamento dos dados
-                                                pessoais de acordo com o RGPD
-                                            </FormDescription>
-                                        </div>
-                                    </FormItem>
-                                    <FormMessage />
-                                </FormField>
                             </div>
                         </div>
 
@@ -480,7 +470,7 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import {
     Form,
     FormControl,
@@ -501,6 +491,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import {
     ArrowLeftIcon,
     CheckCircleIcon,
@@ -544,7 +535,8 @@ const form = useForm({
 // Computed
 const isClient = computed(() => form.types.includes('client'));
 const isSupplier = computed(() => form.types.includes('supplier'));
-
+const error = ref(null);
+// Methods
 const goBack = () => {
     router.get(route('entities.index', { type: props.type }));
 };
@@ -560,34 +552,82 @@ const toggleType = (type, checked) => {
 };
 
 const validateVat = async () => {
+    console.log('validateVat foi chamado');
+    console.log('NIF atual:', form.tax_number);
     if (!form.tax_number) return;
 
     vatLoading.value = true;
     vatResult.value = null;
+    error.value = null;
 
     try {
-        const response = await fetch(route('entities.vies-check'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector(
-                    'meta[name="csrf-token"]',
-                ).content,
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+
+        const response = await axios.post(
+            '/entities/vies-check',
+            {
+                vat_number: form.tax_number,
             },
-            body: JSON.stringify({ vat_number: form.tax_number }),
-        });
+            {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
 
-        const result = await response.json();
+        vatResult.value = response.data;
 
-        vatResult.value = result;
-        vatValid.value = result.valid;
+        if (response.data.valid) {
+            vatValid.value = true;
 
-        if (result.valid) {
-            if (result.name && !form.name) form.name = result.name;
-            if (result.address && !form.address) form.address = result.address;
+            // Preenche automaticamente os campos
+            if (response.data.name) form.name = response.data.name;
+
+            if (response.data.address) {
+                const address = response.data.address
+                    .replace(/\s{2,}/g, ' ') // remove espaços duplos
+                    .trim();
+
+                form.address = address;
+
+                // Regex para código postal português
+                const postalRegex = /(\d{4}-\d{3})/;
+                const postalMatch = address.match(postalRegex);
+
+                if (postalMatch) {
+                    form.postal_code = postalMatch[1];
+
+                    // Agora tentamos pegar a cidade após o código postal
+                    const afterPostal = address
+                        .split(postalMatch[1])[1]
+                        ?.trim();
+
+                    if (afterPostal) {
+                        // remove pontos finais e caracteres soltos
+                        const cleanedCity = afterPostal
+                            .replace(/\.$/, '') // remove ponto final
+                            .replace(/\s+/g, ' ') // espaços duplos
+                            .trim();
+
+                        // Muitas vezes vem algo como "CARNAXIDE" ou "LISBOA"
+                        // Se vier "PORTELA CARNAXIDE" pegamos a última palavra (a mais significativa)
+                        const cityParts = cleanedCity.split(' ');
+                        form.city = cityParts[cityParts.length - 1];
+                    }
+                }
+            }
+        } else {
+            vatValid.value = false;
+            error.value = response.data.error || 'Número VAT inválido';
         }
-    } catch (error) {
-        vatResult.value = { valid: false, error: 'Erro de conexão' };
+    } catch (err) {
+        error.value =
+            err.response?.data?.error ||
+            'Erro ao validar o VAT. Tente novamente.';
+        vatResult.value = { valid: false };
     } finally {
         vatLoading.value = false;
     }

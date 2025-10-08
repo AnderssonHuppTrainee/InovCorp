@@ -9,9 +9,7 @@ import {
 
 import { Input } from '@/components/ui/input';
 
-defineProps({
-    form: Object,
-});
+// Removido form prop - agora usa FormField do vee-validate
 </script>
 
 <template>
@@ -24,7 +22,6 @@ defineProps({
                         <Input
                             placeholder="+351 123 456 789"
                             v-bind="componentField"
-                            v-model="form.phone"
                         />
                     </FormControl>
                     <FormMessage />
@@ -38,7 +35,6 @@ defineProps({
                         <Input
                             placeholder="+351 912 345 678"
                             v-bind="componentField"
-                            v-model="form.mobile"
                         />
                     </FormControl>
                     <FormMessage />
@@ -54,7 +50,6 @@ defineProps({
                         type="email"
                         placeholder="empresa@exemplo.pt"
                         v-bind="componentField"
-                        v-model="form.email"
                     />
                 </FormControl>
                 <FormMessage />
@@ -68,7 +63,6 @@ defineProps({
                     <Input
                         placeholder="https://exemplo.pt"
                         v-bind="componentField"
-                        v-model="form.website"
                     />
                 </FormControl>
                 <FormMessage />

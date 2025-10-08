@@ -151,4 +151,56 @@ class EntityController extends Controller
             return back()->with('error', 'Erro ao eliminar entidade: ' . $e->getMessage());
         }
     }
+
+
+    public function viesCheck(Request $request)
+    {
+        $request->validate([
+            'vat_number' => 'required|string|max:20'
+        ]);
+
+        try {
+            $vatNumber = $request->vat_number;
+
+            // Remover caracteres não numéricos
+            $cleanVat = preg_replace('/[^0-9]/', '', $vatNumber);
+
+            // Verificar formato PT
+            if (!preg_match('/^PT\d{9}$/', $vatNumber)) {
+                $vatNumber = 'PT' . $cleanVat;
+            }
+
+            $client = new \SoapClient(
+                "http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl",
+                ['exceptions' => true]
+            );
+
+            $countryCode = substr($vatNumber, 0, 2);
+            $vatNumberOnly = substr($vatNumber, 2);
+
+            $result = $client->checkVat([
+                'countryCode' => $countryCode,
+                'vatNumber' => $vatNumberOnly
+            ]);
+
+            return response()->json([
+                'valid' => $result->valid,
+                'name' => isset($result->name) && trim($result->name) !== '' ? trim($result->name) : null,
+                'address' => isset($result->address) && trim($result->address) !== '' ? trim($result->address) : null,
+                'country_code' => $result->countryCode,
+                'vat_number' => $result->vatNumber,
+            ]);
+
+        } catch (\SoapFault $e) {
+            return response()->json([
+                'valid' => false,
+                'error' => 'Serviço VIES indisponível. Tente novamente mais tarde.'
+            ], 503);
+        } catch (\Exception $e) {
+            return response()->json([
+                'valid' => false,
+                'error' => 'Erro ao validar NIF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

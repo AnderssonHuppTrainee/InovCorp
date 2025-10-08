@@ -37,3 +37,29 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Entity {
+  id?: number
+  tax_number?: string
+  name?: string
+  types?: string[]
+  address?: string
+  postal_code?: string
+  city?: string
+  country_id?: number | string
+  phone?: string
+  mobile?: string
+  website?: string
+  email?: string
+  gdpr_consent?: boolean
+  observations?: string
+  status?: 'active' | 'inactive'
+}
+
+interface Country {
+  id: number
+  name: string
+  code: string
+  phone_code: string
+  is_active : boolean
+}

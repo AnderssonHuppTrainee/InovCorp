@@ -1,55 +1,18 @@
 <template>
-    <FormField v-slot="{ componentField }" name="tax_number">
+    <FormField name="tax_number">
         <FormItem>
             <FormLabel>NIF *</FormLabel>
             <FormControl>
                 <div class="flex gap-2">
                     <Input
-                        v-bind="componentField"
-                        @blur="validateVat"
-                        :class="vatClass"
-                    />
-                    <Button
-                        type="button"
-                        variant="outline"
-                        @click="validateVat"
-                        :disabled="loading"
-                    >
-                        <LoaderIcon
-                            v-if="loading"
-                            class="mr-2 h-4 w-4 animate-spin"
-                        />
-                        <SearchIcon v-else class="mr-2 h-4 w-4" />
-                        {{ loading ? 'A validar...' : 'Validar VIES' }}
-                    </Button>
-                </div>
-            </FormControl>
-            <FormDescription
-                >Introduza o NIF e valide através do VIES</FormDescription
-            >
-            <FormMessage />
-            <VatResult :result="vatResult" />
-        </FormItem>
-    </FormField>
-
-    <!-- NIF com validação VIES -->
-    <FormField v-slot="{ componentField }" name="tax_number">
-        <FormItem>
-            <FormLabel>NIF *</FormLabel>
-            <FormControl>
-                <div class="flex gap-2">
-                    <Input
+                        v-model="localValue"
                         placeholder="PT123456789"
-                        v-bind="componentField"
-                        @blur="validateVat"
-                        :class="{
-                            'border-green-500': vatValid,
-                        }"
+                        :class="{ 'border-green-500': vatValid }"
                     />
                     <Button
                         type="button"
                         variant="outline"
-                        @click="validateVat"
+                        @click="handleValidate"
                         :disabled="vatLoading"
                         class="whitespace-nowrap"
                     >
@@ -59,12 +22,12 @@
                     </Button>
                 </div>
             </FormControl>
+
             <FormDescription>
                 Introduza o NIF e valide através do VIES
             </FormDescription>
-            <FormMessage />
 
-            <!-- Resultado VIES -->
+            <!-- Resultado -->
             <div
                 v-if="vatResult"
                 class="mt-2 rounded-md p-3 text-sm"
@@ -78,9 +41,7 @@
                     <CheckCircleIcon class="mr-2 h-4 w-4 text-green-600" />
                     <div>
                         <strong>NIF Válido</strong>
-                        <div v-if="vatResult.name">
-                            {{ vatResult.name }}
-                        </div>
+                        <div v-if="vatResult.name">{{ vatResult.name }}</div>
                         <div v-if="vatResult.address">
                             {{ vatResult.address }}
                         </div>
@@ -95,7 +56,7 @@
     </FormField>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import {
     FormControl,
@@ -103,15 +64,31 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useViesValidation } from '@/composables/useViesValidation';
-import { LoaderIcon, SearchIcon } from 'lucide-vue-next';
-import VatResult from './VatResult.vue';
+import {
+    CheckCircleIcon,
+    LoaderIcon,
+    SearchIcon,
+    XCircleIcon,
+} from 'lucide-vue-next';
+import { defineEmits, defineProps, ref, watch } from 'vue';
 
-const props = defineProps({ form: Object });
-const { validateVat, vatResult, loading, vatClass } = useViesValidation(
-    props.form,
+const props = defineProps<{ modelValue: string }>();
+const emit = defineEmits(['update:modelValue', 'vatData']);
+
+const localValue = ref(props.modelValue);
+const { vatLoading, vatResult, vatValid, validateVat } = useViesValidation();
+
+watch(
+    () => props.modelValue,
+    (val) => (localValue.value = val),
 );
+watch(localValue, (val) => emit('update:modelValue', val));
+
+const handleValidate = async () => {
+    const result = await validateVat(localValue.value);
+    if (result && result.valid) emit('vatData', result);
+};
 </script>

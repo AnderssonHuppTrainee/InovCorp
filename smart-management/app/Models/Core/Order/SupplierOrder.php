@@ -39,4 +39,12 @@ class SupplierOrder extends Model
     {
         return $this->hasMany(SupplierInvoice::class);
     }
+
+    // Gerar número sequencial
+    public static function nextNumber(): string
+    {
+        $lastNumber = static::withTrashed()->max('number');
+        $nextNumber = $lastNumber ? intval($lastNumber) + 1 : 1;
+        return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
 }

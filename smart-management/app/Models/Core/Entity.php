@@ -3,6 +3,7 @@
 namespace App\Models\Core;
 
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Core\Contact;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Entity extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'types',
@@ -128,5 +130,30 @@ class Entity extends Model
         $lastNumber = static::withTrashed()->max('number');
         $nextNumber = $lastNumber ? intval($lastNumber) + 1 : 1;
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
+
+    public static function generatePortugueseNif(): string
+    {
+        // frefixos válidos para NIF
+        $prefixes = [1, 2, 3, 5, 6, 8];
+        $nif = (string) fake()->randomElement($prefixes);
+
+        // gera os 7 dígitos seguintes aleatórios
+        for ($i = 0; $i < 7; $i++) {
+            $nif .= fake()->randomDigit();
+        }
+
+        //  ultimo dígito
+        $sum = 0;
+        for ($i = 0; $i < 8; $i++) {
+            $sum += (int) $nif[$i] * (9 - $i);
+        }
+
+        $remainder = $sum % 11;
+        $checkDigit = ($remainder < 2) ? 0 : 11 - $remainder;
+
+        $nif .= $checkDigit;
+
+        return $nif;
     }
 }

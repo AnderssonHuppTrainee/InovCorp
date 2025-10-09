@@ -170,3 +170,19 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* FullCalendar Base Styles */
+@layer components {
+    .fc {
+        font-family: inherit;
+    }
+    
+    .fc .fc-button {
+        border-radius: var(--radius);
+    }
+    
+    .fc-event {
+        cursor: pointer;
+        border-radius: calc(var(--radius) - 2px);
+    }
+}

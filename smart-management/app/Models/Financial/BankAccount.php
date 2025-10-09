@@ -6,13 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Financial\FinancialTransaction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Symfony\Component\Routing\Loader\Configurator\Traits\AddTrait;
 
 class BankAccount extends Model
 {
-    /** @use HasFactory<\Database\Factories\BankAccountFactory> */
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -26,18 +23,54 @@ class BankAccount extends Model
     ];
 
     protected $casts = [
-        'name' => 'string',
-        'encrypted',
         'account_number' => 'encrypted',
         'iban' => 'encrypted',
-        'bank_name' => 'encrypted',
-        'balance' => 'encrypted',
-        'currency' => 'encrypted',
+        'balance' => 'decimal:2',
+        'is_active' => 'boolean',
     ];
 
+    // Relationships
     public function transactions()
     {
         return $this->hasMany(FinancialTransaction::class);
     }
 
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
+    }
+
+    public function scopeFilter($query, array $filters = [])
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('bank_name', 'like', "%{$search}%");
+            });
+        })->when(isset($filters['is_active']) && $filters['is_active'] !== 'all', function ($query) use ($filters) {
+            $query->where('is_active', $filters['is_active'] === '1');
+        });
+    }
+
+    // Helpers
+    public function updateBalance(float $amount, string $type = 'credit'): void
+    {
+        if ($type === 'credit') {
+            $this->balance += $amount;
+        } else {
+            $this->balance -= $amount;
+        }
+        $this->save();
+    }
+
+    public function getFormattedBalance(): string
+    {
+        return number_format($this->balance, 2, ',', '.') . ' ' . $this->currency;
+    }
 }

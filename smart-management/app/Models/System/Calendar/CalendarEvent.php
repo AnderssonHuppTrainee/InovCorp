@@ -57,4 +57,90 @@ class CalendarEvent extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function sharedUsers()
+    {
+        if (!$this->shared_with) {
+            return collect([]);
+        }
+
+        return User::whereIn('id', $this->shared_with)->get();
+    }
+
+    // Scopes
+    public function scopeScheduled($query)
+    {
+        return $query->where('status', 'scheduled');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where(function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                ->orWhereJsonContains('shared_with', $userId);
+        });
+    }
+
+    public function scopeForEntity($query, $entityId)
+    {
+        return $query->where('entity_id', $entityId);
+    }
+
+    public function scopeBetweenDates($query, $start, $end)
+    {
+        return $query->whereBetween('event_date', [$start, $end]);
+    }
+
+    public function scopeFilter($query, array $filters = [])
+    {
+        $query->when($filters['user_id'] ?? null, function ($query, $userId) {
+            $query->forUser($userId);
+        })->when($filters['entity_id'] ?? null, function ($query, $entityId) {
+            $query->where('entity_id', $entityId);
+        })->when($filters['type_id'] ?? null, function ($query, $typeId) {
+            $query->where('calendar_event_type_id', $typeId);
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
+        });
+    }
+
+    // Acessor para FullCalendar
+    public function getFullCalendarEventAttribute()
+    {
+        $eventDateStr = $this->event_date instanceof \Carbon\Carbon
+            ? $this->event_date->format('Y-m-d')
+            : $this->event_date;
+
+        $startDateTime = \Carbon\Carbon::parse($eventDateStr . ' ' . $this->event_time);
+        $endDateTime = $startDateTime->copy()->addMinutes($this->duration);
+
+        return [
+            'id' => $this->id,
+            'title' => $this->description,
+            'start' => $startDateTime->toIso8601String(),
+            'end' => $endDateTime->toIso8601String(),
+            'backgroundColor' => $this->type->color ?? '#3b82f6',
+            'borderColor' => $this->type->color ?? '#3b82f6',
+            'extendedProps' => [
+                'entity_id' => $this->entity_id,
+                'entity_name' => $this->entity?->name,
+                'type_name' => $this->type?->name,
+                'action_name' => $this->action?->name,
+                'status' => $this->status,
+                'knowledge' => $this->knowledge,
+            ],
+        ];
+    }
 }

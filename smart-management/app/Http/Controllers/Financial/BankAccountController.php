@@ -1,19 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Financial;
 
-use App\Models\BankAccount;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBankAccountRequest;
 use App\Http\Requests\UpdateBankAccountRequest;
+use App\Models\Financial\BankAccount;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BankAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $accounts = BankAccount::query()
+            ->filter($request->only(['search', 'is_active']))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('financial/bank-accounts/Index', [
+            'accounts' => $accounts,
+            'filters' => $request->only(['search', 'is_active']),
+        ]);
     }
 
     /**
@@ -21,7 +33,7 @@ class BankAccountController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('financial/bank-accounts/Create');
     }
 
     /**
@@ -29,7 +41,17 @@ class BankAccountController extends Controller
      */
     public function store(StoreBankAccountRequest $request)
     {
-        //
+        try {
+            $account = BankAccount::create($request->validated());
+
+            return redirect()
+                ->route('bank-accounts.show', $account)
+                ->with('success', 'Conta bancária criada com sucesso!');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao criar conta bancária: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -37,7 +59,11 @@ class BankAccountController extends Controller
      */
     public function show(BankAccount $bankAccount)
     {
-        //
+        $bankAccount->load('transactions');
+
+        return Inertia::render('financial/bank-accounts/Show', [
+            'account' => $bankAccount,
+        ]);
     }
 
     /**
@@ -45,7 +71,9 @@ class BankAccountController extends Controller
      */
     public function edit(BankAccount $bankAccount)
     {
-        //
+        return Inertia::render('financial/bank-accounts/Edit', [
+            'account' => $bankAccount,
+        ]);
     }
 
     /**
@@ -53,7 +81,17 @@ class BankAccountController extends Controller
      */
     public function update(UpdateBankAccountRequest $request, BankAccount $bankAccount)
     {
-        //
+        try {
+            $bankAccount->update($request->validated());
+
+            return redirect()
+                ->route('bank-accounts.show', $bankAccount)
+                ->with('success', 'Conta bancária atualizada com sucesso!');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao atualizar conta bancária: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -61,6 +99,19 @@ class BankAccountController extends Controller
      */
     public function destroy(BankAccount $bankAccount)
     {
-        //
+        try {
+            // Check if account has transactions
+            if ($bankAccount->transactions()->count() > 0) {
+                return back()->with('error', 'Não é possível eliminar uma conta com transações associadas.');
+            }
+
+            $bankAccount->delete();
+
+            return redirect()
+                ->route('bank-accounts.index')
+                ->with('success', 'Conta bancária eliminada com sucesso!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao eliminar conta bancária: ' . $e->getMessage());
+        }
     }
 }

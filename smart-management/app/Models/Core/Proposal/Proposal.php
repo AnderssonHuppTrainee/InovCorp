@@ -49,6 +49,77 @@ class Proposal extends Model
             ->where('document_type', 'proposal_pdf');
     }
 
+    // Scopes
+    public function scopeDraft($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeClosed($query)
+    {
+        return $query->where('status', 'closed');
+    }
+
+    public function scopeFilter($query, array $filters = [])
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('number', 'like', "%{$search}%");
+            });
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
+        })->when($filters['client_id'] ?? null, function ($query, $clientId) {
+            $query->where('client_id', $clientId);
+        });
+    }
+
+    // Gerar número sequencial
+    public static function nextNumber(): string
+    {
+        $lastNumber = static::withTrashed()->max('number');
+        $nextNumber = $lastNumber ? intval($lastNumber) + 1 : 1;
+        return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
+
+    // Calcular total
+    public function calculateTotal()
+    {
+        $total = $this->items->sum(function ($item) {
+            return $item->quantity * $item->unit_price;
+        });
+
+        $this->update(['total_amount' => $total]);
+
+        return $total;
+    }
+
+    // Converter para encomenda
+    public function convertToOrder()
+    {
+        $order = Order::create([
+            'number' => Order::nextNumber(),
+            'order_date' => now(),
+            'client_id' => $this->client_id,
+            'delivery_date' => now()->addDays(30),
+            'total_amount' => $this->total_amount,
+            'status' => 'draft', // Estado rascunho
+        ]);
+
+        // Copiar itens
+        foreach ($this->items as $item) {
+            $order->items()->create([
+                'article_id' => $item->article_id,
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'notes' => $item->notes,
+            ]);
+        }
+
+        return $order;
+    }
+
     public function generatePdf()
     {
         $pdfPath = "proposals/{$this->number}.pdf";
@@ -59,10 +130,11 @@ class Proposal extends Model
             'file_name' => "proposta-{$this->number}.pdf",
             'file_path' => $pdfPath,
             'document_type' => 'proposal_pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => 0,
             'archivable_id' => $this->id,
             'archivable_type' => self::class,
             'uploaded_by' => auth()->id()
         ]);
     }
-
 }

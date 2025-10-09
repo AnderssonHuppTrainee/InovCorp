@@ -9,18 +9,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CountryFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = \App\Models\Catalog\Country::class;
+
     public function definition(): array
     {
         return [
-            'name' => fake()->country,
-            'code' => fake()->countryCode,
-            'phone_code' => rand(1, 1000) * rand(1, 5),
-            'is_active' => true
+
         ];
     }
 }

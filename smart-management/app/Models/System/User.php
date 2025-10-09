@@ -27,7 +27,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'mobile',
         'password',
+        'is_active',
     ];
 
     /**
@@ -50,10 +52,11 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
-    //tem muitas ordens de tabalho
+    // Relationships
     public function workOrders()
     {
         return $this->hasMany(WorkOrder::class, 'assigned_to');
@@ -67,5 +70,39 @@ class User extends Authenticatable
     public function uploadedDocuments()
     {
         return $this->hasMany(DigitalArchive::class, 'uploaded_by');
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
+    }
+
+    public function scopeFilter($query, array $filters = [])
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('mobile', 'like', "%{$search}%");
+            });
+        })->when(isset($filters['is_active']) && $filters['is_active'] !== 'all', function ($query) use ($filters) {
+            $query->where('is_active', $filters['is_active'] === '1');
+        })->when($filters['role'] ?? null, function ($query, $role) {
+            if ($role !== 'all') {
+                $query->role($role);
+            }
+        });
+    }
+
+    // Helpers
+    public function getRoleNamesString(): string
+    {
+        return $this->roles->pluck('name')->join(', ');
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -30,4 +29,33 @@ class Company extends Model
         'phone' => 'encrypted',
         'email' => 'encrypted',
     ];
+
+    // Singleton pattern - sempre retorna/cria uma única empresa
+    public static function get()
+    {
+        return static::first() ?? static::create([
+            'name' => config('app.name'),
+            'address' => '',
+            'postal_code' => '',
+            'city' => '',
+            'tax_number' => '',
+            'phone' => '',
+            'email' => '',
+            'website' => '',
+        ]);
+    }
+
+    public static function generatePortugueseNif(): string
+    {
+        // Prefixos válidos para NIF: 1, 2, 3, 5, 6, 8
+        $prefixes = [1, 2, 3, 5, 6, 8];
+        $nif = (string) fake()->randomElement($prefixes);
+
+        // Gerar os 8 restantes dígitos aleatórios
+        for ($i = 0; $i < 8; $i++) {
+            $nif .= fake()->randomDigit();
+        }
+
+        return $nif;
+    }
 }

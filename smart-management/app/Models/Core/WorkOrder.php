@@ -33,10 +33,61 @@ class WorkOrder extends Model
     {
         return $this->belongsTo(Entity::class, 'client_id');
     }
-    //pertecem a um user
+
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeInProgress($query)
+    {
+        return $query->where('status', 'in_progress');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+    public function scopeFilter($query, array $filters = [])
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('number', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
+        })->when($filters['priority'] ?? null, function ($query, $priority) {
+            if ($priority !== 'all') {
+                $query->where('priority', $priority);
+            }
+        })->when($filters['client_id'] ?? null, function ($query, $clientId) {
+            $query->where('client_id', $clientId);
+        })->when($filters['assigned_to'] ?? null, function ($query, $userId) {
+            $query->where('assigned_to', $userId);
+        });
+    }
+
+    // Gerar número sequencial
+    public static function nextNumber(): string
+    {
+        $lastNumber = static::max('number');
+        $nextNumber = $lastNumber ? intval($lastNumber) + 1 : 1;
+        return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
 }

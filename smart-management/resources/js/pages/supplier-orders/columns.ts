@@ -70,8 +70,10 @@ export const columns: ColumnDef<SupplierOrder>[] = [
         accessorKey: 'total_amount',
         header: 'Valor Total',
         cell: ({ row }) => {
-            const amount = row.original.total_amount || 0
-            return h('div', { class: 'font-semibold' }, `€${amount.toFixed(2)}`)
+            const value = row.original.total_amount
+            const amount = typeof value === 'number' ? value : parseFloat(value ?? '0')
+            const validAmount = isNaN(amount) ? 0 : amount
+            return h('div', { class: 'font-semibold' }, `€${validAmount.toFixed(2)}`)
         },
     },
     {

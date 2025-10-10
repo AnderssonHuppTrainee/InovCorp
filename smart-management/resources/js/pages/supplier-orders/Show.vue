@@ -25,26 +25,44 @@
                     <CardContent class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">Número</div>
-                                <div class="mt-1 font-mono text-sm font-semibold">
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
+                                    Número
+                                </div>
+                                <div
+                                    class="mt-1 font-mono text-sm font-semibold"
+                                >
                                     {{ supplierOrder.number }}
                                 </div>
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
                                     Data da Encomenda
                                 </div>
-                                <div class="mt-1 text-sm">{{ formatDate(supplierOrder.order_date) }}</div>
+                                <div class="mt-1 text-sm">
+                                    {{ formatDate(supplierOrder.order_date) }}
+                                </div>
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">Fornecedor</div>
-                                <div class="mt-1 text-sm">{{ supplierOrder.supplier?.name }}</div>
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
+                                    Fornecedor
+                                </div>
+                                <div class="mt-1 text-sm">
+                                    {{ supplierOrder.supplier?.name }}
+                                </div>
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
                                     Encomenda Cliente
                                 </div>
                                 <div class="mt-1 font-mono text-sm">
@@ -53,17 +71,33 @@
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">Valor Total</div>
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
+                                    Valor Total
+                                </div>
                                 <div class="mt-1 text-lg font-bold">
-                                    €{{ (supplierOrder.total_amount || 0).toFixed(2) }}
+                                    €{{ supplierOrder.total_amount || 0 }}
                                 </div>
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium text-muted-foreground">Estado</div>
+                                <div
+                                    class="text-sm font-medium text-muted-foreground"
+                                >
+                                    Estado
+                                </div>
                                 <div class="mt-1">
-                                    <Badge :variant="getStatusVariant(supplierOrder.status)">
-                                        {{ getStatusLabel(supplierOrder.status) }}
+                                    <Badge
+                                        :variant="
+                                            getStatusVariant(
+                                                supplierOrder.status,
+                                            )
+                                        "
+                                    >
+                                        {{
+                                            getStatusLabel(supplierOrder.status)
+                                        }}
                                     </Badge>
                                 </div>
                             </div>
@@ -77,7 +111,9 @@
                     </CardHeader>
                     <CardContent class="space-y-4">
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
                                 Faturas Associadas
                             </div>
                             <div class="mt-1 text-2xl font-bold">
@@ -86,14 +122,20 @@
                         </div>
 
                         <div class="pt-4">
-                            <div class="text-sm font-medium text-muted-foreground">Criada em</div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Criada em
+                            </div>
                             <div class="mt-1 text-sm">
                                 {{ formatDate(supplierOrder.created_at) }}
                             </div>
                         </div>
 
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
                                 Atualizada em
                             </div>
                             <div class="mt-1 text-sm">
@@ -114,11 +156,21 @@
                         <table class="w-full">
                             <thead class="border-b">
                                 <tr class="text-sm text-muted-foreground">
-                                    <th class="pb-3 text-left font-medium">Referência</th>
-                                    <th class="pb-3 text-left font-medium">Artigo</th>
-                                    <th class="pb-3 text-right font-medium">Quantidade</th>
-                                    <th class="pb-3 text-right font-medium">Preço Unit.</th>
-                                    <th class="pb-3 text-right font-medium">Total</th>
+                                    <th class="pb-3 text-left font-medium">
+                                        Referência
+                                    </th>
+                                    <th class="pb-3 text-left font-medium">
+                                        Artigo
+                                    </th>
+                                    <th class="pb-3 text-right font-medium">
+                                        Quantidade
+                                    </th>
+                                    <th class="pb-3 text-right font-medium">
+                                        Preço Unit.
+                                    </th>
+                                    <th class="pb-3 text-right font-medium">
+                                        Total
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -130,13 +182,17 @@
                                     <td class="py-3 font-mono text-sm">
                                         {{ item.article?.reference }}
                                     </td>
-                                    <td class="py-3 text-sm">{{ item.article?.name }}</td>
-                                    <td class="py-3 text-right text-sm">{{ item.quantity }}</td>
+                                    <td class="py-3 text-sm">
+                                        {{ item.article?.name }}
+                                    </td>
                                     <td class="py-3 text-right text-sm">
-                                        €{{ item.unit_price.toFixed(2) }}
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td class="py-3 text-right text-sm">
+                                        €{{ item.unit_price }}
                                     </td>
                                     <td class="py-3 text-right font-semibold">
-                                        €{{ (item.quantity * item.unit_price).toFixed(2) }}
+                                        €{{ item.quantity * item.unit_price }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -149,76 +205,80 @@
 </template>
 
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import PageHeader from '@/components/PageHeader.vue'
-import { ArrowLeftIcon, Trash2Icon } from 'lucide-vue-next'
-import supplierOrders from '@/routes/supplier-orders'
+import PageHeader from '@/components/PageHeader.vue';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
+import supplierOrders from '@/routes/supplier-orders/index';
+import { router } from '@inertiajs/vue3';
+import { ArrowLeftIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
     supplierOrder: {
-        id: number
-        number: string
-        order_date: string
+        id: number;
+        number: string;
+        order_date: string;
         supplier: {
-            id: number
-            name: string
-        }
+            id: number;
+            name: string;
+        };
         order?: {
-            id: number
-            number: string
+            id: number;
+            number: string;
             items?: Array<{
-                id: number
+                id: number;
                 article: {
-                    reference: string
-                    name: string
-                }
-                quantity: number
-                unit_price: number
-            }>
-        }
-        total_amount: number
-        status: string
-        invoices?: Array<any>
-        created_at: string
-        updated_at: string
-    }
+                    reference: string;
+                    name: string;
+                };
+                quantity: number;
+                unit_price: number;
+            }>;
+        };
+        total_amount: number;
+        status: string;
+        invoices?: Array<any>;
+        created_at: string;
+        updated_at: string;
+    };
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const statusMap: Record<string, { label: string; variant: any }> = {
     draft: { label: 'Rascunho', variant: 'secondary' },
     closed: { label: 'Fechada', variant: 'default' },
-}
+};
 
 const getStatusLabel = (status: string) => {
-    return statusMap[status]?.label || status
-}
+    return statusMap[status]?.label || status;
+};
 
 const getStatusVariant = (status: string) => {
-    return statusMap[status]?.variant || 'secondary'
-}
+    return statusMap[status]?.variant || 'secondary';
+};
 
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-PT', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-    })
-}
+    });
+};
 
 const handleBack = () => {
-    router.visit(supplierOrders.index().url)
-}
+    router.visit(supplierOrders.index().url);
+};
 
 const handleDelete = () => {
-    if (confirm('Tem certeza que deseja eliminar esta encomenda de fornecedor?')) {
-        router.delete(supplierOrders.destroy({ supplierOrder: props.supplierOrder.id }).url)
+    if (
+        confirm('Tem certeza que deseja eliminar esta encomenda de fornecedor?')
+    ) {
+        router.delete(
+            supplierOrders.destroy({ supplierOrder: props.supplierOrder.id })
+                .url,
+        );
     }
-}
+};
 </script>
-

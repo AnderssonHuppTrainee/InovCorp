@@ -5,6 +5,7 @@ use App\Http\Controllers\Core\DigitalArchiveController;
 use App\Http\Controllers\Core\EntityController;
 use App\Http\Controllers\Core\OrderController;
 use App\Http\Controllers\Core\ProposalController;
+use App\Http\Controllers\Core\SupplierOrderController;
 use App\Http\Controllers\Core\WorkOrderController;
 use App\Http\Controllers\Financial\BankAccountController;
 use App\Http\Controllers\Financial\CustomerInvoiceController;
@@ -38,7 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('entities.show');
     Route::get('/entities/{entity}/edit', [EntityController::class, 'edit'])
         ->name('entities.edit');
-    Route::patch('/entities/{entity}', [EntityController::class, 'update'])
+    Route::put('/entities/{entity}', [EntityController::class, 'update'])
         ->name('entities.update');
     Route::delete('/entities/{entity}', [EntityController::class, 'destroy'])
         ->name('entities.destroy');
@@ -61,6 +62,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('orders.convert-to-supplier-orders');
     Route::get('/orders/{order}/pdf', [OrderController::class, 'generatePdf'])
         ->name('orders.pdf');
+
+    // Supplier Orders (Encomendas Fornecedores)
+    Route::get('/supplier-orders', [SupplierOrderController::class, 'index'])
+        ->name('supplier-orders.index');
+    Route::get('/supplier-orders/{supplierOrder}', [SupplierOrderController::class, 'show'])
+        ->name('supplier-orders.show');
+    Route::delete('/supplier-orders/{supplierOrder}', [SupplierOrderController::class, 'destroy'])
+        ->name('supplier-orders.destroy');
 
     // Calendar
     Route::get('/calendar', [CalendarEventController::class, 'index'])
@@ -126,6 +135,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Activity Logs
     Route::get('/logs', function () {
         $logs = \Spatie\Activitylog\Models\Activity::with('causer')->latest()->paginate(50);
-        return \Inertia\Inertia::render('settings/logs/Index', ['logs' => $logs]);
+        return Inertia::render('settings/logs/Index', ['logs' => $logs]);
     })->name('logs.index');
 });

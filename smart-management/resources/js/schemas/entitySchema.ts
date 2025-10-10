@@ -39,7 +39,7 @@ export const entitySchema = z.object({
     .optional()
     .or(z.literal('')),
   
-  gdpr_consent: z.boolean().optional().default(false),
+  gdpr_consent: z.boolean().default(false),
   
   observations: z.string().optional(),
   

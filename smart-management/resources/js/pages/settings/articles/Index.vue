@@ -127,3 +127,5 @@ const goToPage = (page: number) => {
 const handleCreate = () => router.get('/articles/create');
 </script>
 
+
+

@@ -43,8 +43,8 @@
                                             </SelectContent>
                                         </Select>
                                         <FormDescription>
-                                            Selecione a entidade associada a este
-                                            contacto
+                                            Selecione a entidade associada a
+                                            este contacto
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -173,34 +173,31 @@
                                 </FormField>
 
                                 <!-- Consentimento RGPD -->
-                                <FormField name="gdpr_consent">
-                                    <FormItem
-                                        class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
-                                    >
-                                        <FormControl>
-                                            <Checkbox
-                                                :checked="form.values.gdpr_consent"
-                                                @update:checked="
-                                                    (value) =>
-                                                        form.setFieldValue(
-                                                            'gdpr_consent',
-                                                            !!value,
-                                                        )
-                                                "
-                                            />
-                                        </FormControl>
-                                        <div class="space-y-1 leading-none">
-                                            <FormLabel
-                                                >Consentimento RGPD</FormLabel
-                                            >
-                                            <FormDescription>
-                                                Autoriza o tratamento dos dados
-                                                pessoais de acordo com o RGPD
-                                            </FormDescription>
-                                        </div>
-                                    </FormItem>
-                                    <FormMessage />
-                                </FormField>
+                                <div
+                                    class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id="gdpr-consent"
+                                        :checked="form.values.gdpr_consent"
+                                        @change="handleGdprChange"
+                                        class="peer h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-primary ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                    />
+                                    <div class="grid gap-1.5 leading-none">
+                                        <label
+                                            for="gdpr-consent"
+                                            class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        >
+                                            Consentimento RGPD
+                                        </label>
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            Autoriza o tratamento dos dados
+                                            pessoais de acordo com o RGPD
+                                        </p>
+                                    </div>
+                                </div>
 
                                 <!-- Estado -->
                                 <FormField
@@ -290,7 +287,6 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import {
     FormControl,
     FormDescription,
@@ -344,6 +340,10 @@ const form = useForm({
 });
 
 // Methods
+const handleGdprChange = (e) => {
+    const checked = e.target.checked;
+    form.setFieldValue('gdpr_consent', checked);
+};
 const goBack = () => {
     router.get('/contacts');
 };
@@ -373,5 +373,3 @@ const submitForm = form.handleSubmit(
     },
 );
 </script>
-
-

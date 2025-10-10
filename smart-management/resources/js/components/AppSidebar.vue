@@ -14,7 +14,11 @@ import { dashboard } from '@/routes';
 import articles from '@/routes/articles';
 import bankAccounts from '@/routes/bank-accounts';
 import calendar from '@/routes/calendar';
+import calendarActions from '@/routes/calendar-actions';
+import calendarEventTypes from '@/routes/calendar-event-types';
+import contactRoles from '@/routes/contact-roles';
 import contacts from '@/routes/contacts';
+import countries from '@/routes/countries';
 import customerInvoices from '@/routes/customer-invoices';
 import digitalArchive from '@/routes/digital-archive';
 import entities from '@/routes/entities';
@@ -22,116 +26,157 @@ import logs from '@/routes/logs';
 import orders from '@/routes/orders';
 import proposals from '@/routes/proposals';
 import roles from '@/routes/roles';
-import taxRates from '@/routes/tax-rates';
+import supplierOrders from '@/routes/supplier-orders';
 import company from '@/routes/settings/company';
 import supplierInvoices from '@/routes/supplier-invoices';
+import taxRates from '@/routes/tax-rates';
 import users from '@/routes/users';
 import workOrders from '@/routes/work-orders';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid } from 'lucide-vue-next';
+import {
+    LayoutDashboard,
+    Users,
+    Building2,
+    Contact,
+    FileText,
+    Calendar,
+    ShoppingCart,
+    ClipboardList,
+    Wallet,
+    FolderOpen,
+    ShieldCheck,
+    Settings,
+} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
-        icon: LayoutGrid,
+        icon: LayoutDashboard,
     },
     {
         title: 'Clientes',
         href: entities.index().url + '?type=client',
-        icon: LayoutGrid,
+        icon: Users,
     },
     {
         title: 'Fornecedores',
         href: entities.index().url + '?type=supplier',
-        icon: LayoutGrid,
+        icon: Building2,
     },
     {
         title: 'Contactos',
         href: contacts.index().url,
-        icon: LayoutGrid,
+        icon: Contact,
     },
     {
         title: 'Propostas',
         href: proposals.index().url,
-        icon: LayoutGrid,
+        icon: FileText,
+    },
+    {
+        title: 'Calendário',
+        href: calendar.index().url,
+        icon: Calendar,
     },
     {
         title: 'Encomendas',
         href: orders.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Calendario',
-        href: calendar.index().url,
-        icon: LayoutGrid,
+        icon: ShoppingCart,
+        items: [
+            {
+                title: 'Clientes',
+                href: orders.index().url,
+            },
+            {
+                title: 'Fornecedores',
+                href: supplierOrders.index().url,
+            },
+        ],
     },
     {
         title: 'Ordens de Trabalho',
         href: workOrders.index().url,
-        icon: LayoutGrid,
+        icon: ClipboardList,
     },
     {
-        title: 'Contas Bancárias',
+        title: 'Financeiro',
         href: bankAccounts.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Conta Corrente Clientes',
-        href: customerInvoices.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Faturas Fornecedores',
-        href: supplierInvoices.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Arquivo Digital',
-        href: digitalArchive.index().url,
-        icon: LayoutGrid,
+        icon: Wallet,
+        items: [
+            {
+                title: 'Contas Bancárias',
+                href: bankAccounts.index().url,
+            },
+            {
+                title: 'Conta Corrente Clientes',
+                href: customerInvoices.index().url,
+            },
+            {
+                title: 'Faturas Fornecedores',
+                href: supplierInvoices.index().url,
+            },
+            {
+                title: 'Arquivo Digital',
+                href: digitalArchive.index().url,
+            },
+        ],
     },
     {
         title: 'Gestão de Acessos',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Gestão de Users',
         href: users.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Gestão de Permissões',
-        href: roles.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Artigos',
-        href: articles.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Company',
-        href: company.index().url,
-        icon: LayoutGrid,
+        icon: ShieldCheck,
+        items: [
+            {
+                title: 'Utilizadores',
+                href: users.index().url,
+            },
+            {
+                title: 'Permissões',
+                href: roles.index().url,
+            },
+        ],
     },
     {
         title: 'Configurações',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Taxas de Imposto',
-        href: taxRates.index().url,
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Logs',
-        href: logs.index().url,
-        icon: LayoutGrid,
+        href: articles.index().url,
+        icon: Settings,
+        items: [
+            {
+                title: 'Países',
+                href: countries.index().url,
+            },
+            {
+                title: 'Contactos - Funções',
+                href: contactRoles.index().url,
+            },
+            {
+                title: 'Calendário - Tipos',
+                href: calendarEventTypes.index().url,
+            },
+            {
+                title: 'Calendário - Acções',
+                href: calendarActions.index().url,
+            },
+            {
+                title: 'Artigos',
+                href: articles.index().url,
+            },
+            {
+                title: 'Financeiro - IVA',
+                href: taxRates.index().url,
+            },
+            {
+                title: 'Logs',
+                href: logs.index().url,
+            },
+            {
+                title: 'Empresa',
+                href: company.index().url,
+            },
+        ],
     },
 ];
 </script>

@@ -39,9 +39,22 @@ class StoreEntityRequest extends FormRequest
             'mobile' => 'nullable|max:20',
             'website' => 'nullable|url|max:255',
             'email' => 'nullable|email|max:255',
-            'gdpr_consent' => 'boolean',
+            'gdpr_consent' => 'sometimes|boolean',
             'observations' => 'nullable|max:1000',
             'status' => 'required|in:active,inactive'
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Garante que gdpr_consent sempre tenha um valor booleano
+        if (!$this->has('gdpr_consent')) {
+            $this->merge([
+                'gdpr_consent' => false
+            ]);
+        }
     }
 }

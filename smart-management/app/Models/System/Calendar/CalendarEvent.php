@@ -31,8 +31,7 @@ class CalendarEvent extends Model
     ];
 
     protected $casts = [
-        'event_date' => 'date',
-        'event_time' => 'datetime',
+        'event_date' => 'date:Y-m-d',
         'shared_with' => 'array',
         'knowledge' => 'boolean'
     ];
@@ -119,20 +118,34 @@ class CalendarEvent extends Model
     // Acessor para FullCalendar
     public function getFullCalendarEventAttribute()
     {
+        // Garantir que event_date está no formato Y-m-d
         $eventDateStr = $this->event_date instanceof \Carbon\Carbon
             ? $this->event_date->format('Y-m-d')
             : $this->event_date;
 
-        $startDateTime = \Carbon\Carbon::parse($eventDateStr . ' ' . $this->event_time);
+        // Garantir que event_time está no formato H:i (apenas hora)
+        // Pode vir como string "09:30" ou como datetime object
+        if ($this->event_time instanceof \Carbon\Carbon) {
+            $eventTimeStr = $this->event_time->format('H:i');
+        } else {
+            // Extrair apenas H:i se vier como datetime string
+            $eventTimeStr = substr($this->event_time, 0, 5);
+        }
+
+        $startDateTime = \Carbon\Carbon::parse($eventDateStr . ' ' . $eventTimeStr);
         $endDateTime = $startDateTime->copy()->addMinutes($this->duration);
+
+        // Garantir que type existe
+        $backgroundColor = $this->type?->color ?? '#3b82f6';
+        $borderColor = $this->type?->color ?? '#3b82f6';
 
         return [
             'id' => $this->id,
             'title' => $this->description,
             'start' => $startDateTime->toIso8601String(),
             'end' => $endDateTime->toIso8601String(),
-            'backgroundColor' => $this->type->color ?? '#3b82f6',
-            'borderColor' => $this->type->color ?? '#3b82f6',
+            'backgroundColor' => $backgroundColor,
+            'borderColor' => $borderColor,
             'extendedProps' => [
                 'entity_id' => $this->entity_id,
                 'entity_name' => $this->entity?->name,

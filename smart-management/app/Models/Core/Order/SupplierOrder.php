@@ -2,6 +2,7 @@
 
 namespace App\Models\Core\Order;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Core\Entity;
 use App\Models\Core\Order\Order;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupplierOrder extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'number',
         'order_date',

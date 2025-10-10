@@ -290,3 +290,5 @@ export const columns: ColumnDef<SupplierInvoice>[] = [
 ]
 
 
+
+

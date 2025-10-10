@@ -101,16 +101,96 @@ class CalendarEventController extends Controller
      */
     public function update(UpdateCalendarEventRequest $request, CalendarEvent $calendarEvent)
     {
+        // Se for um update parcial (drag/drop/resize), usar validação mais flexível
+        if ($this->isPartialUpdate($request)) {
+            return $this->partialUpdate($request, $calendarEvent);
+        }
+
         $validated = $request->validated();
+
+        \Log::info('Updating calendar event', [
+            'event_id' => $calendarEvent->id,
+            'validated_data' => $validated,
+            'request_all' => $request->all()
+        ]);
 
         try {
             $calendarEvent->update($validated);
 
+            \Log::info('Calendar event updated successfully', ['event_id' => $calendarEvent->id]);
+
             return back()->with('success', 'Evento atualizado com sucesso!');
         } catch (\Exception $e) {
+            \Log::error('Error updating calendar event', [
+                'event_id' => $calendarEvent->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar evento: ' . $e->getMessage());
+                ->withErrors(['error' => 'Erro ao atualizar evento: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Check if this is a partial update (drag/drop/resize).
+     */
+    private function isPartialUpdate($request): bool
+    {
+        $allFields = ['event_date', 'event_time', 'duration', 'calendar_event_type_id', 'calendar_action_id', 'description', 'status'];
+        $providedFields = array_keys($request->all());
+
+        // Se não tem todos os campos obrigatórios, é um update parcial
+        foreach (['calendar_event_type_id', 'calendar_action_id', 'description'] as $required) {
+            if (!in_array($required, $providedFields)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle partial updates (drag/drop/resize).
+     */
+    private function partialUpdate($request, CalendarEvent $calendarEvent)
+    {
+        $allowedFields = ['event_date', 'event_time', 'duration', 'status'];
+        $data = $request->only($allowedFields);
+
+        // Validação simples para campos parciais
+        $rules = [];
+        if (isset($data['event_date'])) {
+            $rules['event_date'] = ['required', 'date'];
+        }
+        if (isset($data['event_time'])) {
+            $rules['event_time'] = ['required', 'date_format:H:i'];
+        }
+        if (isset($data['duration'])) {
+            $rules['duration'] = ['required', 'integer', 'min:1'];
+        }
+        if (isset($data['status'])) {
+            $rules['status'] = ['required', 'in:scheduled,completed,cancelled'];
+        }
+
+        $validated = $request->validate($rules);
+
+        \Log::info('Partial update calendar event', [
+            'event_id' => $calendarEvent->id,
+            'data' => $validated
+        ]);
+
+        try {
+            $calendarEvent->update($validated);
+
+            return back()->with('success', 'Evento atualizado!');
+        } catch (\Exception $e) {
+            \Log::error('Error in partial update', [
+                'event_id' => $calendarEvent->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 

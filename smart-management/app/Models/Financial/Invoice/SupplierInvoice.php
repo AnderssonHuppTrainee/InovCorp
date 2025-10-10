@@ -2,6 +2,7 @@
 
 namespace App\Models\Financial\Invoice;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Core\Order\SupplierOrder;
 use App\Models\Core\Entity;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupplierInvoice extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'number',
         'invoice_date',

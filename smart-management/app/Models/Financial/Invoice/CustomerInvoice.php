@@ -2,6 +2,7 @@
 
 namespace App\Models\Financial\Invoice;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Core\Order\Order;
 use App\Models\Core\Entity;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerInvoice extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'number',
@@ -130,5 +131,6 @@ class CustomerInvoice extends Model
         $this->save();
     }
 }
+
 
 

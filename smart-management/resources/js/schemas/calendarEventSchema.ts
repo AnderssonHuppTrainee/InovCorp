@@ -10,11 +10,11 @@ export const calendarEventSchema = z.object({
         .min(1, 'Duração deve ser maior que zero')
         .or(z.string().transform((val) => parseInt(val))),
 
-    shared_with: z.array(z.string()).optional().default([]),
+    shared_with: z.array(z.union([z.string(), z.number()])).optional().default([]),
 
-    knowledge: z.boolean().optional().default(false),
+    knowledge: z.boolean().default(false),
 
-    entity_id: z.string().optional().or(z.literal('')),
+    entity_id: z.string().transform(val => val || undefined).optional(),
 
     calendar_event_type_id: z.string().min(1, 'Tipo é obrigatório'),
 
@@ -26,5 +26,6 @@ export const calendarEventSchema = z.object({
 })
 
 export type CalendarEventFormData = z.infer<typeof calendarEventSchema>
+
 
 

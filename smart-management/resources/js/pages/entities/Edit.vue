@@ -3,9 +3,7 @@
         <div class="space-y-6 p-4">
             <PageHeader
                 :title="
-                    type === 'client'
-                        ? 'Editar Cliente'
-                        : 'Editar Fornecedor'
+                    type === 'client' ? 'Editar Cliente' : 'Editar Fornecedor'
                 "
                 :description="`Atualizar dados ${type === 'client' ? 'do cliente' : 'do fornecedor'}`"
             >
@@ -214,73 +212,6 @@
                                         <FormMessage />
                                     </FormItem>
                                 </FormField>
-
-                                <FormField name="types">
-                                    <FormItem>
-                                        <FormLabel
-                                            >Tipo de Entidade *</FormLabel
-                                        >
-                                        <div class="space-y-2">
-                                            <div
-                                                class="flex flex-row items-start space-y-0 space-x-3"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        :checked="isClient"
-                                                        @update:checked="
-                                                            (value) =>
-                                                                toggleType(
-                                                                    'client',
-                                                                    value,
-                                                                )
-                                                        "
-                                                    />
-                                                </FormControl>
-                                                <div
-                                                    class="space-y-1 leading-none"
-                                                >
-                                                    <FormLabel
-                                                        >Cliente</FormLabel
-                                                    >
-                                                    <FormDescription>
-                                                        Esta entidade pode
-                                                        receber propostas e
-                                                        encomendas
-                                                    </FormDescription>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="flex flex-row items-start space-y-0 space-x-3"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        :checked="isSupplier"
-                                                        @update:checked="
-                                                            (value) =>
-                                                                toggleType(
-                                                                    'supplier',
-                                                                    value,
-                                                                )
-                                                        "
-                                                    />
-                                                </FormControl>
-                                                <div
-                                                    class="space-y-1 leading-none"
-                                                >
-                                                    <FormLabel
-                                                        >Fornecedor</FormLabel
-                                                    >
-                                                    <FormDescription>
-                                                        Esta entidade pode
-                                                        fornecer
-                                                        produtos/serviços
-                                                    </FormDescription>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                </FormField>
                             </div>
 
                             <!-- Coluna 2: Contactos e Outros -->
@@ -355,36 +286,31 @@
                                 </FormField>
 
                                 <!-- Consentimento RGPD -->
-                                <FormField name="gdpr_consent">
-                                    <FormItem
-                                        class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
-                                    >
-                                        <FormControl>
-                                            <Checkbox
-                                                :checked="
-                                                    form.values.gdpr_consent
-                                                "
-                                                @update:checked="
-                                                    (value) =>
-                                                        form.setFieldValue(
-                                                            'gdpr_consent',
-                                                            !!value,
-                                                        )
-                                                "
-                                            />
-                                        </FormControl>
-                                        <div class="space-y-1 leading-none">
-                                            <FormLabel
-                                                >Consentimento RGPD</FormLabel
-                                            >
-                                            <FormDescription>
-                                                Autoriza o tratamento dos dados
-                                                pessoais de acordo com o RGPD
-                                            </FormDescription>
-                                        </div>
-                                    </FormItem>
-                                    <FormMessage />
-                                </FormField>
+                                <div
+                                    class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id="gdpr-consent"
+                                        :checked="form.values.gdpr_consent"
+                                        @change="handleGdprChange"
+                                        class="peer h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-primary ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                    />
+                                    <div class="grid gap-1.5 leading-none">
+                                        <label
+                                            for="gdpr-consent"
+                                            class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        >
+                                            Consentimento RGPD
+                                        </label>
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            Autoriza o tratamento dos dados
+                                            pessoais de acordo com o RGPD
+                                        </p>
+                                    </div>
+                                </div>
 
                                 <!-- Estado -->
                                 <FormField
@@ -474,7 +400,6 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import {
     FormControl,
     FormDescription,
@@ -553,32 +478,9 @@ const goBack = () => {
     router.get(route.index().url, { type: props.type });
 };
 
-const toggleType = (type, checked) => {
-    console.log(
-        'toggleType chamado:',
-        type,
-        checked,
-        'tipos atuais:',
-        form.values.types,
-    );
-
-    // Garantir que checked seja boolean
-    const isChecked = !!checked;
-    const currentTypes = [...form.values.types];
-
-    if (isChecked) {
-        if (!currentTypes.includes(type)) {
-            currentTypes.push(type);
-        }
-    } else {
-        const filtered = currentTypes.filter((t) => t !== type);
-        form.setFieldValue('types', filtered);
-        console.log('Tipos após desmarcar:', filtered);
-        return;
-    }
-
-    form.setFieldValue('types', currentTypes);
-    console.log('Tipos após marcar:', currentTypes);
+const handleGdprChange = (e) => {
+    const checked = e.target.checked;
+    form.setFieldValue('gdpr_consent', checked);
 };
 
 const validateVat = async () => {
@@ -591,22 +493,10 @@ const validateVat = async () => {
     error.value = null;
 
     try {
-        const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute('content');
-
-        const response = await axios.post(
-            '/entities/vies-check',
-            {
-                vat_number: form.values.tax_number,
-            },
-            {
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json',
-                },
-            },
-        );
+        // Axios já está configurado com CSRF token no app.ts
+        const response = await axios.post('/entities/vies-check', {
+            vat_number: form.values.tax_number,
+        });
 
         vatResult.value = response.data;
 
@@ -672,8 +562,6 @@ const validateVat = async () => {
 
 const submitForm = form.handleSubmit(
     (values) => {
-        console.log('✅ Validação passou! Valores:', values);
-        console.log('Types:', values.types, 'Length:', values.types?.length);
         isSubmitting.value = true;
 
         // PUT para atualizar a entidade
@@ -681,7 +569,6 @@ const submitForm = form.handleSubmit(
             preserveScroll: true,
             onSuccess: () => {
                 isSubmitting.value = false;
-                // Success handled by controller
             },
             onError: (errors) => {
                 isSubmitting.value = false;
@@ -693,14 +580,12 @@ const submitForm = form.handleSubmit(
         });
     },
     (errors) => {
-        console.log('❌ Validação falhou! Erros:', errors);
-        console.log('Valores atuais do form:', form.values);
+        console.error('Erros de validação:', errors);
     },
 );
 
-// Log dos valores iniciais
+// Lifecycle hooks podem ser adicionados aqui se necessário
 onMounted(() => {
-    console.log('Entidade carregada:', props.entity);
-    console.log('Valores iniciais do form:', form.values);
+    // Form é inicializado automaticamente com os valores da entidade
 });
 </script>

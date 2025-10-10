@@ -26,10 +26,24 @@ const df = new DateFormatter('pt-PT', {
 
 const value = ref<DateValue | undefined>()
 
+// Helper to normalize date format (YYYY-MM-DD)
+const normalizeDateFormat = (date: string): string => {
+    // If it's already in YYYY-MM-DD format, return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+    }
+    // If it's ISO format (with time/timezone), extract date part
+    if (date.includes('T')) {
+        return date.split('T')[0]
+    }
+    // Otherwise return as is and let parseDate handle it
+    return date
+}
+
 // Initialize from modelValue
 if (props.modelValue) {
     try {
-        value.value = parseDate(props.modelValue)
+        value.value = parseDate(normalizeDateFormat(props.modelValue))
     } catch (e) {
         console.error('Invalid date format:', props.modelValue)
     }
@@ -39,7 +53,7 @@ if (props.modelValue) {
 watch(() => props.modelValue, (newValue) => {
     if (newValue) {
         try {
-            value.value = parseDate(newValue)
+            value.value = parseDate(normalizeDateFormat(newValue))
         } catch (e) {
             console.error('Invalid date format:', newValue)
         }

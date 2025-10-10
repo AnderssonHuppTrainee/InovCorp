@@ -19,13 +19,20 @@ class StoreCalendarEventRequest extends FormRequest
             'duration' => ['required', 'integer', 'min:1'],
             'shared_with' => ['nullable', 'array'],
             'shared_with.*' => ['exists:users,id'],
-            'knowledge' => ['boolean'],
+            'knowledge' => ['sometimes', 'boolean'],
             'entity_id' => ['nullable', 'exists:entities,id'],
             'calendar_event_type_id' => ['required', 'exists:calendar_event_types,id'],
             'calendar_action_id' => ['required', 'exists:calendar_actions,id'],
             'description' => ['required', 'string'],
             'status' => ['required', 'in:scheduled,completed,cancelled'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('knowledge')) {
+            $this->merge(['knowledge' => false]);
+        }
     }
 
     public function attributes(): array

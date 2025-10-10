@@ -56,7 +56,7 @@ class EntityController extends Controller
         $defaultTypes = [$type];
 
         return Inertia::render(
-            'entities/Create2',
+            'entities/Create',
             [
                 'type' => $type,
                 'countries' => Country::active()->get(['id', 'name', 'code']),
@@ -72,6 +72,7 @@ class EntityController extends Controller
     public function store(StoreEntityRequest $request)
     {
         $validated = $request->validated();
+
         try {
             DB::transaction(function () use ($validated) {
                 //chama a função de gerar num incremental

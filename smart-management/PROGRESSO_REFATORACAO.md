@@ -141,6 +141,7 @@ Bugs conhecidos:           0
 ### Arquivos Refatorados (16)
 
 **Formatters (6):**
+
 ```
 ✅ resources/js/pages/orders/columns.ts                      (-2 linhas)
 ✅ resources/js/pages/proposals/columns.ts                   (-2 linhas)
@@ -151,6 +152,7 @@ Bugs conhecidos:           0
 ```
 
 **Checkboxes (10):**
+
 ```
 ✅ resources/js/pages/settings/tax-rates/Create.vue          (-7 linhas)
 ✅ resources/js/pages/settings/tax-rates/Edit.vue            (-7 linhas)
@@ -271,14 +273,14 @@ Bugs conhecidos:           0
 
 ## 📊 TRACKING DE TEMPO
 
-| Fase       | Estimado | Real | Diferença | Eficiência |
-| ---------- | -------- | ---- | --------- | ---------- |
-| **Fase 1A: Formatters** | 5h | 2h | -3h | 150% ✅ |
-| **Fase 1B: Checkboxes** | 2h | 1h | -1h | 200% ✅ |
-| Fase 2     | 14h      | -    | -         | -          |
-| Fase 3     | 15h      | -    | -         | -          |
-| Fase 4     | -        | -    | -         | -          |
-| Fase 5     | -        | -    | -         | -          |
+| Fase                    | Estimado | Real | Diferença | Eficiência |
+| ----------------------- | -------- | ---- | --------- | ---------- |
+| **Fase 1A: Formatters** | 5h       | 2h   | -3h       | 150% ✅    |
+| **Fase 1B: Checkboxes** | 2h       | 1h   | -1h       | 200% ✅    |
+| Fase 2                  | 14h      | -    | -         | -          |
+| Fase 3                  | 15h      | -    | -         | -          |
+| Fase 4                  | -        | -    | -         | -          |
+| Fase 5                  | -        | -    | -         | -          |
 
 **Total até agora:** 3h / 160h (1,9% completo)  
 **Progresso funcional:** 30% (Quick Wins + Checkboxes = base muito sólida!)

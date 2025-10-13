@@ -1,8 +1,14 @@
 <template>
     <AppLayout>
         <div class="space-y-6 p-4">
-            <PageHeader title="Novo Artigo" description="Criar novo artigo no catálogo">
-                <Button variant="outline" @click="goBack"><ArrowLeftIcon class="mr-2 h-4 w-4" />Voltar</Button>
+            <PageHeader
+                title="Novo Artigo"
+                description="Criar novo artigo no catálogo"
+            >
+                <Button variant="outline" @click="goBack">
+                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
+                    Voltar
+                </Button>
             </PageHeader>
 
             <form @submit.prevent="submitForm">
@@ -10,59 +16,105 @@
                     <CardContent class="p-6">
                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Referência *</label>
+                                <label class="text-sm font-medium"
+                                    >Referência *</label
+                                >
                                 <Input v-model="formData.reference" required />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Nome *</label>
+                                <label class="text-sm font-medium"
+                                    >Nome *</label
+                                >
                                 <Input v-model="formData.name" required />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Preço *</label>
-                                <Input type="number" step="0.01" min="0" v-model.number="formData.price" required />
+                                <label class="text-sm font-medium"
+                                    >Preço *</label
+                                >
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    v-model.number="formData.price"
+                                    required
+                                />
                             </div>
 
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">IVA *</label>
-                                <select v-model="formData.tax_rate_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+                                <select
+                                    v-model="formData.tax_rate_id"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    required
+                                >
                                     <option value="">Selecione</option>
-                                    <option v-for="tax in taxRates" :key="tax.id" :value="tax.id">
+                                    <option
+                                        v-for="tax in taxRates"
+                                        :key="tax.id"
+                                        :value="tax.id"
+                                    >
                                         {{ tax.name }} ({{ tax.rate }}%)
                                     </option>
                                 </select>
                             </div>
 
                             <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Descrição</label>
-                                <Textarea v-model="formData.description" rows="3" />
+                                <label class="text-sm font-medium"
+                                    >Descrição</label
+                                >
+                                <Textarea
+                                    v-model="formData.description"
+                                    rows="3"
+                                />
                             </div>
 
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Foto</label>
-                                <Input type="file" accept="image/*" @change="handlePhotoChange" />
-                                <p v-if="photoPreview" class="text-sm text-green-600">✓ Foto selecionada</p>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    @change="handlePhotoChange"
+                                />
+                                <p
+                                    v-if="photoPreview"
+                                    class="text-sm text-green-600"
+                                >
+                                    ✓ Foto selecionada
+                                </p>
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Estado *</label>
-                                <select v-model="formData.status" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                <label class="text-sm font-medium"
+                                    >Estado *</label
+                                >
+                                <select
+                                    v-model="formData.status"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                >
                                     <option value="active">Ativo</option>
                                     <option value="inactive">Inativo</option>
                                 </select>
                             </div>
 
                             <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Observações</label>
-                                <Textarea v-model="formData.observations" rows="3" />
+                                <label class="text-sm font-medium"
+                                    >Observações</label
+                                >
+                                <Textarea
+                                    v-model="formData.observations"
+                                    rows="3"
+                                />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline" @click="goBack">Cancelar</Button>
+                    <Button type="button" variant="outline" @click="goBack"
+                        >Cancelar</Button
+                    >
                     <Button type="submit" :disabled="isSubmitting">
                         <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
                         <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
@@ -122,7 +174,8 @@ const submitForm = () => {
     if (formData.description) data.append('description', formData.description);
     data.append('price', String(formData.price));
     data.append('tax_rate_id', formData.tax_rate_id);
-    if (formData.observations) data.append('observations', formData.observations);
+    if (formData.observations)
+        data.append('observations', formData.observations);
     data.append('status', formData.status);
     if (photoFile.value) data.append('photo', photoFile.value);
 
@@ -134,6 +187,3 @@ const submitForm = () => {
 
 const goBack = () => router.get('/articles');
 </script>
-
-
-

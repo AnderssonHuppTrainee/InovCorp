@@ -45,7 +45,7 @@ class Contact extends Model
         return $this->belongsTo(ContactRole::class, 'contact_role_id');
     }
 
-    // Scopes
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
@@ -72,7 +72,7 @@ class Contact extends Model
         });
     }
 
-    // Gerar número sequencial
+
     public static function nextNumber(): string
     {
         $lastNumber = static::max('number');
@@ -80,7 +80,6 @@ class Contact extends Model
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
-    // Accessor para nome completo
     public function getFullNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

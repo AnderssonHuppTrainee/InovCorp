@@ -19,6 +19,9 @@ class EntityFactory extends Factory
      */
     public function definition(): array
     {
+        // Criar um country se não existir nenhum
+        $country = Country::inRandomOrder()->first() ?? Country::factory()->create();
+
         return [
             'number' => fake()->unique()->numerify('######'),
             'tax_number' => Entity::generatePortugueseNif(),
@@ -27,7 +30,7 @@ class EntityFactory extends Factory
             'address' => fake()->address(),
             'postal_code' => fake()->postcode(),
             'city' => fake()->city(),
-            'country_id' => Country::inRandomOrder()->first()->id,
+            'country_id' => $country->id,
             'phone' => fake()->phoneNumber(),
             'mobile' => fake()->phoneNumber(),
             'website' => 'www.example.pt',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Core;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProposalRequest;
 use App\Http\Requests\UpdateProposalRequest;
-use App\Models\Catalog\ContactRole;
 use App\Models\Core\Article;
 use App\Models\Core\Entity;
 use App\Models\Core\Proposal\Proposal;

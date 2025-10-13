@@ -18,7 +18,6 @@ class CountryController extends Controller
     {
         $query = Country::query();
 
-        // Apply filters
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {

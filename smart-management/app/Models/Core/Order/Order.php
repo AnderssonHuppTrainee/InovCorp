@@ -55,7 +55,7 @@ class Order extends Model
             ->where('document_type', 'order_pdf');
     }
 
-    // Scopes
+    // scopes
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -81,7 +81,7 @@ class Order extends Model
         });
     }
 
-    // Gerar número sequencial
+    // Gerar num sequencial
     public static function nextNumber(): string
     {
         $lastNumber = static::withTrashed()->max('number');
@@ -89,7 +89,7 @@ class Order extends Model
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
-    // Calcular total
+
     public function calculateTotal()
     {
         $total = $this->items->sum(function ($item) {
@@ -101,25 +101,24 @@ class Order extends Model
         return $total;
     }
 
-    // Converter para Encomendas de Fornecedores (agrupa por fornecedor)
+
     public function convertToSupplierOrders()
     {
-        // Agrupar itens por fornecedor
+        // agrupar itens por fornecedor
         $itemsBySupplier = $this->items->groupBy('supplier_id');
 
         $supplierOrders = [];
 
         foreach ($itemsBySupplier as $supplierId => $items) {
             if (!$supplierId) {
-                continue; // Pular itens sem fornecedor
+                continue;
             }
 
-            // Calcular total deste fornecedor
             $totalAmount = $items->sum(function ($item) {
                 return $item->quantity * $item->unit_price;
             });
 
-            // Criar encomenda de fornecedor
+
             $supplierOrder = SupplierOrder::create([
                 'number' => SupplierOrder::nextNumber(),
                 'order_date' => now(),

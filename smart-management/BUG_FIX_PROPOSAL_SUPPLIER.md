@@ -205,7 +205,7 @@ Se já existem encomendas criadas antes desta correção, elas **podem ter `supp
 
 ```sql
 -- Ordens criadas de propostas (onde supplier pode estar NULL)
-SELECT 
+SELECT
     o.id as order_id,
     o.number as order_number,
     oi.id as item_id,
@@ -227,7 +227,7 @@ ORDER BY o.created_at DESC;
 UPDATE order_items oi
 INNER JOIN orders o ON o.id = oi.order_id
 INNER JOIN proposal_items pi ON (
-    pi.proposal_id = o.proposal_id 
+    pi.proposal_id = o.proposal_id
     AND pi.article_id = oi.article_id
 )
 SET oi.supplier_id = pi.supplier_id
@@ -301,14 +301,14 @@ public function it_preserves_supplier_when_converting_proposal_to_order()
     $proposal = Proposal::factory()
         ->has(ProposalItem::factory()->count(2))
         ->create();
-    
+
     $order = $proposal->convertToOrder();
-    
+
     foreach ($order->items as $index => $orderItem) {
         $proposalItem = $proposal->items[$index];
-        
+
         $this->assertEquals(
-            $proposalItem->supplier_id, 
+            $proposalItem->supplier_id,
             $orderItem->supplier_id,
             "Supplier ID should be preserved"
         );
@@ -356,4 +356,3 @@ _Correção realizada: 13/10/2025_
 _Severidade: ALTA_  
 _Tempo de resolução: ~5 minutos_  
 _Impacto: Crítico (preservação de dados)_
-

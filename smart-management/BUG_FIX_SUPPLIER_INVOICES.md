@@ -9,6 +9,7 @@
 ## 🔍 DESCRIÇÃO DO PROBLEMA
 
 Ao tentar **criar** uma Supplier Invoice (Fatura de Fornecedor):
+
 - ❌ Fatura **NÃO era criada**
 - ❌ Página mostrava `dd()` com dados validados
 - ❌ Nada era salvo no banco de dados
@@ -33,7 +34,7 @@ public function store(StoreSupplierInvoiceRequest $request)
     $validated = $request->validated();
 
     /*try {   ← ❌ TODO CÓDIGO COMENTADO!
-        
+
         $invoice = DB::transaction(function () use ($validated, $request) {
             // Upload document if provided
             $documentPath = null;
@@ -108,7 +109,7 @@ public function store(StoreSupplierInvoiceRequest $request)
     try {
         $invoice = DB::transaction(function () use ($validated, $request) {
             \Log::info('📦 [SUPPLIER INVOICE STORE] Iniciando transação...');
-            
+
             // Upload document if provided
             $documentPath = null;
             if ($request->hasFile('document')) {
@@ -163,7 +164,7 @@ public function store(StoreSupplierInvoiceRequest $request)
             'message' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
         ]);
-        
+
         return back()
             ->withInput()
             ->with('error', 'Erro ao criar fatura: ' . $e->getMessage());
@@ -189,16 +190,16 @@ public function store(StoreSupplierInvoiceRequest $request)
 
 Para debug futuro e rastreamento:
 
-| Momento | Log |
-|---------|-----|
-| **Início** | `🔍 Dados validados` |
-| **Transação** | `📦 Iniciando transação` |
-| **Upload documento** | `📄 Uploading document` |
+| Momento                 | Log                          |
+| ----------------------- | ---------------------------- |
+| **Início**              | `🔍 Dados validados`         |
+| **Transação**           | `📦 Iniciando transação`     |
+| **Upload documento**    | `📄 Uploading document`      |
 | **Upload comprovativo** | `💳 Uploading payment proof` |
-| **Criar invoice** | `💾 Criando invoice` |
-| **Email** | `✉️ Enviando email` |
-| **Sucesso** | `✅ Fatura criada` |
-| **Erro** | `❌ Erro ao criar fatura` |
+| **Criar invoice**       | `💾 Criando invoice`         |
+| **Email**               | `✉️ Enviando email`          |
+| **Sucesso**             | `✅ Fatura criada`           |
+| **Erro**                | `❌ Erro ao criar fatura`    |
 
 ---
 
@@ -207,6 +208,7 @@ Para debug futuro e rastreamento:
 ### Por que o código estava comentado?
 
 **Hipótese:** Desenvolvedor estava debugando e:
+
 1. Comentou o código para isolar problemas
 2. Adicionou `dd($validated)` para ver os dados
 3. **Esqueceu de descomentar** antes de commitar
@@ -279,6 +281,7 @@ Database: Fatura salva com sucesso ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Redireciona para /supplier-invoices/show/{id}
 - ✅ Mensagem "Fatura criada com sucesso!"
 - ✅ Fatura aparece na listagem
@@ -293,6 +296,7 @@ Database: Fatura salva com sucesso ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Arquivo salvo em `storage/app/private/invoices/documents/`
 - ✅ Fatura criada com `document_path` preenchido
 - ✅ Botão "Download Documento" funcional na página Show
@@ -307,6 +311,7 @@ Database: Fatura salva com sucesso ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Dialog pergunta se quer enviar email
 - ✅ Se confirmar, envia email ao fornecedor
 - ✅ Fatura criada com status "paid"
@@ -322,6 +327,7 @@ Database: Fatura salva com sucesso ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Mudanças salvas
 - ✅ Redireciona para show
 - ✅ Valores atualizados
@@ -358,6 +364,7 @@ php artisan migrate:status
 ```
 
 Deve existir migration para `supplier_invoices` com colunas:
+
 - number
 - invoice_date
 - due_date
@@ -489,6 +496,7 @@ Refs: BUG_FIX_SUPPLIER_INVOICES.md"
 Este bug teria sido detectado em 2 segundos por um code reviewer.
 
 **Como prevenir:**
+
 - ✅ Pull Request obrigatório
 - ✅ Pelo menos 1 aprovação antes de merge
 - ✅ Checklist de review (código comentado?)
@@ -605,4 +613,3 @@ _Correção realizada: 13/10/2025_
 _Severidade: CRÍTICA_  
 _Tempo de resolução: ~5 minutos_  
 _Impacto: Funcionalidade core restaurada_
-

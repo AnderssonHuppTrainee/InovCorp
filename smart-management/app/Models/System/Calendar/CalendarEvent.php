@@ -9,6 +9,7 @@ use App\Models\System\Calendar\CalendarEventType;
 use App\Models\System\Calendar\CalendarAction;
 use App\Models\System\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use illuminate\Support\Carbon;
 
 class CalendarEvent extends Model
 {
@@ -66,7 +67,7 @@ class CalendarEvent extends Model
         return User::whereIn('id', $this->shared_with)->get();
     }
 
-    // Scopes
+
     public function scopeScheduled($query)
     {
         return $query->where('status', 'scheduled');
@@ -115,27 +116,26 @@ class CalendarEvent extends Model
         });
     }
 
-    // Acessor para FullCalendar
+
     public function getFullCalendarEventAttribute()
     {
-        // Garantir que event_date está no formato Y-m-d
-        $eventDateStr = $this->event_date instanceof \Carbon\Carbon
+        // event_date no formato Y-m-d
+        $eventDateStr = $this->event_date instanceof Carbon
             ? $this->event_date->format('Y-m-d')
             : $this->event_date;
 
-        // Garantir que event_time está no formato H:i (apenas hora)
-        // Pode vir como string "09:30" ou como datetime object
-        if ($this->event_time instanceof \Carbon\Carbon) {
+
+        if ($this->event_time instanceof Carbon) {
             $eventTimeStr = $this->event_time->format('H:i');
         } else {
-            // Extrair apenas H:i se vier como datetime string
+            // extrai apenas H:i se vier como datetime string
             $eventTimeStr = substr($this->event_time, 0, 5);
         }
 
-        $startDateTime = \Carbon\Carbon::parse($eventDateStr . ' ' . $eventTimeStr);
+        $startDateTime = Carbon::parse($eventDateStr . ' ' . $eventTimeStr);
         $endDateTime = $startDateTime->copy()->addMinutes($this->duration);
 
-        // Garantir que type existe
+
         $backgroundColor = $this->type?->color ?? '#3b82f6';
         $borderColor = $this->type?->color ?? '#3b82f6';
 

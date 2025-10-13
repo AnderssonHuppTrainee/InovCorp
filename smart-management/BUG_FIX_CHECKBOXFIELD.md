@@ -9,13 +9,15 @@
 ## 🔍 DESCRIÇÃO DO PROBLEMA
 
 Ao tentar **criar** novos items em:
+
 - ❌ Settings/Articles
-- ❌ Settings/Calendar-Actions  
+- ❌ Settings/Calendar-Actions
 - ❌ Settings/Calendar-Event-Types
 
 **Erro no console:**
+
 ```
-useFormField.ts:10 Uncaught (in promise) Error: 
+useFormField.ts:10 Uncaught (in promise) Error:
 useFormField should be used within <FormField>
 ```
 
@@ -36,18 +38,22 @@ useFormField should be used within <FormField>
 
 ```vue
 <script setup lang="ts">
-import { useFormField } from '@/components/ui/form/useFormField'
+import { useFormField } from '@/components/ui/form/useFormField';
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // ❌ useFormField SEM estar dentro de FormField
-const { value, handleChange } = useFormField(() => props.name)
+const { value, handleChange } = useFormField(() => props.name);
 </script>
 
 <template>
     <!-- ❌ Checkbox SEM FormField wrapper -->
-    <div class="flex flex-row items-start...">
-        <input type="checkbox" :checked="isChecked" @change="handleInputChange" />
+    <div class="items-start... flex flex-row">
+        <input
+            type="checkbox"
+            :checked="isChecked"
+            @change="handleInputChange"
+        />
         <div>
             <label>{{ label }}</label>
             <p>{{ description }}</p>
@@ -109,26 +115,34 @@ Na implementação inicial, eu **removi** o `<FormField>` quando criei o `Checkb
 
 ```vue
 <script setup lang="ts">
-import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { computed } from 'vue'
+import {
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+} from '@/components/ui/form';
+import { computed } from 'vue';
 
 interface Props {
-    name: string
-    label: string
-    description?: string
-    disabled?: boolean
+    name: string;
+    label: string;
+    description?: string;
+    disabled?: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Generate unique ID for accessibility
-const fieldId = computed(() => `checkbox-${props.name}`)
+const fieldId = computed(() => `checkbox-${props.name}`);
 </script>
 
 <template>
     <!-- ✅ FormField encapsulado DENTRO do componente -->
     <FormField v-slot="{ value, handleChange }" :name="name">
-        <FormItem class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4">
+        <FormItem
+            class="flex flex-row items-start space-y-0 space-x-3 rounded-lg border p-4"
+        >
             <FormControl>
                 <input
                     :id="fieldId"
@@ -136,18 +150,26 @@ const fieldId = computed(() => `checkbox-${props.name}`)
                     :name="name"
                     :checked="Boolean(value)"
                     :disabled="disabled"
-                    @change="(event: Event) => handleChange((event.target as HTMLInputElement).checked)"
+                    @change="
+                        (event: Event) =>
+                            handleChange(
+                                (event.target as HTMLInputElement).checked,
+                            )
+                    "
                     class="peer mt-1 h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-primary ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 />
             </FormControl>
             <div class="grid gap-1.5 leading-none">
                 <FormLabel
                     :for="fieldId"
-                    class="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     {{ label }}
                 </FormLabel>
-                <FormDescription v-if="description" class="text-sm text-muted-foreground">
+                <FormDescription
+                    v-if="description"
+                    class="text-sm text-muted-foreground"
+                >
                     {{ description }}
                 </FormDescription>
             </div>
@@ -198,11 +220,11 @@ const fieldId = computed(() => `checkbox-${props.name}`)
 // @/components/ui/form/useFormField.ts
 export function useFormField(path: () => string) {
     // ❌ Lança erro se não houver contexto FormField
-    const fieldContext = inject(FormFieldSymbol)
+    const fieldContext = inject(FormFieldSymbol);
     if (!fieldContext) {
-        throw new Error('useFormField should be used within <FormField>')
+        throw new Error('useFormField should be used within <FormField>');
     }
-    
+
     // ...retorna value e handleChange
 }
 ```
@@ -264,22 +286,22 @@ Form submit funciona ✅
 ### Testar em TODOS os Módulos Migrados
 
 - [ ] **tax-rates/Create.vue**
-  - [ ] Abrir página
-  - [ ] Checkbox "Taxa Ativa" aparece
-  - [ ] Marcar/desmarcar funciona
-  - [ ] Salvar preserva valor
+    - [ ] Abrir página
+    - [ ] Checkbox "Taxa Ativa" aparece
+    - [ ] Marcar/desmarcar funciona
+    - [ ] Salvar preserva valor
 
 - [ ] **countries/Create.vue**
-  - [ ] Checkbox "País Ativo" funciona
+    - [ ] Checkbox "País Ativo" funciona
 
 - [ ] **contact-roles/Create.vue**
-  - [ ] Checkbox "Função Ativa" funciona
+    - [ ] Checkbox "Função Ativa" funciona
 
 - [ ] **calendar-actions/Create.vue**
-  - [ ] Checkbox "Ação Ativa" funciona
+    - [ ] Checkbox "Ação Ativa" funciona
 
 - [ ] **calendar-event-types/Create.vue**
-  - [ ] Checkbox "Tipo Ativo" funciona
+    - [ ] Checkbox "Tipo Ativo" funciona
 
 **Testar também Edit.vue de cada um!**
 
@@ -313,6 +335,7 @@ Todos esses arquivos **usam** CheckboxField e estavam **quebrados**:
 Este bug teria sido detectado se tivesse testado logo após criar CheckboxField.
 
 **Prevenção:**
+
 - ✅ Abrir página após mudança
 - ✅ Testar funcionalidade básica
 - ✅ Verificar console por erros
@@ -330,12 +353,13 @@ Quando criamos wrapper components, **devemos encapsular dependências**:
 ```vue
 <!-- ❌ Exigir que usuário forneça contexto -->
 <script>
-const { value } = useFormField()  // Usuário precisa envolver em FormField
+const { value } = useFormField(); // Usuário precisa envolver em FormField
 </script>
 
 <!-- ✅ Componente fornece próprio contexto -->
 <template>
-    <FormField v-slot="{ value, handleChange }">  <!-- Contexto interno -->
+    <FormField v-slot="{ value, handleChange }">
+        <!-- Contexto interno -->
         <input :checked="value" @change="handleChange" />
     </FormField>
 </template>
@@ -373,7 +397,8 @@ const { value } = useFormField()  // Usuário precisa envolver em FormField
 const { value, handleChange } = useFormField(() => props.name)  ❌
 </script>
 <template>
-    <div>  <!-- ❌ SEM FormField -->
+    <div>
+        <!-- ❌ SEM FormField -->
         <input :checked="value" @change="handleInputChange" />
     </div>
 </template>
@@ -383,7 +408,8 @@ const { value, handleChange } = useFormField(() => props.name)  ❌
 // ✅ Não usa useFormField diretamente
 </script>
 <template>
-    <FormField v-slot="{ value, handleChange }" :name="name">  ✅
+    <FormField v-slot="{ value, handleChange }" :name="name">
+        ✅
         <FormItem>
             <FormControl>
                 <input :checked="Boolean(value)" @change="..." />
@@ -398,11 +424,7 @@ const { value, handleChange } = useFormField(() => props.name)  ❌
 
 ```vue
 <!-- Páginas continuam usando da mesma forma -->
-<CheckboxField
-    name="is_active"
-    label="Taxa Ativa"
-    description="Descrição"
-/>
+<CheckboxField name="is_active" label="Taxa Ativa" description="Descrição" />
 ```
 
 ---
@@ -448,6 +470,7 @@ Refs: BUG_FIX_CHECKBOXFIELD.md"
 - [ ] Verificar valor salvo corretamente
 
 Repetir para:
+
 - [ ] countries
 - [ ] contact-roles
 - [ ] calendar-actions
@@ -462,13 +485,13 @@ Repetir para:
 
 ### Status: ✅ CORRIGIDO
 
-| Métrica | Valor |
-|---------|-------|
+| Métrica              | Valor              |
+| -------------------- | ------------------ |
 | **Páginas afetadas** | 10 (Create + Edit) |
-| **Severidade** | 🔴 CRÍTICA |
-| **Tempo resolução** | ~5 minutos |
-| **Build** | ✅ Sucesso |
-| **Commits** | 1 |
+| **Severidade**       | 🔴 CRÍTICA         |
+| **Tempo resolução**  | ~5 minutos         |
+| **Build**            | ✅ Sucesso         |
+| **Commits**          | 1                  |
 
 ---
 
@@ -477,4 +500,3 @@ Repetir para:
 _Correção: 13/10/2025_  
 _10 páginas restauradas_  
 _Tempo: ~5 minutos_
-

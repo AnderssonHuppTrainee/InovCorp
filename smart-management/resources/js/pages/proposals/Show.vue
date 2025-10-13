@@ -123,7 +123,7 @@
                                     class="rounded-lg border p-4"
                                 >
                                     <div
-                                        class="flex items-start justify-between mb-2"
+                                        class="mb-2 flex items-start justify-between"
                                     >
                                         <div>
                                             <div class="font-medium">
@@ -161,13 +161,17 @@
                                             <span class="text-muted-foreground"
                                                 >Preço:</span
                                             >
-                                            {{ formatCurrency(item.unit_price) }}
+                                            {{
+                                                formatCurrency(item.unit_price)
+                                            }}
                                         </div>
                                         <div v-if="item.cost_price">
                                             <span class="text-muted-foreground"
                                                 >Custo:</span
                                             >
-                                            {{ formatCurrency(item.cost_price) }}
+                                            {{
+                                                formatCurrency(item.cost_price)
+                                            }}
                                         </div>
                                     </div>
 
@@ -187,7 +191,7 @@
                                     <span class="text-muted-foreground"
                                         >Total:</span
                                     >
-                                    <span class="ml-4 font-bold text-2xl">{{
+                                    <span class="ml-4 text-2xl font-bold">{{
                                         formatCurrency(proposal.total_amount)
                                     }}</span>
                                 </div>
@@ -297,12 +301,7 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
@@ -368,7 +367,7 @@ const handleEdit = () => {
 const handleDelete = () => {
     if (
         confirm(
-            `Tem certeza que deseja eliminar a proposta "${props.proposal.number}"?\n\nEsta ação não pode ser desfeita.`
+            `Tem certeza que deseja eliminar a proposta "${props.proposal.number}"?\n\nEsta ação não pode ser desfeita.`,
         )
     ) {
         router.delete(`/proposals/${props.proposal.id}`, {
@@ -382,7 +381,7 @@ const handleDelete = () => {
 const handleConvertToOrder = () => {
     if (
         confirm(
-            `Converter a proposta "${props.proposal.number}" em encomenda?\n\nSerá criada uma encomenda em estado de rascunho.`
+            `Converter a proposta "${props.proposal.number}" em encomenda?\n\nSerá criada uma encomenda em estado de rascunho.`,
         )
     ) {
         router.post(
@@ -390,7 +389,7 @@ const handleConvertToOrder = () => {
             {},
             {
                 preserveScroll: true,
-            }
+            },
         );
     }
 };
@@ -428,5 +427,3 @@ const formatCurrency = (value: number) => {
     }).format(value);
 };
 </script>
-
-

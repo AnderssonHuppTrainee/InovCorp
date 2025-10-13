@@ -18,7 +18,6 @@ class CalendarActionController extends Controller
     {
         $query = CalendarAction::query();
 
-        // Apply filters
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {

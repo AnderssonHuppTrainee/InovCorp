@@ -8,6 +8,7 @@ use App\Models\Core\Order\SupplierOrder;
 use App\Models\Core\Entity;
 use App\Models\Core\DigitalArchive;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Mail\PaymentProofMail;
 
 class SupplierInvoice extends Model
 {
@@ -52,7 +53,7 @@ class SupplierInvoice extends Model
             ->where('document_type', 'payment_proof');
     }
 
-    // Scopes
+
     public function scopePendingPayment($query)
     {
         return $query->where('status', 'pending_payment');
@@ -84,7 +85,6 @@ class SupplierInvoice extends Model
         });
     }
 
-    // Gerar número sequencial
     public static function nextNumber(): string
     {
         $lastNumber = static::withTrashed()->max('number');
@@ -92,13 +92,13 @@ class SupplierInvoice extends Model
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
-    // Check if invoice is overdue
+
     public function isOverdue(): bool
     {
         return $this->status === 'pending_payment' && $this->due_date < now();
     }
 
-    // Send payment proof email to supplier
+    // enviar pova de pagamento
     public function sendPaymentProofEmail()
     {
         $supplier = $this->supplier;
@@ -106,10 +106,10 @@ class SupplierInvoice extends Model
         if (!$supplier || !$supplier->email) {
             return false;
         }
-
-        \Mail::to($supplier->email)->send(
-            new \App\Mail\PaymentProofMail($this)
+        \Mail::to($supplier->email)->queue(
+            new PaymentProofMail($this)
         );
+        \Log::info('Email enviado para' . $supplier->email);
 
         return true;
     }

@@ -21,7 +21,7 @@ class SupplierOrderController extends Controller
     {
         $query = SupplierOrder::query()->with(['supplier', 'order']);
 
-        // Apply filters
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -84,5 +84,6 @@ class SupplierOrderController extends Controller
         }
     }
 }
+
 
 

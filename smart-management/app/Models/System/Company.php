@@ -30,7 +30,7 @@ class Company extends Model
         'email' => 'encrypted',
     ];
 
-    // Singleton pattern - sempre retorna/cria uma única empresa
+
     public static function get()
     {
         return static::first() ?? static::create([
@@ -47,11 +47,11 @@ class Company extends Model
 
     public static function generatePortugueseNif(): string
     {
-        // Prefixos válidos para NIF: 1, 2, 3, 5, 6, 8
+
         $prefixes = [1, 2, 3, 5, 6, 8];
         $nif = (string) fake()->randomElement($prefixes);
 
-        // Gerar os 8 restantes dígitos aleatórios
+
         for ($i = 0; $i < 8; $i++) {
             $nif .= fake()->randomDigit();
         }

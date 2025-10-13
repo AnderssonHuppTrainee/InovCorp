@@ -18,7 +18,7 @@ class CalendarEventTypeController extends Controller
     {
         $query = CalendarEventType::query();
 
-        // Apply filters
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where('name', 'like', "%{$search}%");

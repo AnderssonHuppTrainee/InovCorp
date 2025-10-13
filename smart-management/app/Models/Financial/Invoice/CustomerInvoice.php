@@ -34,7 +34,7 @@ class CustomerInvoice extends Model
         'balance' => 'decimal:2',
     ];
 
-    // Relationships
+
     public function customer()
     {
         return $this->belongsTo(Entity::class, 'customer_id');
@@ -45,7 +45,7 @@ class CustomerInvoice extends Model
         return $this->belongsTo(Order::class);
     }
 
-    // Scopes
+
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -90,7 +90,7 @@ class CustomerInvoice extends Model
         });
     }
 
-    // Helper methods
+
     public static function nextNumber(): string
     {
         $lastNumber = static::withTrashed()->max('number');

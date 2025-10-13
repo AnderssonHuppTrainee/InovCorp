@@ -84,7 +84,7 @@ class TaxRateController extends Controller
 
     public function destroy(TaxRate $taxRate)
     {
-        // Check if tax rate has articles
+
         if ($taxRate->articles()->count() > 0) {
             return back()->with('error', 'Não é possível eliminar uma taxa de IVA com artigos associados.');
         }

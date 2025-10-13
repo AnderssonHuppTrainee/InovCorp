@@ -1289,3 +1289,4 @@ Todos os componentes e composables propostos estão prontos para copiar/colar de
 
 _Exemplos práticos de código pronto para uso_  
 _Última atualização: 10/10/2025_
+

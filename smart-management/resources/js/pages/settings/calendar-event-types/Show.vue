@@ -1,8 +1,15 @@
 <template>
     <AppLayout>
         <div class="space-y-6 p-4">
-            <PageHeader title="Detalhes do Tipo de Evento" :description="calendarEventType.name">
+            <PageHeader
+                title="Detalhes do Tipo de Evento"
+                :description="calendarEventType.name"
+            >
                 <div class="flex gap-2">
+                    <Button variant="outline" @click="goBack">
+                        <ArrowLeftIcon class="mr-2 h-4 w-4" />
+                        Voltar
+                    </Button>
                     <Button variant="outline" @click="handleEdit">
                         <PencilIcon class="mr-2 h-4 w-4" />
                         Editar
@@ -21,26 +28,55 @@
                     </CardHeader>
                     <CardContent class="space-y-4">
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">Nome</div>
-                            <div class="mt-1 text-sm">{{ calendarEventType.name }}</div>
-                        </div>
-
-                        <div>
-                            <div class="text-sm font-medium text-muted-foreground">Cor</div>
-                            <div class="mt-1 flex items-center gap-2">
-                                <div
-                                    class="h-8 w-8 rounded border"
-                                    :style="{ backgroundColor: calendarEventType.color }"
-                                ></div>
-                                <span class="font-mono text-sm">{{ calendarEventType.color }}</span>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Nome
+                            </div>
+                            <div class="mt-1 text-sm">
+                                {{ calendarEventType.name }}
                             </div>
                         </div>
 
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">Estado</div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Cor
+                            </div>
+                            <div class="mt-1 flex items-center gap-2">
+                                <div
+                                    class="h-8 w-8 rounded border"
+                                    :style="{
+                                        backgroundColor:
+                                            calendarEventType.color,
+                                    }"
+                                ></div>
+                                <span class="font-mono text-sm">{{
+                                    calendarEventType.color
+                                }}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Estado
+                            </div>
                             <div class="mt-1">
-                                <Badge :variant="calendarEventType.is_active ? 'default' : 'secondary'">
-                                    {{ calendarEventType.is_active ? 'Ativo' : 'Inativo' }}
+                                <Badge
+                                    :variant="
+                                        calendarEventType.is_active
+                                            ? 'default'
+                                            : 'secondary'
+                                    "
+                                >
+                                    {{
+                                        calendarEventType.is_active
+                                            ? 'Ativo'
+                                            : 'Inativo'
+                                    }}
                                 </Badge>
                             </div>
                         </div>
@@ -53,18 +89,36 @@
                     </CardHeader>
                     <CardContent class="space-y-4">
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">Eventos Associados</div>
-                            <div class="mt-1 text-2xl font-bold">{{ eventsCount }}</div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Eventos Associados
+                            </div>
+                            <div class="mt-1 text-2xl font-bold">
+                                {{ eventsCount }}
+                            </div>
                         </div>
 
                         <div class="pt-4">
-                            <div class="text-sm font-medium text-muted-foreground">Criado em</div>
-                            <div class="mt-1 text-sm">{{ formatDate(calendarEventType.created_at) }}</div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Criado em
+                            </div>
+                            <div class="mt-1 text-sm">
+                                {{ formatDate(calendarEventType.created_at) }}
+                            </div>
                         </div>
 
                         <div>
-                            <div class="text-sm font-medium text-muted-foreground">Atualizado em</div>
-                            <div class="mt-1 text-sm">{{ formatDate(calendarEventType.updated_at) }}</div>
+                            <div
+                                class="text-sm font-medium text-muted-foreground"
+                            >
+                                Atualizado em
+                            </div>
+                            <div class="mt-1 text-sm">
+                                {{ formatDate(calendarEventType.updated_at) }}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -74,28 +128,28 @@
 </template>
 
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import PageHeader from '@/components/PageHeader.vue'
-import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
-import calendarEventTypes from '@/routes/calendar-event-types'
+import PageHeader from '@/components/PageHeader.vue';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
+import calendarEventTypes from '@/routes/calendar-event-types';
+import { router } from '@inertiajs/vue3';
+import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
     calendarEventType: {
-        id: number
-        name: string
-        color: string
-        is_active: boolean
-        created_at: string
-        updated_at: string
-    }
-    eventsCount: number
+        id: number;
+        name: string;
+        color: string;
+        is_active: boolean;
+        created_at: string;
+        updated_at: string;
+    };
+    eventsCount: number;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-PT', {
@@ -104,18 +158,24 @@ const formatDate = (dateString: string) => {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-    })
-}
-
+    });
+};
+const goBack = () => router.get('/calendar-event-types');
 const handleEdit = () => {
-    router.visit(calendarEventTypes.edit({ calendarEventType: props.calendarEventType.id }).url)
-}
+    router.visit(
+        calendarEventTypes.edit({
+            calendar_event_type: props.calendarEventType.id,
+        }).url,
+    );
+};
 
 const handleDelete = () => {
     if (confirm('Tem certeza que deseja eliminar este tipo de evento?')) {
-        router.delete(calendarEventTypes.destroy({ calendarEventType: props.calendarEventType.id }).url)
+        router.delete(
+            calendarEventTypes.destroy({
+                calendar_event_type: props.calendarEventType.id,
+            }).url,
+        );
     }
-}
+};
 </script>
-
-

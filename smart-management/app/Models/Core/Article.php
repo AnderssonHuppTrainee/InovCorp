@@ -31,7 +31,7 @@ class Article extends Model
         'price' => 'decimal:2',
     ];
 
-    // Relationships
+    // relacoes
     public function taxRate()
     {
         return $this->belongsTo(TaxRate::class);
@@ -71,7 +71,7 @@ class Article extends Model
         });
     }
 
-    // Activity Log
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

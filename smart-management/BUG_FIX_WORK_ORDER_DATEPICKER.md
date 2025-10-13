@@ -66,18 +66,18 @@ Ao criar ou editar uma **Work Order** (Ordem de Trabalho), os campos **`start_da
 ### Problema de Integração vee-validate + DatePicker
 
 1. **FormField** do vee-validate fornece `componentField` com:
-   - `value` - valor atual do campo
-   - `onChange` - callback para mudanças
+    - `value` - valor atual do campo
+    - `onChange` - callback para mudanças
 
 2. **DatePicker** espera props Vue padrão:
-   - `:modelValue` - prop de entrada
-   - `@update:modelValue` - evento de saída
+    - `:modelValue` - prop de entrada
+    - `@update:modelValue` - evento de saída
 
 3. **Código bugado** usava:
-   - `v-model="form.values.start_date"` - **acesso direto** ao formulário
-   - **NÃO passava** por `componentField`
-   - Vee-validate **não rastreava** mudanças
-   - Valor **não era incluído** no submit
+    - `v-model="form.values.start_date"` - **acesso direto** ao formulário
+    - **NÃO passava** por `componentField`
+    - Vee-validate **não rastreava** mudanças
+    - Valor **não era incluído** no submit
 
 ### Fluxo do Bug
 
@@ -105,7 +105,12 @@ Backend recebe NULL para start_date e end_date
 
 ```vue
 <FormField
-    v-slot="{ value, handleChange }"  ✅ Expõe value e handleChange
+    v-slot="{ value, handleChange }"
+    ✅
+    Expõe
+    value
+    e
+    handleChange
     name="start_date"
 >
     <FormItem>
@@ -125,10 +130,7 @@ Backend recebe NULL para start_date e end_date
 **Edit.vue (CORRIGIDO)**
 
 ```vue
-<FormField
-    v-slot="{ value, handleChange }"  ✅
-    name="start_date"
->
+<FormField v-slot="{ value, handleChange }" ✅ name="start_date">
     <FormItem>
         <FormLabel>Data Início</FormLabel>
         <FormControl>
@@ -229,10 +231,10 @@ Para componentes que usam `v-model` (como DatePicker), a integração com vee-va
 -- Criar work order (via app)
 
 -- Verificar se datas foram salvas
-SELECT id, title, start_date, end_date 
-FROM work_orders 
+SELECT id, title, start_date, end_date
+FROM work_orders
 WHERE id = [ID_CRIADO]
-ORDER BY created_at DESC 
+ORDER BY created_at DESC
 LIMIT 1;
 
 -- ANTES: start_date = NULL, end_date = NULL
@@ -260,7 +262,7 @@ Então tanto campos vazios quanto preenchidos devem funcionar.
 ```
 Usuário seleciona data
   ↓
-DatePicker emite update:modelValue  
+DatePicker emite update:modelValue
   ↓
 @update:model-value chama handleChange  ✅
   ↓
@@ -315,7 +317,7 @@ Work orders criadas **antes** desta correção podem ter `start_date` e `end_dat
 
 ```sql
 -- Work orders potencialmente afetadas (sem datas)
-SELECT 
+SELECT
     id,
     title,
     client_id,
@@ -323,7 +325,7 @@ SELECT
     end_date,
     created_at
 FROM work_orders
-WHERE start_date IS NULL 
+WHERE start_date IS NULL
    OR end_date IS NULL
 ORDER BY created_at DESC;
 ```
@@ -397,13 +399,13 @@ Componentes que usam `v-model` (como DatePicker) **NÃO podem** usar `v-bind="co
 
 ### 2. Padrão para Diferentes Componentes
 
-| Componente | Props Nativas        | Integração com vee-validate                    |
-| ---------- | -------------------- | ---------------------------------------------- |
-| Input      | value, @input        | `v-bind="componentField"` ✅                   |
-| Select     | value, @change       | `v-bind="componentField"` ✅                   |
-| Textarea   | value, @input        | `v-bind="componentField"` ✅                   |
-| DatePicker | modelValue, @update  | `:model-value="value"` + `@update="onChange"`  |
-| Switch     | modelValue, @update  | `:model-value="value"` + `@update="onChange"`  |
+| Componente | Props Nativas       | Integração com vee-validate                   |
+| ---------- | ------------------- | --------------------------------------------- |
+| Input      | value, @input       | `v-bind="componentField"` ✅                  |
+| Select     | value, @change      | `v-bind="componentField"` ✅                  |
+| Textarea   | value, @input       | `v-bind="componentField"` ✅                  |
+| DatePicker | modelValue, @update | `:model-value="value"` + `@update="onChange"` |
+| Switch     | modelValue, @update | `:model-value="value"` + `@update="onChange"` |
 
 ### 3. Testes de Integração
 
@@ -412,26 +414,26 @@ Este bug poderia ter sido evitado com:
 ```typescript
 /** @test */
 it('should save work order with start and end dates', () => {
-    cy.visit('/work-orders/create')
-    
-    cy.get('[name="title"]').type('Test Order')
-    cy.get('[name="client_id"]').select('Client 1')
-    
+    cy.visit('/work-orders/create');
+
+    cy.get('[name="title"]').type('Test Order');
+    cy.get('[name="client_id"]').select('Client 1');
+
     // Select dates
-    cy.get('[name="start_date"]').click()
-    cy.get('.calendar').contains('15').click()
-    
-    cy.get('[name="end_date"]').click()
-    cy.get('.calendar').contains('20').click()
-    
-    cy.get('button[type="submit"]').click()
-    
+    cy.get('[name="start_date"]').click();
+    cy.get('.calendar').contains('15').click();
+
+    cy.get('[name="end_date"]').click();
+    cy.get('.calendar').contains('20').click();
+
+    cy.get('button[type="submit"]').click();
+
     // Verify saved in database
     cy.request('/api/work-orders/latest').then((response) => {
-        expect(response.body.start_date).to.not.be.null
-        expect(response.body.end_date).to.not.be.null
-    })
-})
+        expect(response.body.start_date).to.not.be.null;
+        expect(response.body.end_date).to.not.be.null;
+    });
+});
 ```
 
 ---
@@ -470,4 +472,3 @@ _Correção realizada: 13/10/2025_
 _Severidade: ALTA_  
 _Tempo de resolução: ~10 minutos_  
 _Impacto: Crítico (funcionalidade core)_
-

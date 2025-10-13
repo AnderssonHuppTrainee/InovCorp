@@ -11,6 +11,7 @@
 Ao acessar páginas **Edit** de Calendar Actions (e possivelmente outros):
 
 **Erro:**
+
 ```
 Uncaught TypeError: Cannot read properties of undefined (reading 'toString')
 ```
@@ -18,6 +19,7 @@ Uncaught TypeError: Cannot read properties of undefined (reading 'toString')
 ### Causa Raiz
 
 **Naming convention inconsistente:**
+
 - ❌ Código usava: `calendarAction` (camelCase)
 - ✅ Backend envia: `calendar_action` (snake_case)
 
@@ -57,11 +59,12 @@ return Inertia::render('calendar-actions/Edit', [
 ### Resultado
 
 ```javascript
-props.calendarAction  // undefined ❌
-props.calendar_action // { id: 1, name: "..." } ✅
+props.calendarAction; // undefined ❌
+props.calendar_action; // { id: 1, name: "..." } ✅
 ```
 
 Ao tentar acessar `props.calendarAction.name.toString()`, JavaScript tenta:
+
 ```
 undefined.name → undefined
 undefined.toString() → ERROR: Cannot read properties of undefined
@@ -175,6 +178,7 @@ props.calendar_action.name  // ✅ Funciona perfeitamente
 - [ ] `tax-rates/Show.vue`
 
 **Verificar se Props usam:**
+
 - ✅ `calendar_action` (correto)
 - ❌ `calendarAction` (errado)
 
@@ -210,12 +214,14 @@ props.calendarAction → props.calendar_action
 ### Status: ✅ CORRIGIDO (pelo usuário)
 
 **Problema:**
+
 - ❌ Props usavam camelCase
 - ❌ Backend enviava snake_case
 - ❌ Mismatch causava undefined
 - ❌ Erro ao acessar propriedades
 
 **Solução:**
+
 - ✅ Props agora usam snake_case
 - ✅ Match perfeito com backend
 - ✅ Sem erros de undefined
@@ -253,12 +259,16 @@ return Inertia::render('page', [
 <!-- Vue -->
 <script setup lang="ts">
 interface Props {
-    calendar_action: any  // snake_case (mesmo que backend)
+    calendar_action: any; // snake_case (mesmo que backend)
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Uso:
-{{ calendar_action.name }}
+{
+    {
+        calendar_action.name;
+    }
+}
 </script>
 ```
 
@@ -267,7 +277,7 @@ const props = defineProps<Props>()
 ```vue
 <script setup lang="ts">
 interface Props {
-    calendarAction: any  // ❌ camelCase (backend não envia assim!)
+    calendarAction: any; // ❌ camelCase (backend não envia assim!)
 }
 </script>
 ```
@@ -276,14 +286,14 @@ interface Props {
 
 ## 📊 IMPACTO
 
-| Métrica | Valor |
-|---------|-------|
-| **Severidade** | 🔴 ALTA |
-| **Arquivos afetados** | ~4-6 (estimado) |
-| **Tipo de erro** | TypeError (undefined) |
-| **Correção** | Rename props |
-| **Tempo** | ~5 min por arquivo |
-| **Complexidade** | Baixa (find & replace) |
+| Métrica               | Valor                  |
+| --------------------- | ---------------------- |
+| **Severidade**        | 🔴 ALTA                |
+| **Arquivos afetados** | ~4-6 (estimado)        |
+| **Tipo de erro**      | TypeError (undefined)  |
+| **Correção**          | Rename props           |
+| **Tempo**             | ~5 min por arquivo     |
+| **Complexidade**      | Baixa (find & replace) |
 
 ---
 
@@ -312,7 +322,7 @@ export interface CalendarAction {
 
 // Uso em Props:
 interface Props {
-    calendar_action: CalendarAction  // ✅
+    calendar_action: CalendarAction; // ✅
 }
 ```
 
@@ -334,4 +344,3 @@ rules: {
 _Correção: 13/10/2025 (pelo usuário)_  
 _Causa: camelCase vs snake_case_  
 _Lição: Manter naming do backend_
-

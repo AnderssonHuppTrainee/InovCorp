@@ -333,3 +333,4 @@ _Comece a testar os fluxos e explore todas as funcionalidades implementadas._ ğŸ
 
 **ğŸ’¡ Dica:** Use `php artisan migrate:fresh --seed` sempre que precisar resetar os dados de teste.
 
+

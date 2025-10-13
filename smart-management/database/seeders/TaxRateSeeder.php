@@ -65,3 +65,4 @@ class TaxRateSeeder extends Seeder
 }
 
 
+

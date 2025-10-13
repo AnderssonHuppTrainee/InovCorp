@@ -9,6 +9,7 @@
 ## 🔍 DESCRIÇÃO DO PROBLEMA
 
 Ao tentar **criar** uma Supplier Invoice com documento anexado:
+
 - ❌ Erro: `Disk [private] does not have a configured driver`
 - ❌ Crash na transação de upload
 - ❌ Fatura não era criada
@@ -19,7 +20,7 @@ Ao tentar **criar** uma Supplier Invoice com documento anexado:
 [2025-10-13 13:01:52] local.INFO: 🔍 [SUPPLIER INVOICE STORE] Dados validados
 [2025-10-13 13:01:52] local.INFO: 📦 Iniciando transação...
 [2025-10-13 13:01:52] local.INFO: 📄 Uploading document...
-[2025-10-13 13:01:52] local.ERROR: ❌ Erro ao criar fatura: 
+[2025-10-13 13:01:52] local.ERROR: ❌ Erro ao criar fatura:
     "Disk [private] does not have a configured driver."
 ```
 
@@ -28,8 +29,9 @@ Ao tentar **criar** uma Supplier Invoice com documento anexado:
 ## 📍 LOCALIZAÇÃO DO BUG
 
 **Arquivos Afetados:**
+
 - `app/Http/Controllers/Financial/SupplierInvoiceController.php` (6 ocorrências)
-- `app/Http/Controllers/Core/DigitalArchiveController.php` (2 ocorrências)  
+- `app/Http/Controllers/Core/DigitalArchiveController.php` (2 ocorrências)
 - `app/Models/Core/DigitalArchive.php` (2 ocorrências)
 
 ### ❌ Código COM Bug
@@ -89,6 +91,7 @@ O arquivo de configuração **NÃO define** um disco chamado `'private'`:
 ### 1. SupplierInvoiceController.php
 
 **Método `store()`:**
+
 ```php
 // ANTES
 $documentPath = $request->file('document')
@@ -100,6 +103,7 @@ $documentPath = $request->file('document')
 ```
 
 **Método `update()`:**
+
 ```php
 // ANTES
 Storage::disk('private')->delete($path);  ❌
@@ -113,6 +117,7 @@ $path = $request->file('document')
 ```
 
 **Métodos `show()`, `edit()`, `destroy()`, `downloadDocument()`, `downloadPaymentProof()`:**
+
 ```php
 // ANTES
 Storage::disk('private')->exists($path)  ❌
@@ -165,12 +170,12 @@ public function deleteFile(): bool {
 
 ### Arquivos Modificados: 3
 
-| Arquivo | Ocorrências Corrigidas |
-|---------|----------------------|
-| `SupplierInvoiceController.php` | 6 |
-| `DigitalArchiveController.php` | 2 |
-| `DigitalArchive.php` | 2 |
-| **TOTAL** | **10** |
+| Arquivo                         | Ocorrências Corrigidas |
+| ------------------------------- | ---------------------- |
+| `SupplierInvoiceController.php` | 6                      |
+| `DigitalArchiveController.php`  | 2                      |
+| `DigitalArchive.php`            | 2                      |
+| **TOTAL**                       | **10**                 |
 
 ### Padrão Estabelecido
 
@@ -281,6 +286,7 @@ Database: Fatura salva com document_path ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Arquivo salvo em `storage/app/private/invoices/supplier/documents/`
 - ✅ Fatura criada com `document_path` preenchido
 - ✅ Download funciona na página Show
@@ -295,6 +301,7 @@ Database: Fatura salva com document_path ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Arquivo salvo em `storage/app/private/invoices/supplier/payment-proofs/`
 - ✅ Download de comprovativo funciona
 
@@ -307,6 +314,7 @@ Database: Fatura salva com document_path ✅
 ```
 
 **Resultado esperado:**
+
 - ✅ Upload, download e delete funcionam
 
 ---
@@ -353,14 +361,14 @@ git commit -m "fix: remover disk 'private' tambem em DigitalArchive model"
 
 ## 📊 ESTATÍSTICAS
 
-| Métrica | Valor |
-|---------|-------|
-| **Arquivos corrigidos** | 3 |
-| **Ocorrências corrigidas** | 10 |
-| **Severidade** | 🔴 CRÍTICA |
-| **Tempo de resolução** | ~10 minutos |
-| **Complexidade** | Baixa (find & replace) |
-| **Impacto** | Upload funcional |
+| Métrica                    | Valor                  |
+| -------------------------- | ---------------------- |
+| **Arquivos corrigidos**    | 3                      |
+| **Ocorrências corrigidas** | 10                     |
+| **Severidade**             | 🔴 CRÍTICA             |
+| **Tempo de resolução**     | ~10 minutos            |
+| **Complexidade**           | Baixa (find & replace) |
+| **Impacto**                | Upload funcional       |
 
 ---
 
@@ -387,4 +395,3 @@ _Correção realizada: 13/10/2025_
 _Severidade: CRÍTICA_  
 _Arquivos: 3_  
 _Ocorrências: 10_
-

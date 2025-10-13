@@ -26,7 +26,7 @@ class CustomerInvoiceController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        // Calculate totals by status
+
         $totals = [
             'total' => CustomerInvoice::sum('total_amount'),
             'paid' => CustomerInvoice::where('status', 'paid')->sum('total_amount'),
@@ -125,7 +125,7 @@ class CustomerInvoiceController extends Controller
             DB::transaction(function () use ($validated, $customerInvoice) {
                 $customerInvoice->update($validated);
 
-                // Recalculate balance
+                // recalcular
                 $customerInvoice->balance = $customerInvoice->total_amount - ($validated['paid_amount'] ?? $customerInvoice->paid_amount);
                 $customerInvoice->updateStatus();
             });
@@ -140,9 +140,6 @@ class CustomerInvoiceController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(CustomerInvoice $customerInvoice)
     {
         try {
@@ -156,9 +153,7 @@ class CustomerInvoiceController extends Controller
         }
     }
 
-    /**
-     * Register a payment for the invoice.
-     */
+
     public function registerPayment(Request $request, CustomerInvoice $customerInvoice)
     {
         $request->validate([

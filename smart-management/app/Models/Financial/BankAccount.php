@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Financial\FinancialTransaction;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ramsey\Uuid\Type\Decimal;
 
 class BankAccount extends Model
 {
@@ -29,13 +30,13 @@ class BankAccount extends Model
         'is_active' => 'boolean',
     ];
 
-    // Relationships
+
     public function transactions()
     {
         return $this->hasMany(FinancialTransaction::class);
     }
 
-    // Scopes
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -58,7 +59,7 @@ class BankAccount extends Model
         });
     }
 
-    // Helpers
+
     public function updateBalance(float $amount, string $type = 'credit'): void
     {
         if ($type === 'credit') {

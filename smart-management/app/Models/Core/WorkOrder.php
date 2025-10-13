@@ -39,7 +39,7 @@ class WorkOrder extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    // Scopes
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
@@ -83,7 +83,6 @@ class WorkOrder extends Model
         });
     }
 
-    // Gerar número sequencial
     public static function nextNumber(): string
     {
         $lastNumber = static::max('number');

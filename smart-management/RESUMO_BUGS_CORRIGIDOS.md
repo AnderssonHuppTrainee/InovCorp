@@ -137,14 +137,16 @@ Refatorado CheckboxField para **encapsular FormField internamente**:
 const { value, handleChange } = useFormField(() => props.name)  ❌
 </script>
 <template>
-    <div>  <!-- Sem FormField -->
+    <div>
+        <!-- Sem FormField -->
         <input :checked="value" />
     </div>
 </template>
 
 <!-- DEPOIS (corrigido) -->
 <template>
-    <FormField v-slot="{ value, handleChange }" :name="name">  ✅
+    <FormField v-slot="{ value, handleChange }" :name="name">
+        ✅
         <FormItem>
             <input :checked="Boolean(value)" @change="handleChange" />
             <FormLabel>{{ label }}</FormLabel>
@@ -154,6 +156,7 @@ const { value, handleChange } = useFormField(() => props.name)  ❌
 ```
 
 **Arquivos afetados (agora funcionam):**
+
 - tax-rates, countries, contact-roles, calendar-actions, calendar-event-types (Create + Edit)
 
 **Documentação:** `BUG_FIX_CHECKBOXFIELD.md`

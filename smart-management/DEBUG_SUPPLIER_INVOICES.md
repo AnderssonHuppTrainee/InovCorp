@@ -9,6 +9,7 @@
 ## 🐛 PROBLEMA REPORTADO
 
 Ao tentar **criar** ou **editar** uma Supplier Invoice (Fatura de Fornecedor):
+
 - ❌ Fatura **NÃO é criada/atualizada**
 - ❌ **Nenhum erro** aparece no console
 - ❌ **Nada acontece** ao clicar em "Guardar"
@@ -83,10 +84,10 @@ performSubmit() {
 1. Abra `/supplier-invoices/create`
 2. **Abra o Console** (F12 → Console)
 3. Preencha o formulário:
-   - Selecione **Data da Fatura**
-   - Selecione **Vencimento**
-   - Escolha um **Fornecedor**
-   - Digite **Valor Total** (ex: 100)
+    - Selecione **Data da Fatura**
+    - Selecione **Vencimento**
+    - Escolha um **Fornecedor**
+    - Digite **Valor Total** (ex: 100)
 4. Clique em **"Guardar Fatura"**
 
 ### Passo 3: Verificar Logs no Console
@@ -170,20 +171,22 @@ Você deve ver logs assim:
 **Problema:** DatePicker usa `v-model` mas reactive() pode não propagar mudanças.
 
 **Verificação:**
+
 ```typescript
 // No console, após selecionar data:
-formData.invoice_date  // deve retornar "2025-10-13"
+formData.invoice_date; // deve retornar "2025-10-13"
 ```
 
 **Solução:**
+
 ```vue
 <!-- ANTES (problemático) -->
 <DatePicker v-model="formData.invoice_date" />
 
 <!-- DEPOIS (manual event handling) -->
-<DatePicker 
+<DatePicker
     :model-value="formData.invoice_date"
-    @update:model-value="(value) => formData.invoice_date = value"
+    @update:model-value="(value) => (formData.invoice_date = value)"
 />
 ```
 
@@ -192,9 +195,10 @@ formData.invoice_date  // deve retornar "2025-10-13"
 **Problema:** `@submit.prevent` não funciona.
 
 **Verificação:**
+
 ```html
 <!-- Verificar se o form tem @submit.prevent -->
-<form @submit.prevent="submitForm">
+<form @submit.prevent="submitForm"></form>
 ```
 
 **Solução:** Já está correto no código.
@@ -218,24 +222,24 @@ formData.invoice_date  // deve retornar "2025-10-13"
 <div class="grid grid-cols-2 gap-4">
     <div class="space-y-2">
         <label class="text-sm font-medium">Data da Fatura *</label>
-        <DatePicker 
+        <DatePicker
             :model-value="formData.invoice_date"
             @update:model-value="(value) => {
                 console.log('📅 DatePicker invoice_date atualizado:', value);
                 formData.invoice_date = value;
             }"
-            placeholder="Selecione" 
+            placeholder="Selecione"
         />
     </div>
     <div class="space-y-2">
         <label class="text-sm font-medium">Vencimento *</label>
-        <DatePicker 
+        <DatePicker
             :model-value="formData.due_date"
             @update:model-value="(value) => {
                 console.log('📅 DatePicker due_date atualizado:', value);
                 formData.due_date = value;
             }"
-            placeholder="Selecione" 
+            placeholder="Selecione"
         />
     </div>
 </div>
@@ -248,14 +252,14 @@ formData.invoice_date  // deve retornar "2025-10-13"
 <div class="grid grid-cols-2 gap-4">
     <div class="space-y-2">
         <label class="text-sm font-medium">Data *</label>
-        <DatePicker 
+        <DatePicker
             :model-value="formData.invoice_date"
             @update:model-value="(value) => formData.invoice_date = value"
         />
     </div>
     <div class="space-y-2">
         <label class="text-sm font-medium">Vencimento *</label>
-        <DatePicker 
+        <DatePicker
             :model-value="formData.due_date"
             @update:model-value="(value) => formData.due_date = value"
         />
@@ -293,14 +297,14 @@ formData.invoice_date  // deve retornar "2025-10-13"
 
 ### Onde Pode Falhar?
 
-| Passo | Se Falhar                          | Sintoma                        | Causa Provável              |
-| ----- | ---------------------------------- | ------------------------------ | --------------------------- |
-| 3     | submitForm() não é chamado         | Sem logs no console            | @submit.prevent quebrado    |
-| 5     | performSubmit() não é chamado      | Log de submitForm mas não POST | Lógica do dialog incorreta  |
-| 6     | FormData vazio/incorreto           | Dados vazios ou null           | DatePicker não atualiza     |
-| 7     | router.post() não envia            | Request não aparece na Network | Inertia com problema        |
-| 8     | Backend retorna erro de validação  | onError callback chamado       | Dados inválidos ou faltando |
-| 9     | onSuccess não é chamado            | Request OK mas sem redirect    | Callback não definido       |
+| Passo | Se Falhar                         | Sintoma                        | Causa Provável              |
+| ----- | --------------------------------- | ------------------------------ | --------------------------- |
+| 3     | submitForm() não é chamado        | Sem logs no console            | @submit.prevent quebrado    |
+| 5     | performSubmit() não é chamado     | Log de submitForm mas não POST | Lógica do dialog incorreta  |
+| 6     | FormData vazio/incorreto          | Dados vazios ou null           | DatePicker não atualiza     |
+| 7     | router.post() não envia           | Request não aparece na Network | Inertia com problema        |
+| 8     | Backend retorna erro de validação | onError callback chamado       | Dados inválidos ou faltando |
+| 9     | onSuccess não é chamado           | Request OK mas sem redirect    | Callback não definido       |
 
 ---
 
@@ -312,7 +316,7 @@ Abra Console e execute:
 
 ```javascript
 // Simular submit manual
-document.querySelector('form').dispatchEvent(new Event('submit'))
+document.querySelector('form').dispatchEvent(new Event('submit'));
 ```
 
 **Resultado esperado:** Logs de submitForm no console
@@ -323,7 +327,7 @@ No console, após preencher formulário:
 
 ```javascript
 // Acessar formData (pode precisar do Vue DevTools)
-$vm0.formData  // ou encontrar componente no Vue DevTools
+$vm0.formData; // ou encontrar componente no Vue DevTools
 ```
 
 ### Teste 3: Verificar Network Tab
@@ -374,6 +378,7 @@ $vm0.formData  // ou encontrar componente no Vue DevTools
 ### Ação 2: Analisar Resultado
 
 Com base nos logs, identificar:
+
 - [ ] submitForm é chamado?
 - [ ] performSubmit é chamado?
 - [ ] Datas estão vazias?
@@ -404,4 +409,3 @@ Ao testar, forneça:
 _Debug document criado: 13/10/2025_  
 _Status: Logs adicionados, aguardando validação_  
 _Próximo: Testar e analisar resultados_
-

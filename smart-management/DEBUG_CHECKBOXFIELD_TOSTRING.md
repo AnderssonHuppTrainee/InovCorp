@@ -9,12 +9,14 @@
 ## 🐛 ERRO REPORTADO
 
 Ao testar páginas **Edit** de:
+
 - ❌ Calendar Event Types / Edit
 - ❌ Contact Roles / Edit
 
 **Erro no console:**
+
 ```
-chunk-QJKNQETX.js?v=8653766c:2543 
+chunk-QJKNQETX.js?v=8653766c:2543
 Uncaught TypeError: Cannot read properties of undefined (reading 'toString')
 ```
 
@@ -31,6 +33,7 @@ O erro `reading 'toString'` geralmente acontece quando:
 ### Possível Causa
 
 Quando o backend retorna `is_active`, ele pode estar retornando:
+
 - ✅ `boolean` (true/false) - ideal
 - ⚠️ `int` (1/0) - comum em MySQL
 - ⚠️ `string` ("1"/"0") - se convertido
@@ -69,6 +72,7 @@ Quando o backend retorna `is_active`, ele pode estar retornando:
 ```
 
 **Mudanças:**
+
 1. `:checked` agora aceita `true`, `1` ou `"1"` ✅
 2. Logs adicionados para debug
 3. Log mostra valor RAW e tipo
@@ -125,6 +129,7 @@ Uncaught TypeError: Cannot read properties of undefined (reading 'toString')
 ```
 
 **Nesse caso, forneça:**
+
 1. Stack trace completo
 2. Qual página exata (URL)
 3. Screenshot do erro
@@ -138,6 +143,7 @@ Uncaught TypeError: Cannot read properties of undefined (reading 'toString')
 **Problema:** Backend não está enviando `is_active`
 
 **Verificar controller:**
+
 ```php
 // SupplierInvoiceController.php ou similar
 return Inertia::render('...Edit', [
@@ -147,6 +153,7 @@ return Inertia::render('...Edit', [
 ```
 
 **Solução temporária em Edit.vue:**
+
 ```typescript
 initialValues: {
     name: props.calendarEventType.name,
@@ -158,10 +165,11 @@ initialValues: {
 ### Se valor vier como string "true"/"false"
 
 **Converter em Edit.vue:**
+
 ```typescript
 initialValues: {
-    is_active: props.calendarEventType.is_active === true 
-        || props.calendarEventType.is_active === 1 
+    is_active: props.calendarEventType.is_active === true
+        || props.calendarEventType.is_active === 1
         || props.calendarEventType.is_active === '1'
         || props.calendarEventType.is_active === 'true',
 },
@@ -181,6 +189,7 @@ initialValues: {
 ### Ação 2: Se Erro Persistir
 
 Fornecer:
+
 - [ ] Stack trace completo
 - [ ] URL exata onde erro ocorre
 - [ ] Logs do CheckboxField (se houver)
@@ -189,6 +198,7 @@ Fornecer:
 ### Ação 3: Verificar Backend
 
 Se logs mostrarem valor estranho:
+
 ```bash
 # Ver o que backend está enviando
 php artisan tinker
@@ -216,4 +226,3 @@ Ao testar, forneça:
 _Debug document: 13/10/2025_  
 _Status: Logs adicionados + validação robusta_  
 _Próximo: Testar e analisar resultados_
-

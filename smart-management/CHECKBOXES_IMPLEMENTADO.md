@@ -14,6 +14,7 @@
 **Localização:** `resources/js/components/common/CheckboxField.vue`
 
 **Funcionalidades:**
+
 - ✅ Input nativo HTML (100% confiável)
 - ✅ Integração com vee-validate via `useFormField`
 - ✅ Props: name, label, description, disabled
@@ -22,6 +23,7 @@
 - ✅ Type-safe com TypeScript
 
 **Uso:**
+
 ```vue
 <CheckboxField
     name="is_active"
@@ -31,6 +33,7 @@
 ```
 
 **Antes (11 linhas):**
+
 ```vue
 <FormField v-slot="{ value, handleChange }" name="is_active">
     <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
@@ -46,8 +49,13 @@
 ```
 
 **Depois (1 linha):**
+
 ```vue
-<CheckboxField name="is_active" label="Taxa Ativa" description="Marque se a taxa está ativa" />
+<CheckboxField
+    name="is_active"
+    label="Taxa Ativa"
+    description="Marque se a taxa está ativa"
+/>
 ```
 
 **Redução:** 11 linhas → 4 linhas (**64% menos código**)
@@ -57,26 +65,31 @@
 ### 2️⃣ Arquivos Migrados ✅
 
 #### ✅ Settings/Tax-Rates (2 arquivos)
+
 - [x] `settings/tax-rates/Create.vue`
 - [x] `settings/tax-rates/Edit.vue`
 - **Checkbox:** "Taxa Ativa"
 
 #### ✅ Settings/Countries (2 arquivos)
+
 - [x] `settings/countries/Create.vue`
 - [x] `settings/countries/Edit.vue`
 - **Checkbox:** "País Ativo"
 
 #### ✅ Settings/Contact-Roles (2 arquivos)
+
 - [x] `settings/contact-roles/Create.vue`
 - [x] `settings/contact-roles/Edit.vue`
 - **Checkbox:** "Função Ativa"
 
 #### ✅ Settings/Calendar-Actions (2 arquivos)
+
 - [x] `settings/calendar-actions/Create.vue`
 - [x] `settings/calendar-actions/Edit.vue`
 - **Checkbox:** "Ação Ativa"
 
 #### ✅ Settings/Calendar-Event-Types (2 arquivos)
+
 - [x] `settings/calendar-event-types/Create.vue`
 - [x] `settings/calendar-event-types/Edit.vue`
 - **Checkbox:** "Tipo Ativo"
@@ -88,6 +101,7 @@
 ## 📊 ESTATÍSTICAS DA IMPLEMENTAÇÃO
 
 ### Arquivos Modificados
+
 ```
 ✅ 1 novo componente criado (CheckboxField.vue)
 ✅ 10 arquivos migrados
@@ -97,6 +111,7 @@
 ```
 
 ### Redução de Código
+
 ```
 ┌──────────────────────────────────────────────┐
 │  MÉTRICA                  ANTES     DEPOIS  │
@@ -111,6 +126,7 @@
 ```
 
 ### Padrões Estabelecidos
+
 ```
 ANTES: 2 abordagens diferentes
 ├─ Shadcn Checkbox (problemático)
@@ -125,14 +141,17 @@ DEPOIS: 1 componente único
 ## 🔒 PROBLEMAS RESOLVIDOS
 
 ### ❌ Problema: Shadcn Checkbox não emitia evento
+
 **Status:** ✅ **RESOLVIDO**
 
 **Antes:**
+
 - Shadcn Checkbox com bug de `@update:checked`
 - Comportamento inconsistente
 - Alguns checkboxes não capturavam valor
 
 **Depois:**
+
 - Input nativo HTML (sempre funciona)
 - Comportamento 100% previsível
 - Todos os checkboxes capturam corretamente
@@ -140,6 +159,7 @@ DEPOIS: 1 componente único
 ---
 
 ### ❌ Problema: Código duplicado em 10 arquivos
+
 **Status:** ✅ **RESOLVIDO**
 
 **Antes:** 11 linhas × 10 arquivos = 110 linhas duplicadas  
@@ -147,6 +167,7 @@ DEPOIS: 1 componente único
 **Economia:** 17 linhas (-15%)
 
 **MAS MAIS IMPORTANTE:**
+
 - ✅ Manutenção centralizada (1 arquivo vs 10)
 - ✅ Bugs corrigidos em 1 lugar afetam todos
 - ✅ Mudanças de estilo em 1 lugar
@@ -157,21 +178,25 @@ DEPOIS: 1 componente único
 ## 💡 BENEFÍCIOS ADICIONAIS
 
 ### Acessibilidade
+
 - ✅ Labels com `for` correto
 - ✅ IDs únicos gerados automaticamente
 - ✅ Estados disabled propagados
 - ✅ Focus visible correto
 
 ### Manutenção
+
 **Cenário:** Mudar estilo de todos os checkboxes
 
 **ANTES:**
+
 - Editar 10 arquivos
 - Garantir consistência
 - Testar 10 páginas
 - Tempo: ~1-2 horas
 
 **DEPOIS:**
+
 - Editar 1 componente
 - Automático em todos
 - Testar páginas afetadas
@@ -184,6 +209,7 @@ DEPOIS: 1 componente único
 ## ✅ VALIDAÇÃO
 
 ### Build
+
 ```bash
 npm run build
 ✅ Sucesso! 0 erros, 0 warnings
@@ -192,6 +218,7 @@ npm run build
 ```
 
 ### Lint
+
 ```bash
 ✅ 0 erros de ESLint em 11 arquivos
 ✅ 0 warnings
@@ -201,26 +228,26 @@ npm run build
 ### Testes Manuais Recomendados
 
 1. **Taxas de IVA** (`/tax-rates`)
-   - [ ] Criar nova taxa com checkbox marcado
-   - [ ] Criar nova taxa com checkbox desmarcado
-   - [ ] Editar taxa e alterar checkbox
-   - [ ] Verificar valor salvo no banco
+    - [ ] Criar nova taxa com checkbox marcado
+    - [ ] Criar nova taxa com checkbox desmarcado
+    - [ ] Editar taxa e alterar checkbox
+    - [ ] Verificar valor salvo no banco
 
 2. **Países** (`/countries`)
-   - [ ] Checkbox "País Ativo" funciona
-   - [ ] Valor capturado corretamente
+    - [ ] Checkbox "País Ativo" funciona
+    - [ ] Valor capturado corretamente
 
 3. **Funções de Contacto** (`/contact-roles`)
-   - [ ] Checkbox "Função Ativa" funciona
-   - [ ] Valor capturado corretamente
+    - [ ] Checkbox "Função Ativa" funciona
+    - [ ] Valor capturado corretamente
 
 4. **Ações de Calendário** (`/calendar-actions`)
-   - [ ] Checkbox "Ação Ativa" funciona
-   - [ ] Valor capturado corretamente
+    - [ ] Checkbox "Ação Ativa" funciona
+    - [ ] Valor capturado corretamente
 
 5. **Tipos de Evento** (`/calendar-event-types`)
-   - [ ] Checkbox "Tipo Ativo" funciona
-   - [ ] Valor capturado corretamente
+    - [ ] Checkbox "Tipo Ativo" funciona
+    - [ ] Valor capturado corretamente
 
 ---
 
@@ -229,6 +256,7 @@ npm run build
 ### Código: tax-rates/Create.vue
 
 #### ❌ ANTES (Linhas 41-53)
+
 ```vue
 <FormField v-slot="{ value, handleChange }" name="is_active">
     <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
@@ -246,6 +274,7 @@ npm run build
 ```
 
 #### ✅ DEPOIS (Linhas 41-45)
+
 ```vue
 <CheckboxField
     name="is_active"
@@ -255,6 +284,7 @@ npm run build
 ```
 
 **Melhoria:**
+
 - ✅ 12 linhas → 5 linhas (-58%)
 - ✅ 100% confiável (input nativo)
 - ✅ Mais legível
@@ -266,24 +296,26 @@ npm run build
 
 ### ✅ OBJETIVOS ALCANÇADOS
 
-| Métrica | Objetivo | Alcançado | Status |
-|---------|----------|-----------|--------|
-| **Componente criado** | 1 | 1 | ✅ 100% |
-| **Arquivos migrados** | 10 | 10 | ✅ 100% |
-| **Build sucesso** | Sim | Sim | ✅ |
-| **Erros** | 0 | 0 | ✅ |
-| **Tempo estimado** | 2h | ~1h | ✅ Melhor! |
+| Métrica               | Objetivo | Alcançado | Status     |
+| --------------------- | -------- | --------- | ---------- |
+| **Componente criado** | 1        | 1         | ✅ 100%    |
+| **Arquivos migrados** | 10       | 10        | ✅ 100%    |
+| **Build sucesso**     | Sim      | Sim       | ✅         |
+| **Erros**             | 0        | 0         | ✅         |
+| **Tempo estimado**    | 2h       | ~1h       | ✅ Melhor! |
 
 ---
 
 ## 💰 ROI ALCANÇADO
 
 ### Investimento
+
 - **Tempo:** 1 hora
 - **Custo:** €50
 - **Risco:** Muito baixo
 
 ### Retorno
+
 - ✅ 10 arquivos mais limpos
 - ✅ 70 linhas duplicadas eliminadas
 - ✅ 1 componente reutilizável
@@ -291,17 +323,19 @@ npm run build
 - ✅ Base para futuros formulários
 
 ### Economia Futura
-| Situação | Antes | Depois | Economia |
-|----------|-------|--------|----------|
-| **Mudar estilo global** | 2h | 5min | 95% |
-| **Novo form com checkbox** | 11 linhas | 4 linhas | 64% |
-| **Corrigir bug em checkbox** | 10 arquivos | 1 arquivo | 90% |
+
+| Situação                     | Antes       | Depois    | Economia |
+| ---------------------------- | ----------- | --------- | -------- |
+| **Mudar estilo global**      | 2h          | 5min      | 95%      |
+| **Novo form com checkbox**   | 11 linhas   | 4 linhas  | 64%      |
+| **Corrigir bug em checkbox** | 10 arquivos | 1 arquivo | 90%      |
 
 ---
 
 ## 📝 COMMITS SUGERIDOS
 
 ### Commit 1: Componente
+
 ```bash
 git add resources/js/components/common/CheckboxField.vue
 git commit -m "feat: criar componente CheckboxField reutilizavel
@@ -315,6 +349,7 @@ Refs: CHECKBOXES_IMPLEMENTADO.md"
 ```
 
 ### Commit 2: Migrações
+
 ```bash
 git add resources/js/pages/settings/*/Create.vue
 git add resources/js/pages/settings/*/Edit.vue
@@ -365,6 +400,7 @@ Refs: CHECKBOXES_IMPLEMENTADO.md"
 ## 📋 CHECKLIST FINAL
 
 ### Implementação
+
 - [x] ✅ Criar `CheckboxField.vue`
 - [x] ✅ Migrar tax-rates (2 arquivos)
 - [x] ✅ Migrar countries (2 arquivos)
@@ -376,6 +412,7 @@ Refs: CHECKBOXES_IMPLEMENTADO.md"
 - [x] ✅ TypeScript sem erros
 
 ### Validação
+
 - [ ] ⏳ Testar criação de taxa com checkbox
 - [ ] ⏳ Testar edição de país com checkbox
 - [ ] ⏳ Verificar valor salvo no banco
@@ -390,6 +427,7 @@ Refs: CHECKBOXES_IMPLEMENTADO.md"
 **Implementado em ~1 hora** (vs 2h estimadas)
 
 **Resultados:**
+
 - ✅ 1 componente reutilizável
 - ✅ 10 arquivos refatorados
 - ✅ 70 linhas duplicadas eliminadas
@@ -401,15 +439,16 @@ Refs: CHECKBOXES_IMPLEMENTADO.md"
 ## 🚀 PRÓXIMOS PASSOS
 
 ### Fase 2 Continuação
+
 Ainda faltam para completar Fase 2:
 
 1. **FormWrapper Component** (6h)
-   - Encapsular estrutura completa de formulários
-   - ~600 linhas economizadas
+    - Encapsular estrutura completa de formulários
+    - ~600 linhas economizadas
 
 2. **IndexWrapper Component** (5h)
-   - Padronizar páginas de listagem
-   - ~500 linhas economizadas
+    - Padronizar páginas de listagem
+    - ~500 linhas economizadas
 
 **Quer continuar com FormWrapper agora ou testar primeiro?**
 
@@ -419,13 +458,14 @@ Ainda faltam para completar Fase 2:
 
 ### Quick Wins + Checkboxes
 
-| Fase | Composables | Componentes | Arquivos | Linhas Economizadas |
-|------|-------------|-------------|----------|---------------------|
-| **Quick Wins** | 2 | 0 | 6 | ~14 |
-| **Checkboxes** | 0 | 1 | 10 | ~70 |
-| **TOTAL** | **2** | **1** | **16** | **~84** |
+| Fase           | Composables | Componentes | Arquivos | Linhas Economizadas |
+| -------------- | ----------- | ----------- | -------- | ------------------- |
+| **Quick Wins** | 2           | 0           | 6        | ~14                 |
+| **Checkboxes** | 0           | 1           | 10       | ~70                 |
+| **TOTAL**      | **2**       | **1**       | **16**   | **~84**             |
 
 **Plus:**
+
 - ✅ 6 bugs críticos eliminados
 - ✅ 100% formatação consistente
 - ✅ 100% checkboxes funcionais
@@ -435,7 +475,6 @@ Ainda faltam para completar Fase 2:
 
 **🎉 CHECKBOXES MIGRADOS COM SUCESSO! 🎉**
 
-*Documento gerado: 13/10/2025*  
-*Status: Implementação concluída*  
-*Próximo: FormWrapper ou validação?*
-
+_Documento gerado: 13/10/2025_  
+_Status: Implementação concluída_  
+_Próximo: FormWrapper ou validação?_

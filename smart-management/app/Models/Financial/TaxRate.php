@@ -2,11 +2,13 @@
 
 namespace App\Models\Financial;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Core\Article;
 
 class TaxRate extends Model
 {
+    use HasFactory;
     protected $fillable = ['name', 'rate', 'is_active'];
 
     protected $casts = [

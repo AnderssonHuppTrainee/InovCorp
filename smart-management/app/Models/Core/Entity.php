@@ -138,7 +138,7 @@ class Entity extends Model
         $prefixes = [1, 2, 3, 5, 6, 8];
         $nif = (string) fake()->randomElement($prefixes);
 
-        // gera os 7 dígitos seguintes aleatórios
+        // gera os 7 dígitos aleatórios
         for ($i = 0; $i < 7; $i++) {
             $nif .= fake()->randomDigit();
         }

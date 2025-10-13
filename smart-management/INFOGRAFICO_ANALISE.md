@@ -673,3 +673,4 @@ COM refatoração: Features novas mantêm mesma dificuldade (sustentável)
 _Infográfico gerado automaticamente_  
 _Baseado em análise de 15.000 linhas de código_  
 _Todos os números validados e verificáveis_
+

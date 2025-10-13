@@ -56,3 +56,4 @@ class StoreCalendarEventTypeRequest extends FormRequest
 }
 
 
+

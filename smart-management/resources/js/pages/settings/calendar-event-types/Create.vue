@@ -1,7 +1,15 @@
 <template>
     <AppLayout>
         <div class="space-y-6 p-4">
-            <PageHeader title="Novo Tipo de Evento" description="Criar um novo tipo de evento" />
+            <PageHeader
+                title="Novo Tipo de Evento"
+                description="Criar um novo tipo de evento"
+            >
+                <Button variant="outline" @click="goBack">
+                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
+                    Voltar
+                </Button>
+            </PageHeader>
 
             <Card>
                 <CardContent class="pt-6">
@@ -39,7 +47,8 @@
                                     </div>
                                 </FormControl>
                                 <FormDescription>
-                                    Cor que será exibida no calendário (formato hexadecimal)
+                                    Cor que será exibida no calendário (formato
+                                    hexadecimal)
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -52,11 +61,18 @@
                         />
 
                         <div class="flex justify-end gap-4">
-                            <Button type="button" variant="outline" @click="handleCancel">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="handleCancel"
+                            >
                                 Cancelar
                             </Button>
                             <Button type="submit" :disabled="isSubmitting">
-                                <LoaderCircleIcon v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
+                                <LoaderCircleIcon
+                                    v-if="isSubmitting"
+                                    class="mr-2 h-4 w-4 animate-spin"
+                                />
                                 Criar Tipo
                             </Button>
                         </div>
@@ -68,15 +84,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import CheckboxField from '@/components/common/CheckboxField.vue'
+import CheckboxField from '@/components/common/CheckboxField.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     FormControl,
     FormDescription,
@@ -84,13 +95,21 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@/components/ui/form'
-import PageHeader from '@/components/PageHeader.vue'
-import { LoaderCircleIcon } from 'lucide-vue-next'
-import { calendarEventTypeSchema, type CalendarEventTypeFormData } from '@/schemas/calendarEventTypeSchema'
-import calendarEventTypes from '@/routes/calendar-event-types'
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import AppLayout from '@/layouts/AppLayout.vue';
+import calendarEventTypes from '@/routes/calendar-event-types';
+import {
+    calendarEventTypeSchema,
+    type CalendarEventTypeFormData,
+} from '@/schemas/calendarEventTypeSchema';
+import { router } from '@inertiajs/vue3';
+import { toTypedSchema } from '@vee-validate/zod';
+import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-vue-next';
+import { useForm } from 'vee-validate';
+import { ref } from 'vue';
 
-const isSubmitting = ref(false)
+const isSubmitting = ref(false);
 
 const form = useForm<CalendarEventTypeFormData>({
     validationSchema: toTypedSchema(calendarEventTypeSchema),
@@ -99,22 +118,19 @@ const form = useForm<CalendarEventTypeFormData>({
         color: '#3B82F6',
         is_active: true,
     },
-})
+});
 
 const onSubmit = form.handleSubmit((values) => {
-    isSubmitting.value = true
+    isSubmitting.value = true;
 
     router.post(calendarEventTypes.store().url, values, {
         onFinish: () => {
-            isSubmitting.value = false
+            isSubmitting.value = false;
         },
-    })
-})
-
+    });
+});
+const goBack = () => router.get('/calendar-event-types');
 const handleCancel = () => {
-    router.visit(calendarEventTypes.index().url)
-}
+    router.visit(calendarEventTypes.index().url);
+};
 </script>
-
-
-

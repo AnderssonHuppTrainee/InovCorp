@@ -108,10 +108,18 @@
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="low">Baixa</SelectItem>
-                                                <SelectItem value="medium">Média</SelectItem>
-                                                <SelectItem value="high">Alta</SelectItem>
-                                                <SelectItem value="urgent">Urgente</SelectItem>
+                                                <SelectItem value="low"
+                                                    >Baixa</SelectItem
+                                                >
+                                                <SelectItem value="medium"
+                                                    >Média</SelectItem
+                                                >
+                                                <SelectItem value="high"
+                                                    >Alta</SelectItem
+                                                >
+                                                <SelectItem value="urgent"
+                                                    >Urgente</SelectItem
+                                                >
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -123,12 +131,20 @@
                             <div class="space-y-6">
                                 <!-- Datas -->
                                 <div class="grid grid-cols-2 gap-4">
-                                    <FormField name="start_date">
+                                    <FormField
+                                        v-slot="{ value, handleChange }"
+                                        name="start_date"
+                                    >
                                         <FormItem>
-                                            <FormLabel>Data de Início</FormLabel>
+                                            <FormLabel
+                                                >Data de Início</FormLabel
+                                            >
                                             <FormControl>
                                                 <DatePicker
-                                                    v-model="form.values.start_date"
+                                                    :model-value="value"
+                                                    @update:model-value="
+                                                        handleChange
+                                                    "
                                                     placeholder="Selecione a data"
                                                 />
                                             </FormControl>
@@ -136,12 +152,18 @@
                                         </FormItem>
                                     </FormField>
 
-                                    <FormField name="end_date">
+                                    <FormField
+                                        v-slot="{ value, handleChange }"
+                                        name="end_date"
+                                    >
                                         <FormItem>
                                             <FormLabel>Data de Fim</FormLabel>
                                             <FormControl>
                                                 <DatePicker
-                                                    v-model="form.values.end_date"
+                                                    :model-value="value"
+                                                    @update:model-value="
+                                                        handleChange
+                                                    "
                                                     placeholder="Selecione a data"
                                                 />
                                             </FormControl>
@@ -166,10 +188,18 @@
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="pending">Pendente</SelectItem>
-                                                <SelectItem value="in_progress">Em Progresso</SelectItem>
-                                                <SelectItem value="completed">Concluído</SelectItem>
-                                                <SelectItem value="cancelled">Cancelado</SelectItem>
+                                                <SelectItem value="pending"
+                                                    >Pendente</SelectItem
+                                                >
+                                                <SelectItem value="in_progress"
+                                                    >Em Progresso</SelectItem
+                                                >
+                                                <SelectItem value="completed"
+                                                    >Concluído</SelectItem
+                                                >
+                                                <SelectItem value="cancelled"
+                                                    >Cancelado</SelectItem
+                                                >
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -198,13 +228,27 @@
 
                         <!-- Botões -->
                         <div class="mt-6 flex justify-end gap-3 border-t pt-6">
-                            <Button type="button" variant="outline" @click="goBack">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="goBack"
+                            >
                                 Cancelar
                             </Button>
                             <Button type="submit" :disabled="isSubmitting">
-                                <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
-                                <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                                {{ isSubmitting ? 'A guardar...' : 'Guardar Ordem' }}
+                                <SaveIcon
+                                    v-if="!isSubmitting"
+                                    class="mr-2 h-4 w-4"
+                                />
+                                <LoaderIcon
+                                    v-else
+                                    class="mr-2 h-4 w-4 animate-spin"
+                                />
+                                {{
+                                    isSubmitting
+                                        ? 'A guardar...'
+                                        : 'Guardar Ordem'
+                                }}
                             </Button>
                         </div>
                     </form>
@@ -280,7 +324,3 @@ const submitForm = form.handleSubmit(
     },
 );
 </script>
-
-
-
-

@@ -87,21 +87,35 @@
 
                             <div class="space-y-6">
                                 <div class="grid grid-cols-2 gap-4">
-                                    <FormField name="start_date">
+                                    <FormField
+                                        v-slot="{ value, handleChange }"
+                                        name="start_date"
+                                    >
                                         <FormItem>
                                             <FormLabel>Data Início</FormLabel>
                                             <FormControl>
-                                                <DatePicker v-model="form.values.start_date" placeholder="Início" />
+                                                <DatePicker
+                                                    :model-value="value"
+                                                    @update:model-value="handleChange"
+                                                    placeholder="Início"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     </FormField>
 
-                                    <FormField name="end_date">
+                                    <FormField
+                                        v-slot="{ value, handleChange }"
+                                        name="end_date"
+                                    >
                                         <FormItem>
                                             <FormLabel>Data Fim</FormLabel>
                                             <FormControl>
-                                                <DatePicker v-model="form.values.end_date" placeholder="Fim" />
+                                                <DatePicker
+                                                    :model-value="value"
+                                                    @update:model-value="handleChange"
+                                                    placeholder="Fim"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -204,6 +218,7 @@ const submitForm = form.handleSubmit((values) => {
     });
 });
 </script>
+
 
 
 

@@ -34,11 +34,19 @@
 
                             <div class="space-y-2 lg:col-span-2">
                                 <div class="flex items-center space-x-2">
-                                    <Checkbox id="is-public-edit" v-model:checked="formData.is_public" />
+                                    <input
+                                        id="is-public-edit"
+                                        type="checkbox"
+                                        v-model="formData.is_public"
+                                        class="h-4 w-4 cursor-pointer rounded border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    />
                                     <label for="is-public-edit" class="text-sm font-medium cursor-pointer">
                                         Ficheiro Público
                                     </label>
                                 </div>
+                                <p class="text-sm text-muted-foreground pl-6">
+                                    Se marcado, o ficheiro poderá ser acedido sem autenticação
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -61,7 +69,6 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import DatePicker from '@/components/ui/date-picker/DatePicker.vue';
 import { Input } from '@/components/ui/input';
 import Textarea from '@/components/ui/textarea/Textarea.vue';

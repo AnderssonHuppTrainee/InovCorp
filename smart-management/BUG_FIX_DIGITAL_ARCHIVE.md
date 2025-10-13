@@ -10,9 +10,11 @@
 ## 🎯 PROBLEMA REPORTADO
 
 **Usuário reportou:**
+
 > "O create do DigitalArchive não está a funcionar, investigue a causa."
 
 ### Comportamento Esperado
+
 ```
 1. Usuário seleciona arquivo
 2. Preenche formulário
@@ -23,6 +25,7 @@
 ```
 
 ### Comportamento Real
+
 ```
 1. Usuário seleciona arquivo
 2. Preenche formulário
@@ -41,6 +44,7 @@
 **Arquivo:** `app/Http/Controllers/Core/DigitalArchiveController.php`
 
 **Linha 77 (PROBLEMÁTICA):**
+
 ```php
 $filePath = $file->store('digital-archive', 'private');
 //                                           ^^^^^^^^^ PROBLEMA!
@@ -60,6 +64,7 @@ $filePath = $file->store('digital-archive', 'private');
 ```
 
 **Quando Laravel tenta usar disco inexistente:**
+
 ```
 InvalidArgumentException: Disk [private] does not have a configured driver.
 ```
@@ -79,6 +84,7 @@ $filePath = $file->store('digital-archive');
 ```
 
 **Explicação:**
+
 - Sem segundo parâmetro = usa disco **padrão** (`local`)
 - Disco `local` está configurado e funciona
 - Arquivos salvos em `storage/app/digital-archive/`
@@ -92,6 +98,7 @@ $filePath = $file->store('digital-archive');
 Este é o **3º arquivo** com o mesmo problema!
 
 **1. SupplierInvoiceController** (Corrigido anteriormente)
+
 ```php
 // ANTES ❌
 ->store('invoices/documents', 'private')
@@ -101,6 +108,7 @@ Este é o **3º arquivo** com o mesmo problema!
 ```
 
 **2. DigitalArchive Model** (Corrigido anteriormente)
+
 ```php
 // ANTES ❌
 Storage::disk('private')->exists(...)
@@ -112,6 +120,7 @@ Storage::delete(...)
 ```
 
 **3. DigitalArchiveController** (ESTE FIX)
+
 ```php
 // ANTES ❌
 $file->store('digital-archive', 'private')
@@ -127,6 +136,7 @@ $file->store('digital-archive')
 ### ❌ NUNCA Usar Disco Não Configurado
 
 **Verificar SEMPRE antes:**
+
 ```php
 // Ver discos configurados
 config('filesystems.disks')
@@ -142,6 +152,7 @@ if (config("filesystems.disks.{$diskName}")) {
 ### ✅ Padrão Correto para Storage
 
 **Opção 1: Usar Disco Padrão (Local)**
+
 ```php
 // ✅ Simples e funciona sempre
 $path = $file->store('pasta');
@@ -149,6 +160,7 @@ $path = $file->store('pasta');
 ```
 
 **Opção 2: Usar Disco Público**
+
 ```php
 // ✅ Para arquivos acessíveis via web
 $path = $file->store('pasta', 'public');
@@ -157,6 +169,7 @@ $path = $file->store('pasta', 'public');
 ```
 
 **Opção 3: Configurar Disco Customizado**
+
 ```php
 // 1. Adicionar em config/filesystems.php
 'disks' => [
@@ -207,6 +220,7 @@ public function store(StoreDigitalArchiveRequest $request)
 ## 🚀 IMPACTO
 
 ### Antes (Com Bug)
+
 ```
 ❌ Upload de arquivos falhava
 ❌ Erro: Disk [private] does not have a configured driver
@@ -216,6 +230,7 @@ public function store(StoreDigitalArchiveRequest $request)
 ```
 
 ### Depois (Corrigido)
+
 ```
 ✅ Upload de arquivos funciona
 ✅ Arquivos salvos em storage/app/digital-archive/
@@ -248,6 +263,7 @@ storage/
 ### Para TODO o projeto:
 
 **✅ USAR (Disco padrão - local):**
+
 ```php
 // Upload
 $path = $file->store('pasta');
@@ -266,6 +282,7 @@ Storage::path($path);
 ```
 
 **❌ NÃO USAR (Disco inexistente):**
+
 ```php
 // Upload
 $path = $file->store('pasta', 'private');  // ❌
@@ -297,6 +314,7 @@ Ao revisar código com uploads:
 ## 📊 VALIDAÇÃO
 
 ### Testes
+
 ```
 ✅ 66/66 Unit Tests passando (100%)
 ✅ Código sem erros de lint
@@ -304,6 +322,7 @@ Ao revisar código com uploads:
 ```
 
 ### Funcionalidade
+
 ```
 ✅ Upload de arquivos funciona
 ✅ Listagem de arquivos funciona
@@ -340,18 +359,21 @@ Ao revisar código com uploads:
 ## 📚 ARQUIVOS CORRIGIDOS (Histórico Completo)
 
 ### 1. SupplierInvoiceController (Corrigido anteriormente)
+
 ```php
 - ->store('invoices/documents', 'private')
 + ->store('invoices/supplier/documents')
 ```
 
 ### 2. DigitalArchive Model (Corrigido anteriormente)
+
 ```php
 - Storage::disk('private')->exists(...)
 + Storage::exists(...)
 ```
 
 ### 3. DigitalArchiveController (ESTE FIX)
+
 ```php
 - $file->store('digital-archive', 'private')
 + $file->store('digital-archive')
@@ -391,15 +413,15 @@ if (!config("filesystems.disks.{$disk}")) {
 ```php
 test('pode fazer upload de arquivo', function () {
     Storage::fake('local');
-    
+
     $file = UploadedFile::fake()->create('test.pdf');
-    
+
     $response = $this->post(route('digital-archive.store'), [
         'name' => 'Test File',
         'file' => $file,
         'document_type' => 'contract',
     ]);
-    
+
     $response->assertRedirect();
     Storage::disk('local')->assertExists('digital-archive/' . $file->hashName());
 });
@@ -414,6 +436,7 @@ test('pode fazer upload de arquivo', function () {
 **Pode usar o Digital Archive normalmente agora!**
 
 **Testado:**
+
 - ✅ Upload de arquivos
 - ✅ Salvamento em `storage/app/digital-archive/`
 - ✅ Download funciona
@@ -430,4 +453,3 @@ _3º arquivo corrigido_
 _Upload de arquivos funcionando!_
 
 **Status:** ✅ **FUNCIONAL!**
-

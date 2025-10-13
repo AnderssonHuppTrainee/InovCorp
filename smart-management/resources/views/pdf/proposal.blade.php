@@ -148,12 +148,13 @@
 </head>
 
 <body>
-
-    <div class="header">
-        <h1>PROPOSTA COMERCIAL</h1>
-        <div class="number">Nº {{ $proposal->number }}</div>
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="{{ public_path('images/logo.png') }}" alt="Logo" style="height: 60px;">
+        <div style="text-align: right;">
+            <h1>PROPOSTA COMERCIAL</h1>
+            <div class="number">Nº {{ $proposal->number }}</div>
+        </div>
     </div>
-
 
     <div class="info-section">
         <div class="info-column">

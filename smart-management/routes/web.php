@@ -7,6 +7,9 @@ use App\Http\Controllers\Core\OrderController;
 use App\Http\Controllers\Core\ProposalController;
 use App\Http\Controllers\Core\SupplierOrderController;
 use App\Http\Controllers\Core\WorkOrderController;
+use App\Http\Controllers\Settings\ArticleController;
+use App\Http\Controllers\Settings\CompanySettingsController;
+use App\Http\Controllers\Financial\TaxRateController;
 use App\Http\Controllers\Financial\BankAccountController;
 use App\Http\Controllers\Financial\CustomerInvoiceController;
 use App\Http\Controllers\Financial\SupplierInvoiceController;
@@ -121,18 +124,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('roles.sync-permissions');
 
     // Settings - Articles
-    Route::resource('articles', \App\Http\Controllers\Settings\ArticleController::class);
+    Route::resource('articles', ArticleController::class);
 
     // Settings - Tax Rates
-    Route::resource('tax-rates', \App\Http\Controllers\Financial\TaxRateController::class);
+    Route::resource('tax-rates', TaxRateController::class);
 
     // Settings - Company
-    Route::get('/settings/company', [\App\Http\Controllers\Settings\CompanySettingsController::class, 'index'])
+    Route::get('/settings/company', [CompanySettingsController::class, 'index'])
         ->name('settings.company.index');
-    Route::put('/settings/company', [\App\Http\Controllers\Settings\CompanySettingsController::class, 'update'])
+    Route::put('/settings/company', [CompanySettingsController::class, 'update'])
         ->name('settings.company.update');
 
-    // Activity Logs
     Route::get('/logs', function () {
         $logs = \Spatie\Activitylog\Models\Activity::with('causer')->latest()->paginate(50);
         return Inertia::render('settings/logs/Index', ['logs' => $logs]);

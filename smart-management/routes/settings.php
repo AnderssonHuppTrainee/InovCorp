@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
 
-    // Settings - Configurações
+    // Configurações
     Route::resource('countries', CountryController::class);
     Route::resource('contact-roles', ContactRoleController::class);
     Route::resource('calendar-event-types', CalendarEventTypeController::class);

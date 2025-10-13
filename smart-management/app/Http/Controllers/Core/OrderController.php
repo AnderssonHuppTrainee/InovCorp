@@ -53,25 +53,12 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $validated = $request->validated();
-        \Log::info('📝 OrderController::store - INICIANDO criação de Order');
 
         try {
             $order = DB::transaction(function () use ($validated) {
-                // Verificar quantas orders existem ANTES
-                $totalOrdersBefore = Order::withTrashed()->count();
-                \Log::info('📊 Total de Orders no DB (antes)', [
-                    'total' => $totalOrdersBefore
-                ]);
-
-                // Gerar número
-                $number = Order::nextNumber();
-                \Log::info('📝 OrderController - Número gerado', [
-                    'number' => $number
-                ]);
-
                 // Criar encomenda
                 $orderData = [
-                    'number' => $number,
+                    'number' => Order::nextNumber(),
                     'order_date' => $validated['order_date'],
                     'client_id' => $validated['client_id'],
                     'delivery_date' => $validated['delivery_date'] ?? null,
@@ -80,16 +67,7 @@ class OrderController extends Controller
                     'total_amount' => 0,
                 ];
 
-                \Log::info('📝 OrderController - Dados da Order', [
-                    'orderData' => $orderData
-                ]);
-
                 $order = Order::create($orderData);
-
-                \Log::info('✅ OrderController - Order CRIADA', [
-                    'id' => $order->id,
-                    'number' => $order->number
-                ]);
 
                 // Criar itens
                 foreach ($validated['items'] as $itemData) {

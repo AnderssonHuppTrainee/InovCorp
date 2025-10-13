@@ -74,7 +74,7 @@ class DigitalArchiveController extends Controller
             $archive = DB::transaction(function () use ($validated, $request) {
 
                 $file = $request->file('file');
-                $filePath = $file->store('digital-archive', 'private');
+                $filePath = $file->store('digital-archive');
 
 
                 $archiveData = [

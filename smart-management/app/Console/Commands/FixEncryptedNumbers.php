@@ -62,12 +62,12 @@ class FixEncryptedNumbers extends Command
 
         foreach ($models as $name => $modelClass) {
             $this->info("📋 Processando {$name}...");
-            
+
             // Verificar se o model usa SoftDeletes
             $query = in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($modelClass))
                 ? $modelClass::withTrashed()
                 : $modelClass::query();
-                
+
             $records = $query->get();
             $fixed = 0;
             $skipped = 0;
@@ -80,16 +80,16 @@ class FixEncryptedNumbers extends Command
                     try {
                         // Tentar decriptar
                         $decrypted = Crypt::decryptString($currentNumber);
-                        
+
                         $this->line("  🔓 ID {$record->id}: '{$currentNumber}' → '{$decrypted}'");
-                        
+
                         if (!$dryRun) {
                             // Atualizar diretamente no DB sem passar pelo Eloquent
                             \DB::table($record->getTable())
                                 ->where('id', $record->id)
                                 ->update(['number' => $decrypted]);
                         }
-                        
+
                         $fixed++;
                     } catch (\Exception $e) {
                         $this->error("  ❌ ID {$record->id}: Erro ao decriptar - {$e->getMessage()}");
@@ -97,15 +97,15 @@ class FixEncryptedNumbers extends Command
                 } else if ($currentNumber === '000001' || is_null($currentNumber) || $currentNumber === '') {
                     // Número padrão ou vazio - gerar novo
                     $newNumber = $modelClass::nextNumber();
-                    
+
                     $this->line("  🆕 ID {$record->id}: NULL/000001 → '{$newNumber}'");
-                    
+
                     if (!$dryRun) {
                         \DB::table($record->getTable())
                             ->where('id', $record->id)
                             ->update(['number' => $newNumber]);
                     }
-                    
+
                     $fixed++;
                 } else {
                     // Número já está OK
@@ -115,12 +115,12 @@ class FixEncryptedNumbers extends Command
 
             $this->info("  ✅ {$name}: {$fixed} corrigidos, {$skipped} já estavam OK");
             $this->newLine();
-            
+
             $totalFixed += $fixed;
         }
 
         $this->newLine();
-        
+
         if ($dryRun) {
             $this->warn("🔍 DRY-RUN: {$totalFixed} registros SERIAM corrigidos");
             $this->info('💡 Execute sem --dry-run para aplicar as correções');

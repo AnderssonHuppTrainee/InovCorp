@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 
 test('pode criar uma order', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
-    
+
     $order = Order::create([
         'number' => Order::nextNumber(),
         'order_date' => now(),
@@ -31,7 +31,7 @@ test('pode calcular total a partir de items', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $article1 = Article::factory()->create(['price' => 150]);
     $article2 = Article::factory()->create(['price' => 200]);
-    
+
     $order = Order::create([
         'number' => Order::nextNumber(),
         'order_date' => now(),
@@ -66,7 +66,7 @@ test('pode calcular total a partir de items', function () {
 
 test('order pertence a um cliente', function () {
     $client = Entity::factory()->create(['types' => ['client'], 'name' => 'Cliente ABC']);
-    
+
     $order = Order::factory()->create(['client_id' => $client->id]);
 
     expect($order->client)->toBeInstanceOf(Entity::class)
@@ -76,7 +76,7 @@ test('order pertence a um cliente', function () {
 test('order pode ter proposal associada', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $proposal = Proposal::factory()->create(['client_id' => $client->id]);
-    
+
     $order = Order::factory()->create([
         'client_id' => $client->id,
         'proposal_id' => $proposal->id,
@@ -91,7 +91,7 @@ test('order pode ter multiplos items', function () {
     $article1 = Article::factory()->create();
     $article2 = Article::factory()->create();
     $article3 = Article::factory()->create();
-    
+
     $order = Order::create([
         'number' => Order::nextNumber(),
         'order_date' => now(),
@@ -115,7 +115,7 @@ test('order pode converter para supplier orders', function () {
     $article1 = Article::factory()->create(['price' => 100]);
     $article2 = Article::factory()->create(['price' => 200]);
     $article3 = Article::factory()->create(['price' => 150]);
-    
+
     $order = Order::create([
         'number' => Order::nextNumber(),
         'order_date' => now(),

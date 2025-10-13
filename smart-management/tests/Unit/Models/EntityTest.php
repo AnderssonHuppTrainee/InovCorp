@@ -14,7 +14,7 @@ uses(RefreshDatabase::class);
 
 test('pode criar entity como cliente', function () {
     $country = Country::factory()->create();
-    
+
     $entity = Entity::create([
         'number' => Entity::nextNumber(),
         'tax_number' => Entity::generatePortugueseNif(),
@@ -38,7 +38,7 @@ test('pode criar entity como cliente', function () {
 
 test('pode criar entity como fornecedor', function () {
     $country = Country::factory()->create();
-    
+
     $entity = Entity::create([
         'number' => Entity::nextNumber(),
         'tax_number' => Entity::generatePortugueseNif(),
@@ -61,7 +61,7 @@ test('pode criar entity como fornecedor', function () {
 
 test('pode criar entity com multiplos tipos', function () {
     $country = Country::factory()->create();
-    
+
     $entity = Entity::create([
         'number' => Entity::nextNumber(),
         'tax_number' => Entity::generatePortugueseNif(),
@@ -85,7 +85,7 @@ test('pode criar entity com multiplos tipos', function () {
 
 test('scope clients retorna apenas clientes', function () {
     $country = Country::factory()->create();
-    
+
     Entity::factory()->create(['types' => ['client'], 'country_id' => $country->id]);
     Entity::factory()->create(['types' => ['supplier'], 'country_id' => $country->id]);
     Entity::factory()->create(['types' => ['client', 'supplier'], 'country_id' => $country->id]);
@@ -97,7 +97,7 @@ test('scope clients retorna apenas clientes', function () {
 
 test('scope suppliers retorna apenas fornecedores', function () {
     $country = Country::factory()->create();
-    
+
     Entity::factory()->create(['types' => ['client'], 'country_id' => $country->id]);
     Entity::factory()->create(['types' => ['supplier'], 'country_id' => $country->id]);
     Entity::factory()->create(['types' => ['client', 'supplier'], 'country_id' => $country->id]);
@@ -109,7 +109,7 @@ test('scope suppliers retorna apenas fornecedores', function () {
 
 test('scope active retorna apenas entidades ativas', function () {
     $country = Country::factory()->create();
-    
+
     Entity::factory()->create(['types' => ['client'], 'country_id' => $country->id, 'status' => 'active']);
     Entity::factory()->create(['types' => ['client'], 'country_id' => $country->id, 'status' => 'inactive']);
     Entity::factory()->create(['types' => ['client'], 'country_id' => $country->id, 'status' => 'active']);
@@ -150,7 +150,7 @@ test('gera numero sequencial correto', function () {
 
 test('entity tem relacionamento com country', function () {
     $country = Country::factory()->create(['name' => 'Portugal']);
-    
+
     $entity = Entity::factory()->create(['country_id' => $country->id]);
 
     expect($entity->country)->toBeInstanceOf(Country::class)

@@ -4,141 +4,195 @@ import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="SmartManagement- Gestão Inteligente">
+    <Head title="SmartManagement - Gestão Inteligente">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
+
     <div
-        class="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]"
+        class="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#0a0a0a] dark:via-[#111] dark:to-[#0f0f0f]"
     >
+        <!-- Top Navigation -->
         <header
-            class="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl"
+            class="flex w-full items-center justify-between border-b border-gray-200 px-6 py-4 lg:px-12 dark:border-gray-800"
         >
-            <nav class="flex items-center justify-end gap-4">
-                <Link
-                    v-if="$page.props.auth.user"
-                    :href="dashboard()"
-                    class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                >
-                    Dashboard
-                </Link>
+            <h1
+                class="text-2xl font-bold tracking-tight text-gray-800 dark:text-white"
+            >
+                Smart<span class="text-blue-600">Management</span>
+            </h1>
+
+            <nav class="flex items-center gap-4">
+                <template v-if="$page.props.auth.user">
+                    <Link
+                        :href="dashboard()"
+                        class="rounded-md bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                    >
+                        Ir para o Dashboard
+                    </Link>
+                </template>
+
                 <template v-else>
                     <Link
                         :href="login()"
-                        class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                        class="px-5 py-2 text-sm font-medium text-gray-800 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400"
                     >
-                        Log in
+                        Entrar
                     </Link>
                     <Link
                         :href="register()"
-                        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                        class="rounded-md border border-blue-600 px-5 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950"
                     >
-                        Register
+                        Criar Conta
                     </Link>
                 </template>
             </nav>
         </header>
-        <div
-            class="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0"
-        >
-            <main
-                class="flex w-full max-w-[335px] flex-col-reverse justify-center overflow-hidden rounded-lg lg:max-w-4xl lg:flex-row"
-            >
-                <div class="flex flex-1 flex-col justify-center p-4 lg:p-8">
-                    <h1
-                        class="mb-4 text-3xl font-bold lg:text-4xl dark:text-[#EDEDEC]"
-                    >
-                        Gerencia sua empresa com o
-                        <span class="text-[#1976D2]">Smart Management</span>
-                    </h1>
-                    <p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
-                        Feito para facilitar a gestão no seu dia a dia. Crie,
-                        edite, organize de forma facilitada.
-                    </p>
 
-                    <div class="mb-8 flex flex-col gap-4 sm:flex-row">
-                        <Link
-                            :href="register()"
-                            class="inline-flex items-center justify-center rounded-md bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-600"
-                        >
-                            Começar Agora
-                        </Link>
-                        <Link
-                            :href="login()"
-                            class="inline-flex items-center justify-center rounded-md border border-[#19140035] px-6 py-3 text-sm font-medium text-[#1b1b18] transition-colors hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                        >
-                            Saiba Mais
-                        </Link>
-                    </div>
+        <!-- Hero Section -->
+        <main
+            class="flex flex-1 flex-col items-center justify-between px-8 py-16 lg:flex-row lg:px-20"
+        >
+            <!-- Text -->
+            <div class="max-w-xl flex-1 space-y-6">
+                <h2
+                    class="text-4xl leading-tight font-bold text-gray-900 lg:text-5xl dark:text-white"
+                >
+                    Gestão <span class="text-blue-600">Inteligente</span> para a
+                    sua Empresa
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">
+                    Automatize processos, acompanhe clientes, fornecedores e
+                    finanças num só lugar. Uma solução completa para pequenas e
+                    médias empresas.
+                </p>
+
+                <div class="flex flex-col gap-4 pt-2 sm:flex-row">
+                    <Link
+                        :href="register()"
+                        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
+                    >
+                        Experimente Gratuitamente
+                    </Link>
+                    <Link
+                        :href="login()"
+                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-6 py-3 text-gray-800 transition hover:border-blue-500 hover:text-blue-600 dark:border-gray-700 dark:text-gray-200 dark:hover:border-blue-500 dark:hover:text-blue-400"
+                    >
+                        Acesse sua Conta
+                    </Link>
                 </div>
-                <div class="flex flex-1 items-center justify-center p-4 lg:p-8">
-                    <div class="relative w-full max-w-md">
-                        <div
-                            class="rounded-2xl bg-gradient-to-br from-[#1976D2] to-[#42A5F5] p-8 shadow-xl"
-                        >
-                            <div
-                                class="mb-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+            </div>
+
+            <!-- Illustration -->
+            <div class="mt-12 flex flex-1 justify-center lg:mt-0">
+                <div
+                    class="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900"
+                >
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="font-medium text-gray-700 dark:text-gray-300"
+                                >Progresso do mês</span
                             >
-                                <div class="mb-3 flex items-center gap-3">
-                                    <div
-                                        class="h-3 w-3 rounded-full bg-green-500"
-                                    ></div>
-                                    <div
-                                        class="text-sm font-medium dark:text-white"
-                                    >
-                                        Reunião com equipe
-                                    </div>
-                                </div>
-                                <div class="mb-3 flex items-center gap-3">
-                                    <div
-                                        class="h-3 w-3 rounded-full bg-yellow-500"
-                                    ></div>
-                                    <div
-                                        class="text-sm font-medium dark:text-white"
-                                    >
-                                        Relatório mensal
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="h-3 w-3 rounded-full bg-red-500"
-                                    ></div>
-                                    <div
-                                        class="text-sm font-medium dark:text-white"
-                                    >
-                                        Entregar projeto
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                            <span
+                                class="text-sm text-blue-600 dark:text-blue-400"
+                                >82%</span
                             >
-                                <div
-                                    class="mb-2 flex items-center justify-between"
-                                >
-                                    <span
-                                        class="text-sm font-medium dark:text-white"
-                                        >Progresso do dia</span
-                                    >
-                                    <span
-                                        class="text-sm text-gray-500 dark:text-gray-400"
-                                        >75%</span
-                                    >
-                                </div>
-                                <div
-                                    class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700"
-                                >
-                                    <div
-                                        class="h-2 rounded-full bg-green-500"
-                                        style="width: 75%"
-                                    ></div>
-                                </div>
-                            </div>
                         </div>
+                        <div
+                            class="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
+                        >
+                            <div class="h-2 w-[82%] bg-blue-600"></div>
+                        </div>
+
+                        <ul class="mt-6 space-y-3">
+                            <li class="flex items-center gap-3">
+                                <div
+                                    class="h-3 w-3 rounded-full bg-green-500"
+                                ></div>
+                                <span
+                                    class="text-sm text-gray-700 dark:text-gray-300"
+                                    >Reunião com Clientes</span
+                                >
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <div
+                                    class="h-3 w-3 rounded-full bg-yellow-500"
+                                ></div>
+                                <span
+                                    class="text-sm text-gray-700 dark:text-gray-300"
+                                    >Emissão de Faturas</span
+                                >
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <div
+                                    class="h-3 w-3 rounded-full bg-red-500"
+                                ></div>
+                                <span
+                                    class="text-sm text-gray-700 dark:text-gray-300"
+                                    >Ordens de Trabalho Pendentes</span
+                                >
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </main>
-        </div>
-        <div class="hidden h-14.5 lg:block"></div>
+            </div>
+        </main>
+
+        <!-- Features -->
+        <section
+            class="border-t border-gray-200 bg-gray-50 px-8 py-16 lg:px-20 dark:border-gray-800 dark:bg-gray-950"
+        >
+            <h3
+                class="mb-10 text-center text-3xl font-bold text-gray-800 dark:text-white"
+            >
+                Tudo o que sua gestão precisa
+            </h3>
+            <div
+                class="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-3"
+            >
+                <div
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                >
+                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
+                        Clientes & Fornecedores
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Centralize todas as informações de clientes e
+                        fornecedores com histórico de interações.
+                    </p>
+                </div>
+                <div
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                >
+                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
+                        Propostas & Encomendas
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Crie propostas em segundos e converta facilmente em
+                        encomendas com um clique.
+                    </p>
+                </div>
+                <div
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                >
+                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
+                        Financeiro & Faturas
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Controle contas, faturas e relatórios financeiros de
+                        forma automatizada e segura.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer
+            class="border-t border-gray-200 py-8 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400"
+        >
+            © {{ new Date().getFullYear() }} SmartManagement — Todos os
+            direitos reservados.
+        </footer>
     </div>
 </template>

@@ -29,7 +29,7 @@ test('can create tax rate with is_active checkbox', function () {
 
     $response->assertRedirect();
 
-    // 🔍 TESTE CRÍTICO: Verificar que checkbox foi salvo corretamente
+
     assertDatabaseHas('tax_rates', [
         'name' => 'IVA 23%',
         'rate' => 23,
@@ -153,14 +153,14 @@ test('checkbox defaults to false when not provided', function () {
     $taxRateData = [
         'name' => 'IVA Desativado',
         'rate' => 6,
-        'is_active' => false,  // Explicitamente false
+        'is_active' => false,
     ];
 
     $response = $this->post(route('tax-rates.store'), $taxRateData);
 
     $taxRate = TaxRate::where('name', 'IVA Desativado')->first();
 
-    // Checkbox deve ser false
+
     expect($taxRate->is_active)->toBeFalse();
 });
 
@@ -173,7 +173,7 @@ test('can toggle checkbox multiple times', function () {
         'is_active' => false,
     ]);
 
-    // Ativar
+
     $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
@@ -181,7 +181,7 @@ test('can toggle checkbox multiple times', function () {
     ]);
     expect($taxRate->fresh()->is_active)->toBeTrue();
 
-    // Desativar
+
     $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
@@ -189,7 +189,7 @@ test('can toggle checkbox multiple times', function () {
     ]);
     expect($taxRate->fresh()->is_active)->toBeFalse();
 
-    // Ativar novamente
+
     $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
@@ -201,7 +201,7 @@ test('can toggle checkbox multiple times', function () {
 test('checkbox accepts various truthy values', function () {
     actingAs($this->user);
 
-    // Teste com 1 (integer)
+
     $taxRate1 = TaxRate::create([
         'name' => 'Test 1',
         'rate' => 23,
@@ -209,7 +209,7 @@ test('checkbox accepts various truthy values', function () {
     ]);
     expect($taxRate1->is_active)->toBeTrue();
 
-    // Teste com true (boolean)
+
     $taxRate2 = TaxRate::create([
         'name' => 'Test 2',
         'rate' => 23,
@@ -217,7 +217,7 @@ test('checkbox accepts various truthy values', function () {
     ]);
     expect($taxRate2->is_active)->toBeTrue();
 
-    // Teste com "1" (string)
+
     $taxRate3 = TaxRate::create([
         'name' => 'Test 3',
         'rate' => 23,
@@ -229,7 +229,7 @@ test('checkbox accepts various truthy values', function () {
 test('checkbox accepts various falsy values', function () {
     actingAs($this->user);
 
-    // Teste com 0 (integer)
+
     $taxRate1 = TaxRate::create([
         'name' => 'Test 0',
         'rate' => 23,
@@ -237,7 +237,7 @@ test('checkbox accepts various falsy values', function () {
     ]);
     expect($taxRate1->is_active)->toBeFalse();
 
-    // Teste com false (boolean)
+
     $taxRate2 = TaxRate::create([
         'name' => 'Test false',
         'rate' => 23,
@@ -245,7 +245,7 @@ test('checkbox accepts various falsy values', function () {
     ]);
     expect($taxRate2->is_active)->toBeFalse();
 
-    // Teste com "0" (string)
+
     $taxRate3 = TaxRate::create([
         'name' => 'Test string 0',
         'rate' => 23,

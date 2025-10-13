@@ -34,7 +34,7 @@ test('can create work order with dates via HTTP request', function () {
 
     $response->assertRedirect();
 
-    // 🔍 TESTE CRÍTICO: Verificar que as datas foram salvas
+
     assertDatabaseHas('work_orders', [
         'title' => 'Instalação de Sistema',
         'client_id' => $client->id,
@@ -73,7 +73,7 @@ test('can update work order dates via HTTP request', function () {
 
     $response->assertRedirect();
 
-    // 🔍 TESTE CRÍTICO: Verificar que as datas foram atualizadas
+
     assertDatabaseHas('work_orders', [
         'id' => $workOrder->id,
         'start_date' => '2025-10-15',
@@ -90,7 +90,7 @@ test('dates persist across multiple operations', function () {
 
     $client = Entity::factory()->create(['types' => ['client']]);
 
-    // Criar work order
+
     $workOrder = WorkOrder::create([
         'number' => WorkOrder::nextNumber(),
         'title' => 'Manutenção Preventiva',
@@ -102,13 +102,13 @@ test('dates persist across multiple operations', function () {
         'status' => 'pending',
     ]);
 
-    // Atualizar status
+
     $workOrder->update(['status' => 'in_progress']);
 
-    // Buscar novamente do banco
+
     $retrieved = WorkOrder::find($workOrder->id);
 
-    // Datas devem permanecer intactas
+
     expect($retrieved->start_date->toDateString())->toBe('2025-10-13')
         ->and($retrieved->end_date->toDateString())->toBe('2025-10-20')
         ->and($retrieved->status)->toBe('in_progress');
@@ -181,7 +181,7 @@ test('date fields are nullable', function () {
         'client_id' => $client->id,
         'priority' => 'medium',
         'status' => 'pending',
-        // Sem start_date e end_date
+
     ];
 
     $response = $this->post(route('work-orders.store'), $workOrderData);

@@ -37,19 +37,19 @@ test('proposal converts to order via HTTP request preserving supplier_id', funct
         'unit_price' => 100,
     ]);
 
-    // Fazer POST request para converter
+
     $response = $this->post(route('proposals.convert-to-order', $proposal->id));
 
     $response->assertRedirect();
 
-    // Verificar que a order foi criada
+
     assertDatabaseHas('orders', [
         'proposal_id' => $proposal->id,
         'client_id' => $client->id,
         'status' => 'draft',
     ]);
 
-    // 🔍 TESTE CRÍTICO: Verificar que supplier_id foi preservado
+
     assertDatabaseHas('order_items', [
         'article_id' => $article->id,
         'supplier_id' => $supplier->id,
@@ -57,7 +57,7 @@ test('proposal converts to order via HTTP request preserving supplier_id', funct
         'unit_price' => 100,
     ]);
 
-    // Verificar que proposta foi fechada
+
     expect($proposal->fresh()->status)->toBe('closed');
 });
 
@@ -79,7 +79,7 @@ test('proposal with multiple items converts preserving all supplier data', funct
         'total_amount' => 1500,
     ]);
 
-    // Criar 3 itens com fornecedores diferentes
+
     ProposalItem::create([
         'proposal_id' => $proposal->id,
         'article_id' => $article1->id,
@@ -104,11 +104,11 @@ test('proposal with multiple items converts preserving all supplier data', funct
         'unit_price' => 500,
     ]);
 
-    // Converter
+
     $response = $this->post(route('proposals.convert', $proposal->id));
     $response->assertRedirect();
 
-    // Verificar todos os supplier_ids foram preservados
+
     assertDatabaseHas('order_items', [
         'article_id' => $article1->id,
         'supplier_id' => $supplier1->id,
@@ -124,7 +124,7 @@ test('proposal with multiple items converts preserving all supplier data', funct
         'supplier_id' => $supplier3->id,
     ]);
 
-    // Verificar que a order tem 3 items
+
     $order = Order::where('proposal_id', $proposal->id)->first();
     expect($order->items()->count())->toBe(3);
 });
@@ -138,13 +138,13 @@ test('cannot convert already converted proposal', function () {
         'status' => 'closed',
     ]);
 
-    // Primeira conversão
+
     $order = $proposal->convertToOrder();
 
-    // Tentar converter novamente (não deve criar nova order)
+
     $response = $this->post(route('proposals.convert', $proposal->id));
 
-    // Deve haver apenas 1 order para esta proposal
+
     expect(Order::where('proposal_id', $proposal->id)->count())->toBe(1);
 });
 
@@ -182,7 +182,7 @@ test('converted order has correct totals', function () {
 
     $order = Order::where('proposal_id', $proposal->id)->first();
 
-    // Total da order deve ser igual ao total da proposal
+
     expect($order->total_amount)->toBe($proposal->total_amount)
         ->and($order->total_amount)->toBe(850.0);
 });

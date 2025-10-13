@@ -105,14 +105,14 @@ Tests:    66 passed (161 assertions)
 
 ### 🟢 Models com Cobertura Completa
 
-| Model | Testes | Cobertura | Status |
-|-------|--------|-----------|--------|
-| **Entity** | 19 | 🟢 95% | ✅ CRÍTICO |
-| **Proposal** | 6 | 🟢 90% | ✅ CRÍTICO |
-| **Order** | 13 | 🟢 90% | ✅ CRÍTICO |
-| **WorkOrder** | 6 | 🟢 85% | ✅ CRÍTICO |
-| **SupplierInvoice** | 7 | 🟢 85% | ✅ CRÍTICO |
-| **CustomerInvoice** | 14 | 🟢 95% | ✅ CRÍTICO |
+| Model               | Testes | Cobertura | Status     |
+| ------------------- | ------ | --------- | ---------- |
+| **Entity**          | 19     | 🟢 95%    | ✅ CRÍTICO |
+| **Proposal**        | 6      | 🟢 90%    | ✅ CRÍTICO |
+| **Order**           | 13     | 🟢 90%    | ✅ CRÍTICO |
+| **WorkOrder**       | 6      | 🟢 85%    | ✅ CRÍTICO |
+| **SupplierInvoice** | 7      | 🟢 85%    | ✅ CRÍTICO |
+| **CustomerInvoice** | 14     | 🟢 95%    | ✅ CRÍTICO |
 
 **Cobertura Crítica:** 6/6 models (100%) ✅
 
@@ -329,10 +329,12 @@ Tests:    66 passed (161 assertions)
 ### ROI Projetado
 
 **Investimento:**
+
 - Tempo: 9 horas
 - Custo: €450 (€50/hora)
 
 **Retorno Ano 1:**
+
 - **Bugs evitados:** ~200h (€10.000)
 - **Features mais rápidas:** ~100h (€5.000)
 - **Manutenção:** ~200h (€10.000)
@@ -347,6 +349,7 @@ Tests:    66 passed (161 assertions)
 ### 1. Entity (19 testes) 🟢 95%
 
 **Testes Implementados:**
+
 - ✅ Criação (client, supplier, múltiplos tipos)
 - ✅ Scopes (clients, suppliers, active)
 - ✅ NIF validation (algoritmo completo)
@@ -356,6 +359,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Filters (search, status, country)
 
 **Funcionalidades Validadas:**
+
 - Base de TODA a aplicação
 - Clientes e Fornecedores
 - Validação de documentos fiscais
@@ -365,6 +369,7 @@ Tests:    66 passed (161 assertions)
 ### 2. Order (13 testes) 🟢 90%
 
 **Testes Implementados:**
+
 - ✅ Criação e relacionamentos
 - ✅ Cálculo de totais (items)
 - ✅ Conversão para Supplier Orders
@@ -374,6 +379,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Soft deletes
 
 **Funcionalidades Validadas:**
+
 - Core do processo de vendas
 - Gestão de encomendas
 - Integração com Proposals
@@ -383,6 +389,7 @@ Tests:    66 passed (161 assertions)
 ### 3. CustomerInvoice (14 testes) 🟢 95%
 
 **Testes Implementados:**
+
 - ✅ Criação e datas
 - ✅ Registro de pagamentos (parcial, total, múltiplos)
 - ✅ Detecção de overdue
@@ -392,6 +399,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Soft deletes
 
 **Funcionalidades Validadas:**
+
 - Faturação de clientes
 - Gestão de pagamentos
 - Control financeiro
@@ -401,6 +409,7 @@ Tests:    66 passed (161 assertions)
 ### 4. Proposal (6 testes) 🟢 90%
 
 **Testes Implementados:**
+
 - ✅ Criação
 - ✅ Cálculo de totais
 - ✅ **Conversão para Order (supplier_id preservado)** 🔴 CRÍTICO
@@ -408,6 +417,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Scopes e filters
 
 **Funcionalidades Validadas:**
+
 - Propostas comerciais
 - Conversão para vendas
 - Preservação de dados de fornecedores
@@ -417,6 +427,7 @@ Tests:    66 passed (161 assertions)
 ### 5. WorkOrder (6 testes) 🟢 85%
 
 **Testes Implementados:**
+
 - ✅ Criação com datas
 - ✅ **Datas persistidas no banco** 🔴 CRÍTICO
 - ✅ Update de datas
@@ -424,6 +435,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Relacionamentos
 
 **Funcionalidades Validadas:**
+
 - Gestão de projetos/tarefas
 - Controle de datas
 - Atribuição de responsáveis
@@ -433,6 +445,7 @@ Tests:    66 passed (161 assertions)
 ### 6. SupplierInvoice (7 testes) 🟢 85%
 
 **Testes Implementados:**
+
 - ✅ Criação e datas
 - ✅ Detecção de overdue
 - ✅ Scopes de status
@@ -440,6 +453,7 @@ Tests:    66 passed (161 assertions)
 - ✅ Status management
 
 **Funcionalidades Validadas:**
+
 - Faturas de fornecedores
 - Controle de pagamentos
 - Gestão de vencimentos
@@ -454,10 +468,10 @@ Tests:    66 passed (161 assertions)
 test('describe o que testa', function () {
     // Arrange - preparar dados
     $entity = Entity::factory()->create(['types' => ['client']]);
-    
+
     // Act - executar ação
     $result = $entity->doSomething();
-    
+
     // Assert - verificar resultado
     expect($result)->toBeTrue();
 });
@@ -469,9 +483,9 @@ test('describe o que testa', function () {
 public function definition(): array
 {
     // ✅ PADRÃO: Auto-criar dependências
-    $dependency = Dependency::inRandomOrder()->first() 
+    $dependency = Dependency::inRandomOrder()->first()
         ?? Dependency::factory()->create();
-    
+
     return [
         'dependency_id' => $dependency->id,
         // ...
@@ -507,13 +521,13 @@ test('scope filtra corretamente', function () {
 ```php
 test('calcula total corretamente', function () {
     $model = Model::create([...]);
-    
+
     // Criar items
     Item::create(['model_id' => $model->id, 'quantity' => 2, 'price' => 100]);
     Item::create(['model_id' => $model->id, 'quantity' => 3, 'price' => 50]);
-    
+
     $total = $model->calculateTotal();
-    
+
     expect($total)->toEqual(350.0); // Usar toEqual() para flexibilidade int/float
 });
 ```
@@ -598,12 +612,12 @@ AVALIAÇÃO:
 
 ### Para Diferentes Ambientes
 
-| Ambiente | Cobertura Necessária | Atual | Status |
-|----------|---------------------|-------|--------|
-| **Desenvolvimento** | 40% | 60% | ✅ Excelente |
-| **Staging** | 50% | 60% | ✅ Excelente |
-| **Produção** | 60% | 60% | ✅ Production-Ready |
-| **Enterprise** | 80%+ | 60% | ⚠️ Adicionar mais |
+| Ambiente            | Cobertura Necessária | Atual | Status              |
+| ------------------- | -------------------- | ----- | ------------------- |
+| **Desenvolvimento** | 40%                  | 60%   | ✅ Excelente        |
+| **Staging**         | 50%                  | 60%   | ✅ Excelente        |
+| **Produção**        | 60%                  | 60%   | ✅ Production-Ready |
+| **Enterprise**      | 80%+                 | 60%   | ⚠️ Adicionar mais   |
 
 **Conclusão:** **PRODUCTION-READY!** ✅
 
@@ -666,6 +680,7 @@ AVALIAÇÃO:
 > "✅ **Dia EXTREMAMENTE produtivo!**
 >
 > Em 9 horas:
+>
 > - ✅ Fase 1 completa (formatters + checkboxes)
 > - ✅ 5 bugs críticos corrigidos
 > - ✅ **66 Unit Tests implementados (100% passando)**
@@ -680,6 +695,7 @@ AVALIAÇÃO:
 > "🎉 **Fase 1 + Bugs + Testes Críticos = 100%!**
 >
 > **Testes implementados:**
+>
 > - Entity (19 testes) - Base de tudo
 > - Order (13 testes) - Vendas
 > - CustomerInvoice (14 testes) - Faturação
@@ -688,12 +704,14 @@ AVALIAÇÃO:
 > **Total:** 66 Unit Tests (100% passando)
 >
 > **Padrões obrigatórios:**
+>
 > - Factories com auto-criação
 > - Testes Unit para models críticos
 > - RefreshDatabase em todos os testes
 > - toEqual() para números (int/float flex)
 >
 > **Consulte:**
+>
 > - TESTES_PRODUCTION_READY.md
 > - ANALISE_COBERTURA_TESTES.md"
 
@@ -704,16 +722,19 @@ AVALIAÇÃO:
 **Com 100% Unit Tests, você pode:**
 
 **Opção A: Continuar Fase 2 HOJE** ⭐⭐⭐ RECOMENDADO
+
 - FormWrapper
 - IndexWrapper
 - Com total confiança (testes cobrem)
 
 **Opção B: Completar Feature Tests**
+
 - Executar 30 Feature Tests
 - Corrigir eventuais falhas
 - ~30 min
 
 **Opção C: Parar por hoje**
+
 - Muito trabalho excelente realizado!
 - Descansar e continuar amanhã
 
@@ -724,5 +745,3 @@ AVALIAÇÃO:
 _66 Unit Tests (100%)_  
 _Cobertura: 60% (críticos)_  
 _Status: Pronto para deploy!_ 🚀
-
-

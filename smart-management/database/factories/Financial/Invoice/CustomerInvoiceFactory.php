@@ -27,7 +27,7 @@ class CustomerInvoiceFactory extends Factory
         $paidAmount = fake()->randomFloat(2, 0, $totalAmount);
 
         // Criar customer se não existir nenhum
-        $customer = Entity::clients()->inRandomOrder()->first() 
+        $customer = Entity::clients()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['client']]);
 
         // Order é opcional

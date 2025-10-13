@@ -37,7 +37,6 @@ test('can create supplier invoice via HTTP request', function () {
 
     $response->assertRedirect();
 
-    // 🔍 TESTE CRÍTICO: Verificar que a fatura foi criada
     assertDatabaseHas('supplier_invoices', [
         'supplier_id' => $supplier->id,
         'supplier_order_id' => $supplierOrder->id,
@@ -71,13 +70,12 @@ test('can create supplier invoice with document upload', function () {
 
     $response->assertRedirect();
 
-    // Verificar que a fatura foi criada
+
     assertDatabaseHas('supplier_invoices', [
         'supplier_id' => $supplier->id,
         'total_amount' => 1500,
     ]);
 
-    // 🔍 TESTE CRÍTICO: Verificar que o arquivo foi salvo
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
 
     if ($invoice->document_path) {
@@ -118,7 +116,7 @@ test('can create supplier invoice with payment proof', function () {
 
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
 
-    // Verificar que ambos os arquivos foram salvos
+
     if ($invoice->document_path) {
         Storage::assertExists($invoice->document_path);
     }
@@ -179,7 +177,7 @@ test('invoice dates are saved correctly', function () {
 
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
 
-    // 🔍 TESTE CRÍTICO: Verificar datas
+
     expect($invoice->invoice_date->toDateString())->toBe('2025-10-13')
         ->and($invoice->due_date->toDateString())->toBe('2025-11-12');
 });
@@ -229,7 +227,7 @@ test('storage uses local disk correctly', function () {
 
     $response = $this->post(route('supplier-invoices.store'), $invoiceData);
 
-    // 🔍 TESTE CRÍTICO: Verificar que não há erro de disco inexistente
+
     $response->assertRedirect();
 
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();

@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Ações de Calendário" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader title="Ações de Calendário" description="Gerir ações disponíveis para eventos">
                 <Button @click="handleCreate">
@@ -75,7 +77,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -110,6 +113,14 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Ações de Calendário',
+        href: '/settings/calendar-actions',
+    },
+];
 
 const searchQuery = ref(props.filters.search || '')
 const statusFilter = ref(props.filters.status || 'all')

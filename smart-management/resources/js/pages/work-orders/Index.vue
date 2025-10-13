@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Ordens de Trabalho" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
                 title="Ordens de Trabalho"
@@ -193,7 +195,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -239,6 +242,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Ordens de Trabalho',
+        href: '/work-orders',
+    },
+];
 
 // Filtros
 const searchQuery = ref(props.filters.search || '');

@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Logs de Atividade" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader title="Logs de Atividade" description="Histórico de ações no sistema">
             </PageHeader>
@@ -59,7 +61,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next';
 
 interface Props {
@@ -67,6 +70,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Logs de Atividade',
+        href: '/settings/logs',
+    },
+];
 
 const goToPage = (page: number) => {
     router.get('/logs', { page }, { preserveState: true, preserveScroll: true });

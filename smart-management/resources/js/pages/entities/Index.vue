@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head :title="type === 'client' ? 'Clientes' : 'Fornecedores'" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
                 :title="type === 'client' ? 'Clientes' : 'Fornecedores'"
@@ -160,7 +162,8 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import route from '@/routes/entities';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -200,6 +203,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: props.type === 'client' ? 'Clientes' : 'Fornecedores',
+        href: route.index({ type: props.type }).url,
+    },
+];
 
 // Filtros
 const searchQuery = ref(props.filters.search || '');

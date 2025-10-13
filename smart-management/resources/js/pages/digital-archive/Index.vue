@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Arquivo Digital" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
                 title="Arquivo Digital"
@@ -137,7 +139,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import { ChevronLeftIcon, ChevronRightIcon, SearchIcon, UploadIcon, XIcon } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { columns } from './columns';
@@ -162,6 +165,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Arquivo Digital',
+        href: '/digital-archive',
+    },
+];
 
 const searchQuery = ref(props.filters.search || '');
 const documentTypeFilter = ref(props.filters.document_type || 'all');

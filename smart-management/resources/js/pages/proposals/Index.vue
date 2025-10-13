@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Propostas" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader title="Propostas" description="Gerir propostas comerciais">
                 <Button @click="handleCreate">
@@ -155,7 +157,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -193,6 +196,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Propostas',
+        href: '/proposals',
+    },
+];
 
 // Filtros
 const searchQuery = ref(props.filters.search || '');

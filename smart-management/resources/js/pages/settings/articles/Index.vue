@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Artigos" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader title="Artigos" description="Gerir catálogo de artigos">
                 <Button @click="handleCreate">
@@ -74,7 +76,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, SearchIcon, XIcon } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { columns } from './columns';
@@ -85,6 +88,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Artigos',
+        href: '/settings/articles',
+    },
+];
 
 const searchQuery = ref(props.filters.search || '');
 const statusFilter = ref(props.filters.status || 'all');

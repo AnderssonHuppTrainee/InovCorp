@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import calendar from '@/routes/calendar';
 import { calendarEventSchema } from '@/schemas/calendarEventSchema';
+import { type BreadcrumbItem } from '@/types';
 import type {
     CalendarOptions,
     DateSelectArg,
@@ -412,11 +413,17 @@ const handleSharedWithChange = (userId: string, event: Event) => {
         );
     }
 };
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Calendário',
+        href: '#',
+    },
+];
 </script>
 
 <template>
     <Head title="Calendário" />
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
                 title="Calendário"

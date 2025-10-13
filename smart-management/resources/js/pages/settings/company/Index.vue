@@ -1,5 +1,7 @@
 <template>
-    <AppLayout>
+    <Head title="Configurações da Empresa" />
+    
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader title="Configurações da Empresa" description="Personalizar dados da empresa">
             </PageHeader>
@@ -89,7 +91,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import { LoaderIcon, SaveIcon } from 'lucide-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -98,6 +101,14 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Configurações da Empresa',
+        href: '/settings/company',
+    },
+];
 
 const isSubmitting = ref(false);
 const logoFile = ref<File | null>(null);

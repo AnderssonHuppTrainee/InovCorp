@@ -12,7 +12,6 @@ import { Head, Link } from '@inertiajs/vue3';
     <div
         class="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#0a0a0a] dark:via-[#111] dark:to-[#0f0f0f]"
     >
-        <!-- Top Navigation -->
         <header
             class="flex w-full items-center justify-between border-b border-gray-200 px-6 py-4 lg:px-12 dark:border-gray-800"
         >
@@ -49,11 +48,9 @@ import { Head, Link } from '@inertiajs/vue3';
             </nav>
         </header>
 
-        <!-- Hero Section -->
         <main
             class="flex flex-1 flex-col items-center justify-between px-8 py-16 lg:flex-row lg:px-20"
         >
-            <!-- Text -->
             <div class="max-w-xl flex-1 space-y-6">
                 <h2
                     class="text-4xl leading-tight font-bold text-gray-900 lg:text-5xl dark:text-white"
@@ -83,7 +80,6 @@ import { Head, Link } from '@inertiajs/vue3';
                 </div>
             </div>
 
-            <!-- Illustration -->
             <div class="mt-12 flex flex-1 justify-center lg:mt-0">
                 <div
                     class="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900"
@@ -139,7 +135,6 @@ import { Head, Link } from '@inertiajs/vue3';
             </div>
         </main>
 
-        <!-- Features -->
         <section
             class="border-t border-gray-200 bg-gray-50 px-8 py-16 lg:px-20 dark:border-gray-800 dark:bg-gray-950"
         >
@@ -187,7 +182,6 @@ import { Head, Link } from '@inertiajs/vue3';
             </div>
         </section>
 
-        <!-- Footer -->
         <footer
             class="border-t border-gray-200 py-8 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400"
         >

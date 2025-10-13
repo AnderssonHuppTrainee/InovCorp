@@ -25,7 +25,7 @@ class WorkOrderFactory extends Factory
         $endDate = (clone $startDate)->modify('+' . rand(1, 30) . ' days');
 
         // Criar client se não existir nenhum
-        $client = Entity::clients()->inRandomOrder()->first() 
+        $client = Entity::clients()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['client']]);
 
         // Criar user se não existir nenhum

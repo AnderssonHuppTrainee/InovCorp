@@ -26,7 +26,7 @@ class OrderFactory extends Factory
         $deliveryDate = (clone $orderDate)->modify('+15 days');
 
         // Criar client se não existir nenhum
-        $client = Entity::clients()->inRandomOrder()->first() 
+        $client = Entity::clients()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['client']]);
 
         // Proposal é opcional

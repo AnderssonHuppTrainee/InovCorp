@@ -22,7 +22,7 @@ class SupplierOrderFactory extends Factory
     public function definition(): array
     {
         // Criar supplier se não existir nenhum
-        $supplier = Entity::suppliers()->inRandomOrder()->first() 
+        $supplier = Entity::suppliers()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['supplier']]);
 
         // Criar order se não existir nenhuma

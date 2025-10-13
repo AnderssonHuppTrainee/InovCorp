@@ -25,7 +25,7 @@ class ProposalFactory extends Factory
         $validityDate = (clone $proposalDate)->modify('+30 days');
 
         // Criar client se não existir nenhum
-        $client = Entity::clients()->inRandomOrder()->first() 
+        $client = Entity::clients()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['client']]);
 
         return [

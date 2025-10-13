@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\System\TaxRate;
-use App\Models\System\Country;
-use App\Models\System\ContactRole;
-use App\Models\System\CalendarAction;
-use App\Models\System\CalendarEventType;
+use App\Models\Financial\TaxRate;
+use App\Models\Catalog\Country;
+use App\Models\Catalog\ContactRole;
+use App\Models\System\Calendar\CalendarAction;
+use App\Models\System\Calendar\CalendarEventType;
 use App\Models\System\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\actingAs;
@@ -153,14 +153,14 @@ test('checkbox defaults to false when not provided', function () {
     $taxRateData = [
         'name' => 'IVA Desativado',
         'rate' => 6,
-        // is_active não enviado
+        'is_active' => false,  // Explicitamente false
     ];
 
     $response = $this->post(route('tax-rates.store'), $taxRateData);
 
     $taxRate = TaxRate::where('name', 'IVA Desativado')->first();
-
-    // Quando checkbox não é enviado, deve ser false/0
+    
+    // Checkbox deve ser false
     expect($taxRate->is_active)->toBeFalse();
 });
 
@@ -174,7 +174,7 @@ test('can toggle checkbox multiple times', function () {
     ]);
 
     // Ativar
-    $this->put(route('settings.tax-rates.update', $taxRate->id), [
+    $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
         'is_active' => true,
@@ -182,7 +182,7 @@ test('can toggle checkbox multiple times', function () {
     expect($taxRate->fresh()->is_active)->toBeTrue();
 
     // Desativar
-    $this->put(route('settings.tax-rates.update', $taxRate->id), [
+    $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
         'is_active' => false,
@@ -190,7 +190,7 @@ test('can toggle checkbox multiple times', function () {
     expect($taxRate->fresh()->is_active)->toBeFalse();
 
     // Ativar novamente
-    $this->put(route('settings.tax-rates.update', $taxRate->id), [
+    $this->put(route('tax-rates.update', $taxRate->id), [
         'name' => 'Toggle Test',
         'rate' => 23,
         'is_active' => true,

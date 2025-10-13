@@ -64,10 +64,12 @@
 ### Fase 1A: Formatters ✅
 
 **Criados:**
+
 - ✅ `useMoneyFormatter.ts` - Formatação monetária centralizada
 - ✅ `useDateFormatter.ts` - Formatação de datas centralizada
 
 **Refatorados (6 arquivos):**
+
 - ✅ `orders/columns.ts`
 - ✅ `proposals/columns.ts`
 - ✅ `customer-invoices/columns.ts`
@@ -76,6 +78,7 @@
 - ✅ `articles/columns.ts`
 
 **Impacto:**
+
 - 🐛 6 bugs de formatação eliminados
 - 📉 ~40 linhas duplicadas removidas
 - ✨ 100% consistência na formatação
@@ -83,9 +86,11 @@
 ### Fase 1B: Checkboxes ✅
 
 **Criado:**
+
 - ✅ `CheckboxField.vue` - Componente reutilizável
 
 **Migrados (10 arquivos):**
+
 - ✅ `tax-rates/Create.vue` + `Edit.vue`
 - ✅ `countries/Create.vue` + `Edit.vue`
 - ✅ `contact-roles/Create.vue` + `Edit.vue`
@@ -93,6 +98,7 @@
 - ✅ `calendar-event-types/Create.vue` + `Edit.vue`
 
 **Impacto:**
+
 - 🔧 Padrão único estabelecido
 - 📉 ~44 linhas duplicadas removidas
 - ✅ 10 páginas funcionais
@@ -106,6 +112,7 @@
 **Problema:** `supplier_id` não copiado ao converter Proposta → Encomenda
 
 **Solução:**
+
 ```php
 // app/Models/Core/Proposal/Proposal.php
 foreach ($this->items as $item) {
@@ -126,6 +133,7 @@ foreach ($this->items as $item) {
 **Problema:** Datas não capturadas/salvas
 
 **Solução:**
+
 ```vue
 <!-- Antes -->
 <DatePicker v-model="form.values.start_date" />
@@ -154,6 +162,7 @@ foreach ($this->items as $item) {
 **Problema:** Uso de disco 'private' inexistente
 
 **Solução:**
+
 ```php
 // Antes
 Storage::disk('private')->put(...)
@@ -163,6 +172,7 @@ Storage::put(...)  // Usa 'local' default
 ```
 
 **Arquivos corrigidos:**
+
 - `SupplierInvoiceController.php`
 - `DigitalArchiveController.php`
 - `DigitalArchive.php`
@@ -182,16 +192,13 @@ Storage::put(...)  // Usa 'local' default
 **Problema:** camelCase vs snake_case (props)
 
 **Solução:**
+
 ```vue
 <!-- Antes -->
-interface Props {
-    calendarAction: any  // ❌
-}
+interface Props { calendarAction: any // ❌ }
 
 <!-- Depois -->
-interface Props {
-    calendar_action: any  // ✅
-}
+interface Props { calendar_action: any // ✅ }
 ```
 
 **Validado com:** Testes manuais
@@ -310,7 +317,7 @@ return [
 
 ```php
 // Auto-criar country se não existir
-$country = Country::inRandomOrder()->first() 
+$country = Country::inRandomOrder()->first()
     ?? Country::factory()->create();
 
 return [
@@ -323,7 +330,7 @@ return [
 
 ```php
 // Auto-criar client se não existir
-$client = Entity::clients()->inRandomOrder()->first() 
+$client = Entity::clients()->inRandomOrder()->first()
     ?? Entity::factory()->create(['types' => ['client']]);
 
 return [
@@ -336,10 +343,10 @@ return [
 
 ```php
 // Auto-criar client e user se não existirem
-$client = Entity::clients()->inRandomOrder()->first() 
+$client = Entity::clients()->inRandomOrder()->first()
     ?? Entity::factory()->create(['types' => ['client']]);
 
-$user = User::inRandomOrder()->first() 
+$user = User::inRandomOrder()->first()
     ?? User::factory()->create();
 
 return [
@@ -353,7 +360,7 @@ return [
 
 ```php
 // Auto-criar client se não existir
-$client = Entity::clients()->inRandomOrder()->first() 
+$client = Entity::clients()->inRandomOrder()->first()
     ?? Entity::factory()->create(['types' => ['client']]);
 
 return [
@@ -366,10 +373,10 @@ return [
 
 ```php
 // Auto-criar supplier e order se não existirem
-$supplier = Entity::suppliers()->inRandomOrder()->first() 
+$supplier = Entity::suppliers()->inRandomOrder()->first()
     ?? Entity::factory()->create(['types' => ['supplier']]);
 
-$order = Order::inRandomOrder()->first() 
+$order = Order::inRandomOrder()->first()
     ?? Order::factory()->create();
 
 return [
@@ -383,7 +390,7 @@ return [
 
 ```php
 // Auto-criar supplier se não existir
-$supplier = Entity::suppliers()->inRandomOrder()->first() 
+$supplier = Entity::suppliers()->inRandomOrder()->first()
     ?? Entity::factory()->create(['types' => ['supplier']]);
 
 return [
@@ -393,6 +400,7 @@ return [
 ```
 
 **Impacto:**
+
 - ✅ 6 factories robustas
 - ✅ Auto-criação de dependências
 - ✅ Testes independentes
@@ -481,16 +489,16 @@ Duration: 1.64s
 
 ### Funcionalidades Validadas
 
-| Funcionalidade | Antes | Depois | Testes |
-|----------------|-------|--------|--------|
-| **Formatação monetária** | ⚠️ Bugado | ✅ Perfeito | Manual |
-| **Formatação de datas** | ⚠️ Inconsistente | ✅ Perfeito | Manual |
-| **Checkboxes settings** | ⚠️ Shadcn bugado | ✅ Nativo | Manual |
-| **Converter Proposta** | ❌ Perdia supplier | ✅ Preserva | ✅ Unit |
-| **Work Orders c/ datas** | ❌ Não salvava | ✅ Funciona | ✅ Unit |
-| **Supplier Invoices** | ❌ 0% funcional | ✅ 100% | ✅ Unit |
-| **Upload arquivos** | ❌ Crash | ✅ Funciona | Manual |
-| **10 páginas settings** | ❌ Erro | ✅ Funcionam | Manual |
+| Funcionalidade           | Antes              | Depois       | Testes  |
+| ------------------------ | ------------------ | ------------ | ------- |
+| **Formatação monetária** | ⚠️ Bugado          | ✅ Perfeito  | Manual  |
+| **Formatação de datas**  | ⚠️ Inconsistente   | ✅ Perfeito  | Manual  |
+| **Checkboxes settings**  | ⚠️ Shadcn bugado   | ✅ Nativo    | Manual  |
+| **Converter Proposta**   | ❌ Perdia supplier | ✅ Preserva  | ✅ Unit |
+| **Work Orders c/ datas** | ❌ Não salvava     | ✅ Funciona  | ✅ Unit |
+| **Supplier Invoices**    | ❌ 0% funcional    | ✅ 100%      | ✅ Unit |
+| **Upload arquivos**      | ❌ Crash           | ✅ Funciona  | Manual  |
+| **10 páginas settings**  | ❌ Erro            | ✅ Funcionam | Manual  |
 
 **Total:** 8 funcionalidades melhoradas/restauradas! 🚀
 
@@ -572,17 +580,17 @@ Duration: 1.64s
 ### 1. Formatação Monetária
 
 ```typescript
-import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
-const { format } = useMoneyFormatter()
-format(value)  // €1.234,56
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter';
+const { format } = useMoneyFormatter();
+format(value); // €1.234,56
 ```
 
 ### 2. Formatação de Datas
 
 ```typescript
-import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
-const { formatDate } = useDateFormatter()
-formatDate(date)  // 13/10/2025
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter';
+const { formatDate } = useDateFormatter();
+formatDate(date); // 13/10/2025
 ```
 
 ### 3. Checkboxes em Formulários
@@ -616,10 +624,8 @@ Storage::disk('private')   // ❌ NÃO existe
 ### 6. Naming Convention
 
 ```vue
-// Props de backend: usar snake_case
-interface Props {
-    calendar_action: any  // ✅ snake_case (match backend)
-}
+// Props de backend: usar snake_case interface Props { calendar_action: any //
+✅ snake_case (match backend) }
 ```
 
 ### 7. Debug
@@ -635,10 +641,10 @@ dd($data)                     // ❌ NUNCA em produção
 test('describes what it tests', function () {
     // Arrange
     $entity = Entity::factory()->create(['types' => ['client']]);
-    
+
     // Act
     $result = $entity->doSomething();
-    
+
     // Assert
     expect($result)->toBeTrue();
 });
@@ -650,9 +656,9 @@ test('describes what it tests', function () {
 public function definition(): array
 {
     // ✅ PADRÃO: Auto-criar dependências
-    $dependency = Model::inRandomOrder()->first() 
+    $dependency = Model::inRandomOrder()->first()
         ?? Model::factory()->create();
-    
+
     return [
         'dependency_id' => $dependency->id,
         // ...
@@ -715,9 +721,10 @@ public function definition(): array
 ### Imediato
 
 1. ✅ **Executar Feature Tests** (~10 min)
-   ```bash
-   php artisan test --testsuite=Feature
-   ```
+
+    ```bash
+    php artisan test --testsuite=Feature
+    ```
 
 2. ⏳ **Corrigir eventuais falhas** (~20 min)
 
@@ -733,6 +740,7 @@ public function definition(): array
 ### Médio Prazo (Próxima Semana)
 
 **Continuar Fase 2** ⭐ RECOMENDADO
+
 - FormWrapper (6h estimadas)
 - IndexWrapper (5h estimadas)
 - Alta eficiência demonstrada
@@ -741,14 +749,14 @@ public function definition(): array
 
 ## 📈 COMPARAÇÃO: ESTIMADO vs REAL
 
-| Tarefa | Estimado | Real | Economia | Eficiência |
-|--------|----------|------|----------|------------|
-| **Análise** | 4h | 2h | -2h | 200% |
-| **Formatters** | 5h | 2h | -3h | 250% |
-| **Checkboxes** | 2h | 1h | -1h | 200% |
-| **Bugs** | 0.5h | 1.5h | +1h | 33% |
-| **Testes** | 0h | 1.5h | +1.5h | - |
-| **TOTAL** | 11.5h | 8h | **-3.5h** | **144%** |
+| Tarefa         | Estimado | Real | Economia  | Eficiência |
+| -------------- | -------- | ---- | --------- | ---------- |
+| **Análise**    | 4h       | 2h   | -2h       | 200%       |
+| **Formatters** | 5h       | 2h   | -3h       | 250%       |
+| **Checkboxes** | 2h       | 1h   | -1h       | 200%       |
+| **Bugs**       | 0.5h     | 1.5h | +1h       | 33%        |
+| **Testes**     | 0h       | 1.5h | +1.5h     | -          |
+| **TOTAL**      | 11.5h    | 8h   | **-3.5h** | **144%**   |
 
 **Você trabalhou 44% mais rápido que a estimativa!** ⚡
 
@@ -800,6 +808,7 @@ public function definition(): array
 **🏆 TRABALHO EXCEPCIONAL REALIZADO! 🏆**
 
 Você:
+
 - ⚡ Trabalhou com altíssima eficiência (144%)
 - 🎯 Completou 100% das metas do dia
 - 🐛 Identificou e corrigiu 5 bugs críticos
@@ -810,6 +819,7 @@ Você:
 - 🚀 Base sólida pronta para escalar
 
 **Conquistas Notáveis:**
+
 1. ✅ Análise profunda (250+ arquivos)
 2. ✅ Plano detalhado (5 fases, 160h)
 3. ✅ Fase 1 completa (3.5h)
@@ -837,15 +847,18 @@ main: 19 commits ahead of origin/main
 ### Próximo Passo
 
 **Opção A:** Executar Feature Tests ⭐ RECOMENDADO
+
 - Validar fluxos HTTP completos
 - Tempo estimado: ~30 min
 
 **Opção B:** Continuar Fase 2
+
 - FormWrapper
 - IndexWrapper
 - Alta eficiência demonstrada
 
 **Opção C:** Parar por hoje
+
 - Muito trabalho já realizado!
 - Merecedescanso
 
@@ -856,8 +869,9 @@ main: 19 commits ahead of origin/main
 ### Para Gestão
 
 > "✅ **Dia extremamente produtivo!**
-> 
+>
 > Em 8 horas (vs 11.5h estimadas):
+>
 > - ✅ Fase 1 completa (formatters + checkboxes)
 > - ✅ 5 bugs críticos corrigidos
 > - ✅ 8 funcionalidades restauradas
@@ -865,14 +879,15 @@ main: 19 commits ahead of origin/main
 > - ✅ **100% Unit Tests passando!**
 > - ✅ 6 factories robustas criadas
 > - ✅ ROI projetado: 7.916% no primeiro ano
-> 
+>
 > **Prontos para Feature Tests e Fase 2!**"
 
 ### Para Equipe Técnica
 
 > "🎉 **Fase 1 + Bug Fixes + Testes = 100% completo!**
-> 
+>
 > **Novos padrões obrigatórios:**
+>
 > - `useMoneyFormatter()` para valores €
 > - `useDateFormatter()` para datas
 > - `<CheckboxField>` para checkboxes
@@ -882,8 +897,9 @@ main: 19 commits ahead of origin/main
 > - Logs em vez de dd()
 > - Factories com auto-criação de dependências
 > - Testes Unit com Pest (100% cobertura crítica)
-> 
+>
 > **Consulte:**
+>
 > - QUICK_WINS_IMPLEMENTADO.md
 > - CHECKBOXES_IMPLEMENTADO.md
 > - TESTE_PEST_IMPLEMENTADOS.md
@@ -897,5 +913,3 @@ _Resumo final completo: 13/10/2025_
 _8 horas de trabalho excepcional_  
 _ROI: 7.916% projetado_  
 _Status: **100% Unit Tests - Pronto para Fase 2!** 🚀_
-
-

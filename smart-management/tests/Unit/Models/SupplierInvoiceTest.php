@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('can create a supplier invoice', function () {
+test('pode criar uma fatura fornecedor', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
     $supplierOrder = SupplierOrder::factory()->create();
 
@@ -27,7 +27,7 @@ test('can create a supplier invoice', function () {
         ->and($invoice->total_amount)->toEqual(1000.0);
 });
 
-test('invoice dates are persisted correctly', function () {
+test('datas da fatura são salvas corretamente', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
 
     $invoiceDate = '2025-10-13';
@@ -42,16 +42,16 @@ test('invoice dates are persisted correctly', function () {
         'status' => 'pending_payment',
     ]);
 
-    // 🔍 TESTE CRÍTICO: Verificar que datas são salvas
+
     $retrieved = SupplierInvoice::find($invoice->id);
     expect($retrieved->invoice_date->toDateString())->toBe($invoiceDate)
         ->and($retrieved->due_date->toDateString())->toBe($dueDate);
 });
 
-test('can detect overdue invoices', function () {
+test('pode detetar faturas atrasadas', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
 
-    // Fatura vencida
+
     $overdueInvoice = SupplierInvoice::create([
         'number' => SupplierInvoice::nextNumber(),
         'invoice_date' => now()->subDays(60),
@@ -61,7 +61,7 @@ test('can detect overdue invoices', function () {
         'status' => 'pending_payment',
     ]);
 
-    // Fatura não vencida
+
     $currentInvoice = SupplierInvoice::create([
         'number' => SupplierInvoice::nextNumber(),
         'invoice_date' => now(),
@@ -71,7 +71,7 @@ test('can detect overdue invoices', function () {
         'status' => 'pending_payment',
     ]);
 
-    // Fatura paga (não deve ser considerada vencida)
+
     $paidInvoice = SupplierInvoice::create([
         'number' => SupplierInvoice::nextNumber(),
         'invoice_date' => now()->subDays(60),
@@ -88,7 +88,7 @@ test('can detect overdue invoices', function () {
     expect(SupplierInvoice::overdue()->count())->toBe(1);
 });
 
-test('can filter invoices by status', function () {
+test('pode filtrar por status', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
 
     SupplierInvoice::factory()->create(['supplier_id' => $supplier->id, 'status' => 'pending_payment']);
@@ -99,17 +99,17 @@ test('can filter invoices by status', function () {
         ->and(SupplierInvoice::paid()->count())->toBe(1);
 });
 
-test('generates next number correctly', function () {
-    // Verificar que nextNumber retorna formato válido (6 dígitos)
+test('gera num sequencial correto', function () {
+
     $number = SupplierInvoice::nextNumber();
     expect($number)->toMatch('/^\d{6}$/');
 
-    // Criar invoice e verificar que tem número válido
+
     $invoice = SupplierInvoice::factory()->create();
     expect($invoice->number)->not->toBeNull();
 });
 
-test('belongs to supplier and supplier order', function () {
+test('pertence ao fornecedor e a uma order', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
     $supplierOrder = SupplierOrder::factory()->create();
 
@@ -124,7 +124,7 @@ test('belongs to supplier and supplier order', function () {
         ->and($invoice->supplierOrder->id)->toBe($supplierOrder->id);
 });
 
-test('can update invoice status', function () {
+test('pode atualizar o status', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
 
     $invoice = SupplierInvoice::create([

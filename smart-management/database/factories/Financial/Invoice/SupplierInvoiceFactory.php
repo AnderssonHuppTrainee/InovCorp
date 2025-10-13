@@ -25,7 +25,7 @@ class SupplierInvoiceFactory extends Factory
         $dueDate = (clone $invoiceDate)->modify('+30 days');
 
         // Criar supplier se não existir nenhum
-        $supplier = Entity::suppliers()->inRandomOrder()->first() 
+        $supplier = Entity::suppliers()->inRandomOrder()->first()
             ?? Entity::factory()->create(['types' => ['supplier']]);
 
         // Criar supplier order se não existir nenhuma (opcional)

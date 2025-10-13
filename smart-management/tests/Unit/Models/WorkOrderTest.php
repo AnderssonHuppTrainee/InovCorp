@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('can create a work order with dates', function () {
+test('pode criar uma ordem de trabalho', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $user = User::factory()->create();
 
@@ -30,16 +30,16 @@ test('can create a work order with dates', function () {
         ->and($workOrder->start_date)->toBeInstanceOf(\Illuminate\Support\Carbon::class)
         ->and($workOrder->end_date)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
 
-    // 🔍 TESTE CRÍTICO: Verificar que as datas são salvas corretamente
+
     $freshWorkOrder = WorkOrder::find($workOrder->id);
     expect($freshWorkOrder->start_date->toDateString())->toBe($startDate->toDateString())
         ->and($freshWorkOrder->end_date->toDateString())->toBe($endDate->toDateString());
 });
 
-test('dates are persisted to database correctly', function () {
+test('datas são salvas corretamente', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $user = User::factory()->create();
-    
+
     $workOrder = WorkOrder::create([
         'number' => WorkOrder::nextNumber(),
         'title' => 'Date Persistence Test',
@@ -52,17 +52,17 @@ test('dates are persisted to database correctly', function () {
         'status' => 'pending',
     ]);
 
-    // Buscar do banco novamente para garantir persistência
+
     $retrieved = WorkOrder::find($workOrder->id);
 
     expect($retrieved->start_date->toDateString())->toBe('2025-10-13')
         ->and($retrieved->end_date->toDateString())->toBe('2025-10-20');
 });
 
-test('can update work order dates', function () {
+test('pode atualizar ordens de trabalho', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $user = User::factory()->create();
-    
+
     $workOrder = WorkOrder::create([
         'number' => WorkOrder::nextNumber(),
         'title' => 'Update Test',
@@ -75,7 +75,7 @@ test('can update work order dates', function () {
         'status' => 'pending',
     ]);
 
-    // Atualizar datas
+
     $workOrder->update([
         'start_date' => '2025-10-15',
         'end_date' => '2025-10-25',
@@ -87,7 +87,7 @@ test('can update work order dates', function () {
         ->and($updated->end_date->toDateString())->toBe('2025-10-25');
 });
 
-test('can filter work orders by status', function () {
+test('pode buscar pelo status', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $user = User::factory()->create();
 
@@ -101,17 +101,17 @@ test('can filter work orders by status', function () {
         ->and(WorkOrder::completed()->count())->toBe(1);
 });
 
-test('generates next number correctly', function () {
-    // Verificar que nextNumber retorna formato válido (6 dígitos)
+test('gerar num sequencial correto', function () {
+
     $number = WorkOrder::nextNumber();
     expect($number)->toMatch('/^\d{6}$/');
 
-    // Criar work order e verificar que tem número válido
+
     $workOrder = WorkOrder::factory()->create();
     expect($workOrder->number)->not->toBeNull();
 });
 
-test('belongs to client and assigned user', function () {
+test('pertece a um client e assigned user', function () {
     $client = Entity::factory()->create(['types' => ['client']]);
     $user = User::factory()->create();
 

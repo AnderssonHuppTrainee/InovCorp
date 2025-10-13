@@ -44,7 +44,7 @@ class Entity extends Model
     protected $casts = [
         'types' => 'array',
         'gdpr_consent' => 'boolean',
-        'tax_number' => 'encrypted',
+        // tax_number NÃO é encriptado para permitir buscas e filtros
         'phone' => 'encrypted',
         'mobile' => 'encrypted',
         'email' => 'encrypted',

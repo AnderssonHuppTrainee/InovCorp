@@ -26,27 +26,26 @@ import logs from '@/routes/logs';
 import orders from '@/routes/orders';
 import proposals from '@/routes/proposals';
 import roles from '@/routes/roles';
-import supplierOrders from '@/routes/supplier-orders';
 import company from '@/routes/settings/company';
 import supplierInvoices from '@/routes/supplier-invoices';
+import supplierOrders from '@/routes/supplier-orders';
 import taxRates from '@/routes/tax-rates';
 import users from '@/routes/users';
 import workOrders from '@/routes/work-orders';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
-    LayoutDashboard,
-    Users,
     Building2,
+    Calendar,
+    ClipboardList,
     Contact,
     FileText,
-    Calendar,
-    ShoppingCart,
-    ClipboardList,
-    Wallet,
-    FolderOpen,
-    ShieldCheck,
+    LayoutDashboard,
     Settings,
+    ShieldCheck,
+    ShoppingCart,
+    Users,
+    Wallet,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 

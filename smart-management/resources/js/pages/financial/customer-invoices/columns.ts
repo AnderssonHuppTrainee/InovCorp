@@ -18,6 +18,11 @@ import {
     CreditCard,
 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
+
+const { format: formatMoney } = useMoneyFormatter()
+const { formatDate } = useDateFormatter()
 
 export interface CustomerInvoice {
     id: number
@@ -61,8 +66,7 @@ export const columns: ColumnDef<CustomerInvoice>[] = [
         accessorKey: 'invoice_date',
         header: 'Data',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('invoice_date'))
-            return h('div', {}, date.toLocaleDateString('pt-PT'))
+            return h('div', {}, formatDate(row.getValue('invoice_date')))
         },
     },
     {
@@ -91,7 +95,7 @@ export const columns: ColumnDef<CustomerInvoice>[] = [
             return h(
                 'div',
                 { class: isOverdue ? 'text-destructive font-medium' : '' },
-                date.toLocaleDateString('pt-PT')
+                formatDate(row.getValue('due_date'))
             )
         },
     },
@@ -99,29 +103,21 @@ export const columns: ColumnDef<CustomerInvoice>[] = [
         accessorKey: 'total_amount',
         header: 'Valor Total',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('total_amount'))
-            const formatted = new Intl.NumberFormat('pt-PT', {
-                style: 'currency',
-                currency: 'EUR',
-            }).format(amount)
-            return h('div', { class: 'font-medium' }, formatted)
+            return h('div', { class: 'font-medium' }, formatMoney(row.getValue('total_amount')))
         },
     },
     {
         accessorKey: 'balance',
         header: 'Saldo',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('balance'))
-            const formatted = new Intl.NumberFormat('pt-PT', {
-                style: 'currency',
-                currency: 'EUR',
-            }).format(amount)
+            const amount = parseFloat(row.getValue('balance') ?? '0')
+            const validAmount = isNaN(amount) ? 0 : amount
             return h(
                 'div',
                 {
-                    class: `font-medium ${amount > 0 ? 'text-destructive' : 'text-green-600'}`,
+                    class: `font-medium ${validAmount > 0 ? 'text-destructive' : 'text-green-600'}`,
                 },
-                formatted
+                formatMoney(row.getValue('balance'))
             )
         },
     },
@@ -236,6 +232,7 @@ export const columns: ColumnDef<CustomerInvoice>[] = [
         },
     },
 ]
+
 
 
 

@@ -20,6 +20,11 @@ import {
     FileText,
 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
+
+const { format: formatMoney } = useMoneyFormatter()
+const { formatDate } = useDateFormatter()
 
 export interface SupplierInvoice {
     id: number
@@ -45,8 +50,7 @@ export const columns: ColumnDef<SupplierInvoice>[] = [
         accessorKey: 'invoice_date',
         header: 'Data',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('invoice_date'))
-            return h('div', {}, date.toLocaleDateString('pt-PT'))
+            return h('div', {}, formatDate(row.getValue('invoice_date')))
         },
     },
     {
@@ -101,12 +105,7 @@ export const columns: ColumnDef<SupplierInvoice>[] = [
         accessorKey: 'total_amount',
         header: 'Valor Total',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('total_amount'))
-            const formatted = new Intl.NumberFormat('pt-PT', {
-                style: 'currency',
-                currency: 'EUR',
-            }).format(amount)
-            return h('div', { class: 'font-medium' }, formatted)
+            return h('div', { class: 'font-medium' }, formatMoney(row.getValue('total_amount')))
         },
     },
     {
@@ -288,6 +287,7 @@ export const columns: ColumnDef<SupplierInvoice>[] = [
         },
     },
 ]
+
 
 
 

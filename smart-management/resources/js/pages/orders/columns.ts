@@ -19,6 +19,11 @@ import {
     PackageIcon,
 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
+
+const { format: formatMoney } = useMoneyFormatter()
+const { formatDate } = useDateFormatter()
 
 export interface Order {
     id: number
@@ -38,8 +43,7 @@ export const columns: ColumnDef<Order>[] = [
         accessorKey: 'order_date',
         header: 'Data',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('order_date'))
-            return h('div', {}, date.toLocaleDateString('pt-PT'))
+            return h('div', {}, formatDate(row.getValue('order_date')))
         },
     },
     {
@@ -53,9 +57,7 @@ export const columns: ColumnDef<Order>[] = [
         accessorKey: 'delivery_date',
         header: 'Entrega',
         cell: ({ row }) => {
-            const date = row.getValue('delivery_date') as string | null
-            if (!date) return h('div', { class: 'text-muted-foreground' }, '-')
-            return h('div', {}, new Date(date).toLocaleDateString('pt-PT'))
+            return h('div', { class: 'text-muted-foreground' }, formatDate(row.getValue('delivery_date')))
         },
     },
     {
@@ -70,12 +72,7 @@ export const columns: ColumnDef<Order>[] = [
         accessorKey: 'total_amount',
         header: 'Valor Total',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('total_amount'))
-            const formatted = new Intl.NumberFormat('pt-PT', {
-                style: 'currency',
-                currency: 'EUR',
-            }).format(amount)
-            return h('div', { class: 'font-medium' }, formatted)
+            return h('div', { class: 'font-medium' }, formatMoney(row.getValue('total_amount')))
         },
     },
     {

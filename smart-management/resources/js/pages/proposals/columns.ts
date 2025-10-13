@@ -19,6 +19,11 @@ import {
     ShoppingCart,
 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
+
+const { format: formatMoney } = useMoneyFormatter()
+const { formatDate } = useDateFormatter()
 
 export interface Proposal {
     id: number
@@ -38,8 +43,7 @@ export const columns: ColumnDef<Proposal>[] = [
         accessorKey: 'proposal_date',
         header: 'Data',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('proposal_date'))
-            return h('div', {}, date.toLocaleDateString('pt-PT'))
+            return h('div', {}, formatDate(row.getValue('proposal_date')))
         },
     },
     {
@@ -53,8 +57,7 @@ export const columns: ColumnDef<Proposal>[] = [
         accessorKey: 'validity_date',
         header: 'Validade',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('validity_date'))
-            return h('div', {}, date.toLocaleDateString('pt-PT'))
+            return h('div', {}, formatDate(row.getValue('validity_date')))
         },
     },
     {
@@ -69,12 +72,7 @@ export const columns: ColumnDef<Proposal>[] = [
         accessorKey: 'total_amount',
         header: 'Valor Total',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('total_amount'))
-            const formatted = new Intl.NumberFormat('pt-PT', {
-                style: 'currency',
-                currency: 'EUR',
-            }).format(amount)
-            return h('div', { class: 'font-medium' }, formatted)
+            return h('div', { class: 'font-medium' }, formatMoney(row.getValue('total_amount')))
         },
     },
     {

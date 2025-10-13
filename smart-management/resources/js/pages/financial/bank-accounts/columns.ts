@@ -64,16 +64,17 @@ export const columns: ColumnDef<BankAccount>[] = [
         accessorKey: 'balance',
         header: 'Saldo',
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue('balance'))
+            const amount = parseFloat(row.getValue('balance') ?? '0')
+            const validAmount = isNaN(amount) ? 0 : amount
             const currency = row.original.currency
             const formatted = new Intl.NumberFormat('pt-PT', {
                 style: 'currency',
                 currency: currency || 'EUR',
-            }).format(amount)
+            }).format(validAmount)
             return h(
                 'div',
                 {
-                    class: `font-medium ${amount < 0 ? 'text-destructive' : ''}`,
+                    class: `font-medium ${validAmount < 0 ? 'text-destructive' : ''}`,
                 },
                 formatted
             )
@@ -190,6 +191,7 @@ export const columns: ColumnDef<BankAccount>[] = [
         },
     },
 ]
+
 
 
 

@@ -12,6 +12,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
+
+const { format: formatMoney } = useMoneyFormatter()
 
 export interface Article {
     id: number
@@ -69,22 +72,15 @@ export const columns: ColumnDef<Article>[] = [
         accessorKey: 'price',
         header: 'Preço',
         cell: ({ row }) => {
-            const price = parseFloat(row.getValue('price'))
+            const price = parseFloat(row.getValue('price') ?? '0')
+            const validPrice = isNaN(price) ? 0 : price
             const taxRate = row.original.tax_rate
-            const priceWithTax = price * (1 + taxRate.rate / 100)
+            const priceWithTax = validPrice * (1 + taxRate.rate / 100)
             
             return h('div', { class: 'text-sm' }, [
-                h('div', { class: 'font-medium' }, 
-                    new Intl.NumberFormat('pt-PT', {
-                        style: 'currency',
-                        currency: 'EUR',
-                    }).format(priceWithTax)
-                ),
+                h('div', { class: 'font-medium' }, formatMoney(priceWithTax)),
                 h('div', { class: 'text-xs text-muted-foreground' }, 
-                    `s/ IVA: ${new Intl.NumberFormat('pt-PT', {
-                        style: 'currency',
-                        currency: 'EUR',
-                    }).format(price)}`
+                    `s/ IVA: ${formatMoney(validPrice)}`
                 ),
             ])
         },
@@ -180,6 +176,7 @@ export const columns: ColumnDef<Article>[] = [
         },
     },
 ]
+
 
 
 

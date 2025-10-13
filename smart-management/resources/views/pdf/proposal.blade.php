@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
@@ -18,115 +19,115 @@
             color: #333;
             padding: 20px;
         }
-        
+
         .header {
             margin-bottom: 30px;
             border-bottom: 3px solid #2563eb;
             padding-bottom: 20px;
         }
-        
+
         .header h1 {
             color: #2563eb;
             font-size: 28px;
             margin-bottom: 5px;
         }
-        
+
         .header .number {
             font-size: 16px;
             color: #666;
         }
-        
+
         .info-section {
             display: table;
             width: 100%;
             margin-bottom: 30px;
         }
-        
+
         .info-column {
             display: table-cell;
             width: 50%;
             vertical-align: top;
             padding-right: 20px;
         }
-        
+
         .info-box {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 15px;
         }
-        
+
         .info-box h3 {
             color: #2563eb;
             font-size: 14px;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        
+
         .info-box p {
             margin: 5px 0;
         }
-        
+
         .info-label {
             color: #666;
             font-weight: bold;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
         }
-        
+
         table thead {
             background: #2563eb;
             color: white;
         }
-        
+
         table th {
             padding: 12px 8px;
             text-align: left;
             font-weight: bold;
         }
-        
+
         table td {
             padding: 10px 8px;
             border-bottom: 1px solid #e5e7eb;
         }
-        
+
         table tbody tr:hover {
             background: #f8f9fa;
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .text-center {
             text-align: center;
         }
-        
+
         .totals {
             margin-top: 30px;
             text-align: right;
         }
-        
+
         .totals table {
             margin-left: auto;
             width: 300px;
         }
-        
+
         .totals td {
             padding: 8px 12px;
         }
-        
+
         .total-final {
             background: #2563eb;
             color: white;
             font-weight: bold;
             font-size: 16px;
         }
-        
+
         .footer {
             margin-top: 50px;
             padding-top: 20px;
@@ -135,7 +136,7 @@
             color: #666;
             text-align: center;
         }
-        
+
         .notes {
             background: #fffbeb;
             border-left: 4px solid #f59e0b;
@@ -145,14 +146,15 @@
         }
     </style>
 </head>
+
 <body>
-    <!-- Header -->
+
     <div class="header">
         <h1>PROPOSTA COMERCIAL</h1>
         <div class="number">Nº {{ $proposal->number }}</div>
     </div>
 
-    <!-- Informações -->
+
     <div class="info-section">
         <div class="info-column">
             <div class="info-box">
@@ -169,20 +171,20 @@
                 @endif
             </div>
         </div>
-        
+
         <div class="info-column">
             <div class="info-box">
                 <h3>Informações da Proposta</h3>
                 <p><span class="info-label">Data:</span> {{ $proposal->proposal_date->format('d/m/Y') }}</p>
                 <p><span class="info-label">Validade:</span> {{ $proposal->validity_date->format('d/m/Y') }}</p>
-                <p><span class="info-label">Estado:</span> 
+                <p><span class="info-label">Estado:</span>
                     <strong>{{ $proposal->status === 'draft' ? 'Rascunho' : 'Fechado' }}</strong>
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- Tabela de Artigos -->
+
     <table>
         <thead>
             <tr>
@@ -215,7 +217,7 @@
         </tbody>
     </table>
 
-    <!-- Totais -->
+
     <div class="totals">
         <table>
             <tr>
@@ -229,18 +231,17 @@
         </table>
     </div>
 
-    <!-- Notas -->
+
     <div class="notes">
         <strong>Observações:</strong><br>
         Esta proposta é válida até {{ $proposal->validity_date->format('d/m/Y') }}.<br>
         Todos os preços são apresentados em Euros (€).
     </div>
 
-    <!-- Footer -->
+
     <div class="footer">
         <p>Proposta gerada automaticamente em {{ now()->format('d/m/Y H:i') }}</p>
     </div>
 </body>
+
 </html>
-
-

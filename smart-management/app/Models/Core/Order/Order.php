@@ -84,9 +84,33 @@ class Order extends Model
     // Gerar num sequencial
     public static function nextNumber(): string
     {
+        \Log::info('🔢 Order::nextNumber() - INICIANDO');
+        
+        // Verificar todas as orders no DB
+        $allOrders = static::withTrashed()->get(['id', 'number'])->pluck('number', 'id');
+        \Log::info('📋 Orders existentes no DB', [
+            'total' => $allOrders->count(),
+            'numbers' => $allOrders->toArray()
+        ]);
+        
         $lastNumber = static::withTrashed()->max('number');
+        \Log::info('🔢 Order::nextNumber() - Último número no DB', [
+            'lastNumber' => $lastNumber,
+            'type' => gettype($lastNumber)
+        ]);
+        
         $nextNumber = $lastNumber ? intval($lastNumber) + 1 : 1;
-        return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        \Log::info('🔢 Order::nextNumber() - Próximo número calculado', [
+            'nextNumber' => $nextNumber,
+            'formula' => $lastNumber ? "intval('$lastNumber') + 1 = $nextNumber" : "default = 1"
+        ]);
+        
+        $formattedNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        \Log::info('🔢 Order::nextNumber() - Número formatado', [
+            'formattedNumber' => $formattedNumber
+        ]);
+        
+        return $formattedNumber;
     }
 
 

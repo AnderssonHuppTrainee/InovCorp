@@ -49,7 +49,7 @@ class Proposal extends Model
             ->where('document_type', 'proposal_pdf');
     }
 
-    // Scopes
+    // scopes
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
@@ -75,7 +75,7 @@ class Proposal extends Model
         });
     }
 
-    // Gerar número sequencial
+
     public static function nextNumber(): string
     {
         $lastNumber = static::withTrashed()->max('number');
@@ -83,7 +83,7 @@ class Proposal extends Model
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
-    // Calcular total
+
     public function calculateTotal()
     {
         $total = $this->items->sum(function ($item) {
@@ -95,27 +95,31 @@ class Proposal extends Model
         return $total;
     }
 
-    // Converter para encomenda
+
     public function convertToOrder()
     {
         $order = Order::create([
             'number' => Order::nextNumber(),
             'order_date' => now(),
             'client_id' => $this->client_id,
+            'proposal_id' => $this->id,
             'delivery_date' => now()->addDays(30),
             'total_amount' => $this->total_amount,
-            'status' => 'draft', // Estado rascunho
+            'status' => 'draft', // rascunho
         ]);
 
-        // Copiar itens
+
         foreach ($this->items as $item) {
             $order->items()->create([
                 'article_id' => $item->article_id,
+                'supplier_id' => $item->supplier_id,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'notes' => $item->notes,
             ]);
         }
+        //atualiza o estado da proposta
+        $this->update(['status' => 'closed']);
 
         return $order;
     }

@@ -21,9 +21,9 @@ defineProps<{
                         class="flex flex-col items-center gap-2 font-medium"
                     >
                         <div
-                            class="mb-1 flex h-15 w-15 items-center justify-center rounded-md"
+                            class="mb-1 flex h-30 w-30 items-center justify-center rounded-md"
                         >
-                            <AppLogoIcon class="size-12" />
+                            <AppLogoIcon class="h-20 w-20 object-cover" />
                         </div>
                         <span class="sr-only">{{ title }}</span>
                     </Link>

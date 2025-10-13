@@ -30,11 +30,13 @@ Dashboard moderna e profissional criada com **Shadcn Vue components**, fornecend
 ### 1️⃣ Entities (Clientes e Fornecedores)
 
 **Métricas:**
+
 - Total de Clientes
 - Total de Fornecedores
 - Entidades Ativas
 
 **Card:**
+
 ```vue
 <Card>
   <CardHeader>
@@ -49,6 +51,7 @@ Dashboard moderna e profissional criada com **Shadcn Vue components**, fornecend
 ```
 
 **Queries:**
+
 ```php
 $totalClients = Entity::clients()->count();
 $totalSuppliers = Entity::suppliers()->count();
@@ -60,12 +63,14 @@ $activeEntities = Entity::active()->count();
 ### 2️⃣ Vendas (Propostas e Encomendas)
 
 **Métricas:**
+
 - Total de Propostas
 - Propostas em Rascunho
 - Total de Encomendas
 - Encomendas em Rascunho
 
 **Cards:**
+
 ```vue
 <!-- Propostas -->
 <Card>
@@ -83,6 +88,7 @@ $activeEntities = Entity::active()->count();
 ```
 
 **Queries:**
+
 ```php
 $totalProposals = Proposal::count();
 $draftProposals = Proposal::draft()->count();
@@ -95,6 +101,7 @@ $draftOrders = Order::draft()->count();
 ### 3️⃣ Financeiro (Receita, Despesas, Lucro)
 
 **Métricas:**
+
 - **Receita Total** (Faturas Pagas)
 - **Receita Pendente** (A Receber)
 - **Despesas Totais** (Faturas Pagas)
@@ -102,6 +109,7 @@ $draftOrders = Order::draft()->count();
 - **Lucro** (Receita - Despesas)
 
 **Card de Receita:**
+
 ```vue
 <Card>
   <CardHeader>
@@ -120,6 +128,7 @@ $draftOrders = Order::draft()->count();
 ```
 
 **Card de Lucro (Dinâmico):**
+
 ```vue
 <Card>
   <CardTitle>Lucro</CardTitle>
@@ -135,12 +144,15 @@ $draftOrders = Order::draft()->count();
 ```
 
 **Cálculo de Lucro:**
+
 ```typescript
-const profit = (props.stats.financials.revenue.total || 0) 
-             - (props.stats.financials.expenses.total || 0)
+const profit =
+    (props.stats.financials.revenue.total || 0) -
+    (props.stats.financials.expenses.total || 0);
 ```
 
 **Queries:**
+
 ```php
 // Receita
 $totalRevenue = CustomerInvoice::paid()->sum('total_amount') ?? 0;
@@ -159,11 +171,13 @@ $pendingExpenses = SupplierInvoice::pendingPayment()->sum('total_amount') ?? 0;
 ### 4️⃣ Work Orders
 
 **Métricas:**
+
 - Total de Work Orders
 - Pendentes
 - Em Progresso
 
 **Card:**
+
 ```vue
 <Card>
   <CardTitle>Work Orders</CardTitle>
@@ -175,6 +189,7 @@ $pendingExpenses = SupplierInvoice::pendingPayment()->sum('total_amount') ?? 0;
 ```
 
 **Queries:**
+
 ```php
 $totalWorkOrders = WorkOrder::count();
 $pendingWorkOrders = WorkOrder::pending()->count();
@@ -188,18 +203,21 @@ $inProgressWorkOrders = WorkOrder::inProgress()->count();
 **Métricas Detalhadas:**
 
 #### Faturas de Clientes:
+
 - Total de Faturas
 - **Pagas** (Badge Verde)
 - **Pendentes** (Badge Azul)
 - **Atrasadas** (Badge Vermelho)
 
 #### Faturas de Fornecedores:
+
 - Total de Faturas
 - **Pagas** (Badge Verde)
 - **A Pagar** (Badge Laranja)
 - **Atrasadas** (Badge Vermelho)
 
 **Card de Faturas:**
+
 ```vue
 <Card>
   <CardHeader>
@@ -242,6 +260,7 @@ $inProgressWorkOrders = WorkOrder::inProgress()->count();
 ```
 
 **Queries:**
+
 ```php
 // Customer Invoices
 $totalCustomerInvoices = CustomerInvoice::count();
@@ -263,12 +282,14 @@ $paidSupplierInvoices = SupplierInvoice::paid()->count();
 ### Propostas Recentes (Últimas 5)
 
 **Informações Exibidas:**
+
 - Número da Proposta
 - Cliente
 - Valor Total
 - Status (Badge)
 
 **Card:**
+
 ```vue
 <Card>
   <CardHeader>
@@ -293,6 +314,7 @@ $paidSupplierInvoices = SupplierInvoice::paid()->count();
 ```
 
 **Query:**
+
 ```php
 $recentProposals = Proposal::with('client')
     ->latest()
@@ -305,12 +327,14 @@ $recentProposals = Proposal::with('client')
 ### Encomendas Recentes (Últimas 5)
 
 **Informações Exibidas:**
+
 - Número da Encomenda
 - Cliente
 - Valor Total
 - Status (Badge)
 
 **Query:**
+
 ```php
 $recentOrders = Order::with('client')
     ->latest()
@@ -323,12 +347,14 @@ $recentOrders = Order::with('client')
 ### Work Orders Recentes (Últimas 5)
 
 **Informações Exibidas:**
+
 - Título
 - Cliente
 - Prioridade (Badge: High=Red, Medium=Default, Low=Outline)
 - Status (Badge)
 
 **Card:**
+
 ```vue
 <div v-for="wo in recent_activities.work_orders" :key="wo.id">
   <div>
@@ -336,10 +362,10 @@ $recentOrders = Order::with('client')
     <span>{{ wo.client?.name }}</span>
   </div>
   <div>
-    <Badge 
+    <Badge
       :variant="
-        wo.priority === 'high' ? 'destructive' : 
-        wo.priority === 'medium' ? 'default' : 
+        wo.priority === 'high' ? 'destructive' :
+        wo.priority === 'medium' ? 'default' :
         'outline'
       "
     >
@@ -353,6 +379,7 @@ $recentOrders = Order::with('client')
 ```
 
 **Query:**
+
 ```php
 $recentWorkOrders = WorkOrder::with('client', 'assignedUser')
     ->latest()
@@ -367,14 +394,20 @@ $recentWorkOrders = WorkOrder::with('client', 'assignedUser')
 ### Alertas Inteligentes (Condicional)
 
 **Condição de Exibição:**
+
 ```vue
-<Card v-if="stats.financials.customer_invoices.overdue > 0 || 
-            stats.financials.supplier_invoices.overdue > 0">
+<Card
+    v-if="
+        stats.financials.customer_invoices.overdue > 0 ||
+        stats.financials.supplier_invoices.overdue > 0
+    "
+></Card>
 ```
 
 **Alerta de Faturas de Clientes Atrasadas:**
+
 ```vue
-<div v-if="stats.financials.customer_invoices.overdue > 0" 
+<div v-if="stats.financials.customer_invoices.overdue > 0"
      class="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
   <AlertCircle class="text-red-600" />
   <div>
@@ -389,6 +422,7 @@ $recentWorkOrders = WorkOrder::with('client', 'assignedUser')
 ```
 
 **Alerta de Faturas de Fornecedores Atrasadas:**
+
 ```vue
 <div v-if="stats.financials.supplier_invoices.overdue > 0"
      class="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
@@ -411,6 +445,7 @@ $recentWorkOrders = WorkOrder::with('client', 'assignedUser')
 **Card Grande com 3 Colunas:**
 
 ### Coluna 1: Faturas Clientes
+
 ```
 Total:      XX
 Pendentes:  XX (Badge Azul)
@@ -419,6 +454,7 @@ Atrasadas:  XX (Badge Vermelho)
 ```
 
 ### Coluna 2: Faturas Fornecedores
+
 ```
 Total:      XX
 A Pagar:    XX (Badge Laranja)
@@ -427,6 +463,7 @@ Atrasadas:  XX (Badge Vermelho)
 ```
 
 ### Coluna 3: Resumo Geral
+
 ```
 Receita Total:       €X,XXX.XX (Verde)
 Despesas Totais:     €X,XXX.XX (Vermelho)
@@ -442,48 +479,29 @@ Pendente Pagar:      €XXX.XX
 ## 🎨 COMPONENTES SHADCN UTILIZADOS
 
 ### Cards
+
 ```vue
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from
+'@/components/ui/card'
 ```
 
 ### Badges
+
 ```vue
 import { Badge } from '@/components/ui/badge'
 
 <!-- Variantes -->
-<Badge variant="default">      <!-- Azul -->
-<Badge variant="outline">      <!-- Branco c/ borda -->
-<Badge variant="destructive">  <!-- Vermelho -->
-<Badge variant="secondary">    <!-- Cinza -->
-
-<!-- Com cores customizadas -->
-<Badge variant="outline" class="bg-green-50 text-green-700 border-green-200">
-<Badge variant="outline" class="bg-blue-50 text-blue-700 border-blue-200">
-<Badge variant="outline" class="bg-orange-50 text-orange-700 border-orange-200">
+<Badge variant="default"></Badge>
 ```
 
 ### Ícones Lucide
+
 ```vue
-import {
-  Users,              // Clientes
-  Truck,              // Fornecedores
-  FileText,           // Propostas
-  ShoppingCart,       // Encomendas
-  Briefcase,          // Work Orders
-  TrendingUp,         // Receita
-  TrendingDown,       // Despesas
-  DollarSign,         // Lucro/Financeiro
-  AlertCircle,        // Alertas/Atrasadas
-  CheckCircle2,       // Pagas
-  Clock,              // Pendentes
-  Activity            // Atividade
-} from 'lucide-vue-next'
+import { Users, // Clientes Truck, // Fornecedores FileText, // Propostas
+ShoppingCart, // Encomendas Briefcase, // Work Orders TrendingUp, // Receita
+TrendingDown, // Despesas DollarSign, // Lucro/Financeiro AlertCircle, //
+Alertas/Atrasadas CheckCircle2, // Pagas Clock, // Pendentes Activity //
+Atividade } from 'lucide-vue-next'
 ```
 
 ---
@@ -493,12 +511,14 @@ import {
 ### useMoneyFormatter
 
 **Import:**
+
 ```typescript
-import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter'
-const { format } = useMoneyFormatter()
+import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter';
+const { format } = useMoneyFormatter();
 ```
 
 **Uso:**
+
 ```vue
 {{ format(stats.financials.revenue.total) }}
 <!-- Output: €1.234,56 -->
@@ -507,12 +527,14 @@ const { format } = useMoneyFormatter()
 ### useDateFormatter
 
 **Import:**
+
 ```typescript
-import { useDateFormatter } from '@/composables/formatters/useDateFormatter'
-const { formatDate } = useDateFormatter()
+import { useDateFormatter } from '@/composables/formatters/useDateFormatter';
+const { formatDate } = useDateFormatter();
 ```
 
 **Uso:**
+
 ```vue
 {{ formatDate(proposal.created_at) }}
 <!-- Output: 13/10/2025 -->
@@ -525,6 +547,7 @@ const { formatDate } = useDateFormatter()
 ### Grid Responsivo
 
 **Estatísticas Principais:**
+
 ```vue
 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
   <!-- 1 coluna mobile, 2 tablet, 4 desktop -->
@@ -532,6 +555,7 @@ const { formatDate } = useDateFormatter()
 ```
 
 **Atividades Recentes:**
+
 ```vue
 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
   <!-- 1 coluna mobile, 2 tablet, 3 desktop -->
@@ -539,6 +563,7 @@ const { formatDate } = useDateFormatter()
 ```
 
 **Alertas e Financeiro:**
+
 ```vue
 <div class="grid gap-4 md:grid-cols-2">
   <!-- 1 coluna mobile, 2 tablet+ -->
@@ -546,6 +571,7 @@ const { formatDate } = useDateFormatter()
 ```
 
 ### Padding Responsivo
+
 ```vue
 <div class="p-4 md:p-6">
   <!-- p-4 mobile, p-6 desktop -->
@@ -573,8 +599,9 @@ dark:border-red-800
 ```
 
 **Exemplo de Alerta com Dark Mode:**
+
 ```vue
-<div class="bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800">
+<div class="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
   <p class="text-red-900 dark:text-red-100">Alerta!</p>
   <p class="text-red-700 dark:text-red-300">Descrição</p>
 </div>
@@ -587,6 +614,7 @@ dark:border-red-800
 ### Otimizações Implementadas
 
 **Queries Otimizadas:**
+
 ```php
 // ✅ Apenas fields necessários
 Proposal::get(['id', 'number', 'client_id', 'total_amount', 'status', 'created_at'])
@@ -599,12 +627,14 @@ Proposal::get(['id', 'number', 'client_id', 'total_amount', 'status', 'created_a
 ```
 
 **Cálculos no Frontend:**
+
 ```typescript
 // ✅ Lucro calculado no cliente (não precisa query extra)
-const profit = revenue - expenses
+const profit = revenue - expenses;
 ```
 
 **Queries Condicionais:**
+
 ```php
 // ✅ Apenas quando necessário
 ->when($type === 'client', fn($q) => $q->clients())
@@ -617,31 +647,35 @@ const profit = revenue - expenses
 ### Cores Semânticas
 
 **Verde (Positivo):**
+
 ```vue
-text-green-600      <!-- Receita, Pagas, Lucro positivo -->
-bg-green-50
-border-green-200
+text-green-600
+<!-- Receita, Pagas, Lucro positivo -->
+bg-green-50 border-green-200
 ```
 
 **Vermelho (Negativo/Urgente):**
+
 ```vue
-text-red-600        <!-- Despesas, Atrasadas, Lucro negativo -->
-bg-red-50
-border-red-200
+text-red-600
+<!-- Despesas, Atrasadas, Lucro negativo -->
+bg-red-50 border-red-200
 ```
 
 **Azul (Neutro/Informação):**
+
 ```vue
-text-blue-600       <!-- Pendentes, Informações -->
-bg-blue-50
-border-blue-200
+text-blue-600
+<!-- Pendentes, Informações -->
+bg-blue-50 border-blue-200
 ```
 
 **Laranja (Atenção):**
+
 ```vue
-text-orange-600     <!-- A Pagar -->
-bg-orange-50
-border-orange-200
+text-orange-600
+<!-- A Pagar -->
+bg-orange-50 border-orange-200
 ```
 
 ### Typography Hierarquia
@@ -650,11 +684,15 @@ border-orange-200
 <h1 class="text-3xl font-bold">Dashboard</h1>
 <p class="text-muted-foreground">Subtítulo</p>
 
-<div class="text-2xl font-bold">€1,234.56</div>  <!-- Valor principal -->
-<p class="text-xs">€123.45 pendente</p>          <!-- Valor secundário -->
+<div class="text-2xl font-bold">€1,234.56</div>
+<!-- Valor principal -->
+<p class="text-xs">€123.45 pendente</p>
+<!-- Valor secundário -->
 
-<span class="text-sm font-medium">#123456</span>  <!-- Label -->
-<span class="text-xs text-muted-foreground">Cliente</span>  <!-- Descrição -->
+<span class="text-sm font-medium">#123456</span>
+<!-- Label -->
+<span class="text-xs text-muted-foreground">Cliente</span>
+<!-- Descrição -->
 ```
 
 ---
@@ -702,46 +740,47 @@ class DashboardController extends Controller
 ### Estrutura de Dados
 
 **Stats:**
+
 ```typescript
 interface Stats {
-  entities: {
-    total_clients: number
-    total_suppliers: number
-    active_entities: number
-  }
-  sales: {
-    total_proposals: number
-    draft_proposals: number
-    total_orders: number
-    draft_orders: number
-  }
-  work_orders: {
-    total: number
-    pending: number
-    in_progress: number
-  }
-  financials: {
-    customer_invoices: {
-      total: number
-      pending: number
-      overdue: number
-      paid: number
-    }
-    supplier_invoices: {
-      total: number
-      pending: number
-      overdue: number
-      paid: number
-    }
-    revenue: {
-      total: number
-      pending: number
-    }
-    expenses: {
-      total: number
-      pending: number
-    }
-  }
+    entities: {
+        total_clients: number;
+        total_suppliers: number;
+        active_entities: number;
+    };
+    sales: {
+        total_proposals: number;
+        draft_proposals: number;
+        total_orders: number;
+        draft_orders: number;
+    };
+    work_orders: {
+        total: number;
+        pending: number;
+        in_progress: number;
+    };
+    financials: {
+        customer_invoices: {
+            total: number;
+            pending: number;
+            overdue: number;
+            paid: number;
+        };
+        supplier_invoices: {
+            total: number;
+            pending: number;
+            overdue: number;
+            paid: number;
+        };
+        revenue: {
+            total: number;
+            pending: number;
+        };
+        expenses: {
+            total: number;
+            pending: number;
+        };
+    };
 }
 ```
 
@@ -750,6 +789,7 @@ interface Stats {
 ## ✅ CHECKLIST DE IMPLEMENTAÇÃO
 
 ### Backend
+
 - [x] Criar `DashboardController.php`
 - [x] Implementar queries otimizadas
 - [x] Eager loading de relacionamentos
@@ -762,6 +802,7 @@ interface Stats {
 - [x] Retornar dados estruturados
 
 ### Frontend
+
 - [x] Redesign completo `Dashboard.vue`
 - [x] Importar componentes Shadcn
 - [x] Importar ícones Lucide
@@ -782,10 +823,12 @@ interface Stats {
 - [x] Estados vazios (v-if)
 
 ### Routes
+
 - [x] Atualizar rota `dashboard`
 - [x] Usar `DashboardController::class`
 
 ### Build & Quality
+
 - [x] Build sem erros
 - [x] 0 erros de lint
 - [x] TypeScript 100%
@@ -836,6 +879,7 @@ Load time:    < 1s (estimado)
 ### Melhorias Futuras
 
 **Gráficos:**
+
 ```vue
 <!-- Adicionar Chart.js ou similar -->
 <Card>
@@ -845,6 +889,7 @@ Load time:    < 1s (estimado)
 ```
 
 **Filtros:**
+
 ```vue
 <!-- Filtrar por período -->
 <Select v-model="period">
@@ -855,6 +900,7 @@ Load time:    < 1s (estimado)
 ```
 
 **Drill-down:**
+
 ```vue
 <!-- Click em card para ver detalhes -->
 <Card @click="router.push('/customer-invoices?status=overdue')">
@@ -863,6 +909,7 @@ Load time:    < 1s (estimado)
 ```
 
 **Exportação:**
+
 ```vue
 <!-- Exportar relatórios -->
 <Button @click="exportPDF">
@@ -875,12 +922,14 @@ Load time:    < 1s (estimado)
 ## 📚 RECURSOS E REFERÊNCIAS
 
 ### Documentação
+
 - [Shadcn Vue](https://shadcn-vue.com/)
 - [Lucide Icons](https://lucide.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Inertia.js](https://inertiajs.com/)
 
 ### Padrões do Projeto
+
 - `useMoneyFormatter` - Formatação monetária
 - `useDateFormatter` - Formatação de datas
 - `AppLayout` - Layout base
@@ -920,4 +969,3 @@ Load time:    < 1s (estimado)
 _13 de Outubro de 2025_  
 _Smart Management System_  
 _Vue 3 + Shadcn + Tailwind CSS_
-

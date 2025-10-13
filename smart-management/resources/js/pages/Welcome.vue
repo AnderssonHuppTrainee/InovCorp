@@ -10,37 +10,38 @@ import { Head, Link } from '@inertiajs/vue3';
     </Head>
 
     <div
-        class="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#0a0a0a] dark:via-[#111] dark:to-[#0f0f0f]"
+        class="flex min-h-screen flex-col bg-gradient-to-b from-[#FAFAFA] to-[#EDEDED] text-[#1B1B1B] dark:from-[#0A0A0A] dark:to-[#121212] dark:text-[#EDEDED]"
     >
         <header
             class="flex w-full items-center justify-between border-b border-gray-200 px-6 py-4 lg:px-12 dark:border-gray-800"
         >
-            <h1
-                class="text-2xl font-bold tracking-tight text-gray-800 dark:text-white"
-            >
-                Smart<span class="text-blue-600">Management</span>
+            <h1 class="flex items-center text-2xl font-bold tracking-tight">
+                Smart
+                <span class="ml-2 rounded bg-black px-2 py-1 text-white">
+                    Management
+                </span>
             </h1>
 
             <nav class="flex items-center gap-4">
                 <template v-if="$page.props.auth.user">
                     <Link
                         :href="dashboard()"
-                        class="rounded-md bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                        class="rounded-md bg-gray-800 px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
                     >
-                        Ir para o Dashboard
+                        Dashboard
                     </Link>
                 </template>
 
                 <template v-else>
                     <Link
                         :href="login()"
-                        class="px-5 py-2 text-sm font-medium text-gray-800 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400"
+                        class="px-5 py-2 text-sm font-medium text-gray-800 hover:text-gray-600 dark:text-gray-200 dark:hover:text-gray-400"
                     >
                         Entrar
                     </Link>
                     <Link
                         :href="register()"
-                        class="rounded-md border border-blue-600 px-5 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950"
+                        class="rounded-md border border-gray-800 px-5 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-900 hover:text-white dark:border-gray-300 dark:text-gray-200 dark:hover:bg-gray-100 dark:hover:text-black"
                     >
                         Criar Conta
                     </Link>
@@ -52,30 +53,28 @@ import { Head, Link } from '@inertiajs/vue3';
             class="flex flex-1 flex-col items-center justify-between px-8 py-16 lg:flex-row lg:px-20"
         >
             <div class="max-w-xl flex-1 space-y-6">
-                <h2
-                    class="text-4xl leading-tight font-bold text-gray-900 lg:text-5xl dark:text-white"
-                >
-                    Gestão <span class="text-blue-600">Inteligente</span> para a
-                    sua Empresa
+                <h2 class="text-4xl leading-tight font-bold lg:text-5xl">
+                    Gestão <span class="text-blue-600">Inteligente</span> e
+                    Minimalista
                 </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400">
-                    Automatize processos, acompanhe clientes, fornecedores e
-                    finanças num só lugar. Uma solução completa para pequenas e
-                    médias empresas.
+                <p class="text-lg text-gray-700 dark:text-gray-400">
+                    Organize, monitore e cresça sua empresa com uma interface
+                    moderna e funcional. Foco total na eficiência e clareza dos
+                    dados.
                 </p>
 
                 <div class="flex flex-col gap-4 pt-2 sm:flex-row">
                     <Link
                         :href="register()"
-                        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
+                        class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-6 py-3 font-medium text-white transition hover:bg-gray-800"
                     >
-                        Experimente Gratuitamente
+                        Começar Agora
                     </Link>
                     <Link
                         :href="login()"
-                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-6 py-3 text-gray-800 transition hover:border-blue-500 hover:text-blue-600 dark:border-gray-700 dark:text-gray-200 dark:hover:border-blue-500 dark:hover:text-blue-400"
+                        class="inline-flex items-center justify-center rounded-lg border border-gray-400 px-6 py-3 text-gray-800 transition hover:border-gray-600 hover:text-gray-600 dark:border-gray-700 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:text-gray-300"
                     >
-                        Acesse sua Conta
+                        Acessar Conta
                     </Link>
                 </div>
             </div>
@@ -88,17 +87,16 @@ import { Head, Link } from '@inertiajs/vue3';
                         <div class="flex items-center justify-between">
                             <span
                                 class="font-medium text-gray-700 dark:text-gray-300"
-                                >Progresso do mês</span
+                                >Atividades de Hoje</span
                             >
-                            <span
-                                class="text-sm text-blue-600 dark:text-blue-400"
-                                >82%</span
-                            >
+                            <span class="text-sm text-gray-500">75%</span>
                         </div>
                         <div
                             class="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
                         >
-                            <div class="h-2 w-[82%] bg-blue-600"></div>
+                            <div
+                                class="h-2 w-[75%] bg-blue-600 dark:bg-blue-500"
+                            ></div>
                         </div>
 
                         <ul class="mt-6 space-y-3">
@@ -136,47 +134,51 @@ import { Head, Link } from '@inertiajs/vue3';
         </main>
 
         <section
-            class="border-t border-gray-200 bg-gray-50 px-8 py-16 lg:px-20 dark:border-gray-800 dark:bg-gray-950"
+            class="border-t border-gray-200 bg-gray-50 px-8 py-16 lg:px-20 dark:border-gray-800 dark:bg-[#0F0F0F]"
         >
-            <h3
-                class="mb-10 text-center text-3xl font-bold text-gray-800 dark:text-white"
-            >
-                Tudo o que sua gestão precisa
+            <h3 class="mb-10 text-center text-3xl font-bold">
+                Soluções para sua gestão diária
             </h3>
             <div
                 class="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-3"
             >
                 <div
-                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-[#1A1A1A]"
                 >
-                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
-                        Clientes & Fornecedores
+                    <h4
+                        class="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-200"
+                    >
+                        Gestão de Clientes
                     </h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Centralize todas as informações de clientes e
-                        fornecedores com histórico de interações.
+                        Centralize cadastros, histórico e comunicações com
+                        clientes em um só lugar.
                     </p>
                 </div>
                 <div
-                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-[#1A1A1A]"
                 >
-                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
-                        Propostas & Encomendas
+                    <h4
+                        class="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-200"
+                    >
+                        Controle Financeiro
                     </h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Crie propostas em segundos e converta facilmente em
-                        encomendas com um clique.
+                        Monitore entradas, saídas, faturas e relatórios de forma
+                        prática e precisa.
                     </p>
                 </div>
                 <div
-                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900"
+                    class="rounded-xl border border-gray-100 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-[#1A1A1A]"
                 >
-                    <h4 class="mb-2 text-xl font-semibold text-blue-600">
-                        Financeiro & Faturas
+                    <h4
+                        class="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-200"
+                    >
+                        Produtividade
                     </h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Controle contas, faturas e relatórios financeiros de
-                        forma automatizada e segura.
+                        Visualize tarefas, progresso e metas em tempo real, com
+                        painéis intuitivos.
                     </p>
                 </div>
             </div>

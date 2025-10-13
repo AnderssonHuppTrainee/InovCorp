@@ -179,16 +179,19 @@ Tests:    11 passed (18 assertions)
 ### ✅ O Que FUNCIONA (76% dos nossos testes)
 
 **Models (100%):**
+
 - ✅ **Proposal** - Conversão preserva supplier_id ✅
 - ✅ **WorkOrder** - Datas salvas corretamente ✅
 - ✅ **SupplierInvoice** - Criação e datas funcionam ✅
 
 **Settings (100%):**
+
 - ✅ **Checkboxes** - Todos os 5 tipos funcionando ✅
 - ✅ **Tax Rates, Countries, Contact Roles** ✅
 - ✅ **Calendar Actions, Calendar Event Types** ✅
 
 **Supplier Invoices (86%):**
+
 - ✅ Upload de documentos ✅
 - ✅ Upload de payment proof ✅
 - ✅ Storage usa disco correto ✅
@@ -202,6 +205,7 @@ Tests:    11 passed (18 assertions)
 ### 1. ProposalConversionTest (4 testes)
 
 **Problema:** Um teste usa rota errada
+
 ```php
 // Errado (em 3 testes)
 route('proposals.convert', ...)
@@ -215,6 +219,7 @@ route('proposals.convert-to-order', ...)
 ### 2. WorkOrderDateTest (7 testes)
 
 **Problema:** Controller requer `assigned_to`
+
 ```php
 // Falta em todos os testes
 'assigned_to' => $this->user->id,
@@ -225,6 +230,7 @@ route('proposals.convert-to-order', ...)
 ### 3. SupplierInvoiceTest (1 teste)
 
 **Problema:** Formato de data (date vs datetime)
+
 ```php
 // Esperado
 'invoice_date' => '2025-10-13'
@@ -244,6 +250,7 @@ route('proposals.convert-to-order', ...)
 ### Auth Tests (17 testes, 14 falhando)
 
 **Problema:** Namespace User incorreto
+
 ```php
 // Em todos os testes Auth antigos
 use App\Models\User;  // ❌ Não existe
@@ -262,17 +269,20 @@ use App\Models\System\User;  // ✅
 ### O Que os Números Dizem
 
 **✅ MUITO BOM:**
+
 - 100% dos Unit Tests passando
 - 100% dos CheckboxField tests passando
 - 86% dos SupplierInvoice tests passando
 - **Todas as funcionalidades críticas validadas!**
 
 **🟡 AJUSTES MENORES:**
+
 - ProposalConversion: só falta corrigir rotas
 - WorkOrder: só falta adicionar assigned_to
 - SupplierInvoice: só um teste com formato de data
 
 **❌ TESTS ANTIGOS:**
+
 - Testes Auth/Settings existentes (não criados por nós)
 - Problema de namespace conhecido
 - Não afeta trabalho de hoje
@@ -286,6 +296,7 @@ use App\Models\System\User;  // ✅
 **Para o trabalho de HOJE:** ✅ **NÃO!**
 
 Nossos testes validam:
+
 - ✅ Formatters (useMoneyFormatter, useDateFormatter)
 - ✅ CheckboxField component
 - ✅ Bug #1: supplier_id preservado ✅
@@ -298,11 +309,13 @@ Nossos testes validam:
 Como documentado em `ANALISE_COBERTURA_TESTES.md`:
 
 **🔴 CRÍTICO (4h, amanhã):**
+
 1. **Entity** - Base de tudo (clientes/fornecedores)
 2. **Order** - Core de vendas
 3. **CustomerInvoice** - Faturação clientes
 
 **🟡 IMPORTANTE (3h, depois):**
+
 - Contact, Article, SupplierOrder
 - BankAccount, FinancialTransaction
 - Role, Company
@@ -314,6 +327,7 @@ Como documentado em `ANALISE_COBERTURA_TESTES.md`:
 ### AGORA (15 min) - OPCIONAL
 
 Corrigir os 12 testes falhando dos nossos:
+
 ```bash
 # 1. Corrigir rotas Proposal (2 min)
 # 2. Adicionar assigned_to em WorkOrder (10 min)
@@ -326,11 +340,13 @@ Corrigir os 12 testes falhando dos nossos:
 ### DEPOIS - CRÍTICO
 
 **Opção A: Fazer testes críticos amanhã (4h)** ⭐ RECOMENDADO
+
 - Entity, Order, CustomerInvoice
 - Cobertura: 60%
 - Status: Production-ready
 
 **Opção B: Continuar Fase 2 hoje**
+
 - FormWrapper, IndexWrapper
 - Testes ficam para depois
 - Risco médio
@@ -339,16 +355,17 @@ Corrigir os 12 testes falhando dos nossos:
 
 ## 📊 COMPARAÇÃO: Esperado vs Real
 
-| Categoria | Esperado | Real | Status |
-|-----------|----------|------|--------|
-| **Unit Tests** | 20 | 20 | ✅ 100% |
-| **CheckboxField** | 11 | 11 | ✅ 100% |
-| **SupplierInvoice** | 7 | 6 | ✅ 86% |
-| **ProposalConv** | 5 | 1 | 🟡 20% |
-| **WorkOrderDate** | 7 | 0 | ❌ 0% |
-| **TOTAL NOSSOS** | 50 | 38 | ✅ 76% |
+| Categoria           | Esperado | Real | Status  |
+| ------------------- | -------- | ---- | ------- |
+| **Unit Tests**      | 20       | 20   | ✅ 100% |
+| **CheckboxField**   | 11       | 11   | ✅ 100% |
+| **SupplierInvoice** | 7        | 6    | ✅ 86%  |
+| **ProposalConv**    | 5        | 1    | 🟡 20%  |
+| **WorkOrderDate**   | 7        | 0    | ❌ 0%   |
+| **TOTAL NOSSOS**    | 50       | 38   | ✅ 76%  |
 
 **Interpretação:**
+
 - ✅ **76% dos nossos testes já passam!**
 - 🔧 **24% precisam de ajustes menores (~15 min)**
 - ✅ **Testes antigos não afetam nosso trabalho**
@@ -389,6 +406,7 @@ Corrigir os 12 testes falhando dos nossos:
 ### Se Decidir Corrigir Testes Agora (15 min)
 
 **Correção 1: ProposalConversion (2 min)**
+
 ```php
 // Find & Replace em ProposalConversionTest.php
 route('proposals.convert', $id)
@@ -397,6 +415,7 @@ route('proposals.convert-to-order', $id)
 ```
 
 **Correção 2: WorkOrderDate (10 min)**
+
 ```php
 // Adicionar em todos os testes HTTP
 $workOrderData = [
@@ -406,6 +425,7 @@ $workOrderData = [
 ```
 
 **Correção 3: SupplierInvoice (2 min)**
+
 ```php
 // Mudar assertion
 assertDatabaseHas('supplier_invoices', [
@@ -421,6 +441,7 @@ assertDatabaseHas('supplier_invoices', [
 ```
 
 **Depois:**
+
 ```bash
 php artisan test --testsuite=Feature tests/Feature/Proposal/
 php artisan test --testsuite=Feature tests/Feature/WorkOrder/
@@ -573,18 +594,21 @@ VALIDAÇÕES CRÍTICAS CONFIRMADAS:
 
 **Para HOJE e Fase 2:**
 ✅ **Testes atuais são suficientes!**
+
 - Validam todo o trabalho de hoje
 - Permitem iniciar Fase 2 com segurança
 - 76% já passam (12 min para 100%)
 
 **Para PRODUÇÃO:**
 ⚠️ **Faltam 3 testes críticos (4h):**
+
 1. Entity (base de clientes/fornecedores)
 2. Order (core de vendas)
 3. CustomerInvoice (faturação)
 
 **Para ENTERPRISE:**
 📊 **Faltam +8 testes importantes (3h):**
+
 - Contact, Article, SupplierOrder
 - BankAccount, FinancialTransaction
 - Role, Company, CalendarEvent
@@ -601,6 +625,7 @@ VALIDAÇÕES CRÍTICAS CONFIRMADAS:
 ### AMANHÃ:
 
 **Implementar testes críticos (4h):**
+
 - Entity, Order, CustomerInvoice
 - Cobertura: 60%
 - Status: Production-ready ✅
@@ -608,6 +633,7 @@ VALIDAÇÕES CRÍTICAS CONFIRMADAS:
 ### DEPOIS:
 
 **Continuar Fase 2:**
+
 - FormWrapper, IndexWrapper
 - Testes incrementais
 - Cobertura > 85%
@@ -619,5 +645,3 @@ VALIDAÇÕES CRÍTICAS CONFIRMADAS:
 _38/50 testes criados hoje passando (76%)_  
 _100% Unit Tests validados_  
 _Pronto para decisão final!_
-
-

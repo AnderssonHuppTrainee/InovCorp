@@ -106,12 +106,14 @@ TOTAL:
 #### 1. **Entity (Clientes/Fornecedores)** 🔴 CRÍTICO
 
 **Por quê:**
+
 - Base de TODOS os outros módulos
 - Validação de NIF/VAT
 - VIES integration
 - Tipos múltiplos (client, supplier, ambos)
 
 **Testes necessários:**
+
 - ✅ VIES validation (já testado manualmente)
 - ❌ Criação de Entity com tipos
 - ❌ Validação de NIF português
@@ -127,12 +129,14 @@ TOTAL:
 #### 2. **Order (Encomendas)** 🔴 CRÍTICO
 
 **Por quê:**
+
 - Processo central de vendas
 - Conversão de Proposals ✅ (já testado)
 - Cálculo de totais
 - Relacionamentos complexos
 
 **Testes necessários:**
+
 - ❌ Criação de Order
 - ❌ Cálculo de total
 - ❌ Relacionamento com OrderItems
@@ -148,11 +152,13 @@ TOTAL:
 #### 3. **Contact (Contactos)** 🔴 CRÍTICO
 
 **Por quê:**
+
 - Gestão de pessoas/contactos
 - Relacionamentos com Entities
 - GDPR compliance
 
 **Testes necessários:**
+
 - ❌ Criação de Contact
 - ❌ Associação com Entity
 - ❌ Associação com ContactRole
@@ -167,12 +173,14 @@ TOTAL:
 #### 4. **CustomerInvoice (Faturas Clientes)** 🔴 CRÍTICO
 
 **Por quê:**
+
 - Faturação é crítica para negócio
 - Similar a SupplierInvoice (já testado)
 - Geração de PDF
 - Envio de emails
 
 **Testes necessários:**
+
 - ❌ Criação de CustomerInvoice
 - ❌ Relacionamento com Order
 - ❌ Relacionamento com Client
@@ -188,12 +196,14 @@ TOTAL:
 #### 5. **User (Utilizadores/Gestão de Acesso)** 🔴 CRÍTICO
 
 **Por quê:**
+
 - Autenticação e autorização
 - Permissions (Spatie)
 - Roles
 - 2FA
 
 **Testes necessários:**
+
 - ❌ Criação de User
 - ❌ Atribuição de Roles
 - ❌ Permissions
@@ -210,12 +220,14 @@ TOTAL:
 #### 6. **Article (Artigos/Produtos)** 🔴 IMPORTANTE
 
 **Por quê:**
+
 - Base para Proposals e Orders
 - Pricing
 - Tax rates
 - Stock (se houver)
 
 **Testes necessários:**
+
 - ❌ Criação de Article
 - ❌ Relacionamento com TaxRate
 - ❌ Cálculo de preços
@@ -230,11 +242,13 @@ TOTAL:
 #### 7. **Calendar Events (Eventos de Calendário)** 🟡 IMPORTANTE
 
 **Por quê:**
+
 - Gestão de agenda
 - Relacionamentos com Entities
 - Tipos e ações
 
 **Testes necessários:**
+
 - ❌ Criação de CalendarEvent
 - ❌ Relacionamento com Entity
 - ❌ Relacionamento com CalendarEventType
@@ -251,6 +265,7 @@ TOTAL:
 #### 8. **SupplierOrder (Encomendas a Fornecedores)** 🟡
 
 **Testes necessários:**
+
 - ❌ Criação de SupplierOrder
 - ❌ Relacionamento com Order
 - ❌ Relacionamento com Supplier
@@ -265,6 +280,7 @@ TOTAL:
 #### 9. **BankAccount (Contas Bancárias)** 🟡
 
 **Testes necessários:**
+
 - ❌ Criação de BankAccount
 - ❌ Validação de IBAN
 - ❌ Relacionamento com Company
@@ -277,6 +293,7 @@ TOTAL:
 #### 10. **FinancialTransaction (Transações)** 🟡
 
 **Testes necessários:**
+
 - ❌ Criação de Transaction
 - ❌ Tipos (income, expense)
 - ❌ Relacionamento com BankAccount
@@ -289,6 +306,7 @@ TOTAL:
 #### 11. **Role (Permissões)** 🟡
 
 **Testes necessários:**
+
 - ❌ Criação de Role
 - ❌ Atribuição de Permissions
 - ❌ Relacionamento com Users
@@ -301,6 +319,7 @@ TOTAL:
 #### 12. **Company (Empresa)** 🟡
 
 **Testes necessários:**
+
 - ❌ Criação/Edição de Company
 - ❌ Validação de dados
 - ❌ Settings
@@ -312,11 +331,12 @@ TOTAL:
 ### 🟢 PRIORIDADE BAIXA (4 funcionalidades)
 
 Já cobertas por Feature Tests criados (não executados ainda):
-- ✅* TaxRate
-- ✅* Country
-- ✅* ContactRole
-- ✅* CalendarAction
-- ✅* CalendarEventType
+
+- ✅\* TaxRate
+- ✅\* Country
+- ✅\* ContactRole
+- ✅\* CalendarAction
+- ✅\* CalendarEventType
 
 ---
 
@@ -340,6 +360,7 @@ Já cobertas por Feature Tests criados (não executados ainda):
 ### O Que Falta Testar
 
 #### 🔴 PRIORIDADE ALTA (7 items)
+
 ```
 ❌ Entity Model + Controller         (~1.5h, 10-12 testes)
 ❌ Order Model + Controller          (~1h, 8-10 testes)
@@ -355,6 +376,7 @@ SUBTOTAL ALTA:                       ~7.5h, 54-68 testes
 ```
 
 #### 🟡 PRIORIDADE MÉDIA (5 items)
+
 ```
 ❌ SupplierOrder Model + Ctrl        (~0.75h, 6-8 testes)
 ❌ BankAccount Model + Controller    (~0.5h, 4-6 testes)
@@ -366,6 +388,7 @@ SUBTOTAL MÉDIA:                      ~3h, 24-34 testes
 ```
 
 #### 🟢 PRIORIDADE BAIXA (5 items)
+
 ```
 ✅* Settings (já têm Feature Tests criados)
    - TaxRate, Country, ContactRole
@@ -447,6 +470,7 @@ RESULTADO:
 **Cobertura final:** ~95%
 
 Adiciona a Opção B:
+
 - Todos os Models secundários
 - Testes de integração
 - Testes de API
@@ -477,6 +501,7 @@ git commit -m "test: executar Feature Tests"
 ```
 
 **Resultado:**
+
 - ✅ 50 testes criados e validados
 - ✅ Pronto para Fase 2
 - ✅ Cobertura: ~35%
@@ -513,6 +538,7 @@ TARDE (1.5h):
 ```
 
 **Resultado Final:**
+
 - ✅ 90+ testes implementados
 - ✅ Cobertura: ~60%
 - ✅ Todas as funcionalidades críticas testadas
@@ -540,12 +566,12 @@ Cobertura final: ~85%
 
 ## 📊 COMPARAÇÃO DE OPÇÕES
 
-| Opção | Tempo | Testes | Cobertura | Quando | Recomendado |
-|-------|-------|--------|-----------|--------|-------------|
-| **A-Mini** | 0.5h | 50 | 35% | Hoje | ⭐⭐⭐ |
-| **A** | 4h | 90+ | 60% | Amanhã | ⭐⭐ |
-| **B** | 11.5h | 150+ | 85% | 3 dias | ⭐ |
-| **C** | 15h+ | 200+ | 95% | 1 semana | ❌ Overkill |
+| Opção      | Tempo | Testes | Cobertura | Quando   | Recomendado |
+| ---------- | ----- | ------ | --------- | -------- | ----------- |
+| **A-Mini** | 0.5h  | 50     | 35%       | Hoje     | ⭐⭐⭐      |
+| **A**      | 4h    | 90+    | 60%       | Amanhã   | ⭐⭐        |
+| **B**      | 11.5h | 150+   | 85%       | 3 dias   | ⭐          |
+| **C**      | 15h+  | 200+   | 95%       | 1 semana | ❌ Overkill |
 
 ---
 
@@ -556,24 +582,24 @@ Cobertura final: ~85%
 **Se objetivo é:**
 
 1. **"Validar refatorações de hoje"**
-   - ✅ **Opção A-Mini** (30 min)
-   - Executar Feature Tests
-   - Seguir para Fase 2
+    - ✅ **Opção A-Mini** (30 min)
+    - Executar Feature Tests
+    - Seguir para Fase 2
 
 2. **"Ter aplicação production-ready"**
-   - ✅ **Opção A Completa** (4h amanhã)
-   - Testar Entity, Order, CustomerInvoice
-   - ~60% cobertura é suficiente
+    - ✅ **Opção A Completa** (4h amanhã)
+    - Testar Entity, Order, CustomerInvoice
+    - ~60% cobertura é suficiente
 
 3. **"Ter cobertura enterprise-grade"**
-   - ✅ **Opção B** (11.5h, 3 dias)
-   - Testar TUDO de alta e média prioridade
-   - ~85% cobertura
+    - ✅ **Opção B** (11.5h, 3 dias)
+    - Testar TUDO de alta e média prioridade
+    - ~85% cobertura
 
 4. **"Continuar Fase 2 refatorações"**
-   - ✅ **Pular testes adicionais**
-   - Fazer testes incrementalmente
-   - Focar em FormWrapper/IndexWrapper
+    - ✅ **Pular testes adicionais**
+    - Fazer testes incrementalmente
+    - Focar em FormWrapper/IndexWrapper
 
 ---
 
@@ -686,6 +712,7 @@ Risco: Muito baixo
 #### Para HOJE e Fase 2:
 
 **NÃO, os testes atuais são suficientes para:**
+
 - ✅ Validar refatorações de hoje
 - ✅ Iniciar Fase 2 com segurança
 - ✅ Desenvolvimento contínuo
@@ -695,6 +722,7 @@ Risco: Muito baixo
 #### Para PRODUÇÃO:
 
 **SIM, faltam testes críticos:**
+
 - 🔴 Entity (base de tudo)
 - 🔴 Order (vendas)
 - 🔴 CustomerInvoice (faturação)
@@ -741,12 +769,12 @@ OPÇÃO B: Continuar Fase 2
 
 ## 📊 MATRIZ DE DECISÃO
 
-| Cenário | Testes Atuais OK? | Ação Recomendada |
-|---------|-------------------|------------------|
-| **Desenvolvimento** | ✅ SIM | Continuar Fase 2 |
-| **Staging/Testing** | ⚠️ QUASE | +Entity/Order/Invoice |
-| **Produção** | ❌ NÃO | Opção A obrigatória |
-| **Enterprise** | ❌ NÃO | Opção B |
+| Cenário             | Testes Atuais OK? | Ação Recomendada      |
+| ------------------- | ----------------- | --------------------- |
+| **Desenvolvimento** | ✅ SIM            | Continuar Fase 2      |
+| **Staging/Testing** | ⚠️ QUASE          | +Entity/Order/Invoice |
+| **Produção**        | ❌ NÃO            | Opção A obrigatória   |
+| **Enterprise**      | ❌ NÃO            | Opção B               |
 
 ---
 
@@ -761,16 +789,19 @@ OPÇÃO B: Continuar Fase 2
 ### Resposta Detalhada:
 
 Você criou **50 testes excelentes** que cobrem:
+
 - ✅ Bugs críticos corrigidos hoje
 - ✅ Funcionalidades refatoradas
 - ✅ Models essenciais (3/21)
 
 **Mas faltam testes para:**
+
 - 🔴 Entity (base de TUDO)
 - 🔴 Order (core de vendas)
 - 🔴 CustomerInvoice (faturação)
 
 **Quando fazer:**
+
 - **Agora:** Executar Feature Tests (30 min)
 - **Amanhã:** Completar testes críticos (4h)
 - **Depois:** Fase 2 ou testes secundários
@@ -786,6 +817,7 @@ php artisan test --testsuite=Feature
 ```
 
 **Depois decida:**
+
 - Continuar Fase 2 hoje? OU
 - Parar e fazer testes críticos amanhã?
 
@@ -794,5 +826,3 @@ php artisan test --testsuite=Feature
 **🎊 TESTES ATUAIS SÃO EXCELENTES PARA DESENVOLVIMENTO! 🎊**
 
 _Para produção, recomendo Opção A (4h adicional amanhã)_
-
-

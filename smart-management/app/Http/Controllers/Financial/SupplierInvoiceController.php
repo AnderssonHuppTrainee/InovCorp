@@ -57,12 +57,12 @@ class SupplierInvoiceController extends Controller
         try {
             $invoice = DB::transaction(function () use ($validated, $request) {
                 \Log::info('📦 [SUPPLIER INVOICE STORE] Iniciando transação...');
-                
+
                 // Upload document if provided
                 $documentPath = null;
                 if ($request->hasFile('document')) {
                     \Log::info('📄 Uploading document...');
-                    $documentPath = $request->file('document')->store('invoices/documents', 'private');
+                    $documentPath = $request->file('document')->store('invoices/supplier/documents');
                     \Log::info('✅ Document uploaded:', ['path' => $documentPath]);
                 }
 
@@ -70,7 +70,7 @@ class SupplierInvoiceController extends Controller
                 $paymentProofPath = null;
                 if ($request->hasFile('payment_proof')) {
                     \Log::info('💳 Uploading payment proof...');
-                    $paymentProofPath = $request->file('payment_proof')->store('invoices/payment-proofs', 'private');
+                    $paymentProofPath = $request->file('payment_proof')->store('invoices/supplier/payment-proofs');
                     \Log::info('✅ Payment proof uploaded:', ['path' => $paymentProofPath]);
                 }
 
@@ -112,7 +112,7 @@ class SupplierInvoiceController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Erro ao criar fatura: ' . $e->getMessage());
@@ -128,8 +128,8 @@ class SupplierInvoiceController extends Controller
 
         return Inertia::render('financial/supplier-invoices/Show', [
             'invoice' => $supplierInvoice,
-            'hasDocument' => $supplierInvoice->document_path && Storage::disk('private')->exists($supplierInvoice->document_path),
-            'hasPaymentProof' => $supplierInvoice->payment_proof_path && Storage::disk('private')->exists($supplierInvoice->payment_proof_path),
+            'hasDocument' => $supplierInvoice->document_path && Storage::exists($supplierInvoice->document_path),
+            'hasPaymentProof' => $supplierInvoice->payment_proof_path && Storage::exists($supplierInvoice->payment_proof_path),
         ]);
     }
 
@@ -144,8 +144,8 @@ class SupplierInvoiceController extends Controller
             'invoice' => $supplierInvoice,
             'suppliers' => Entity::suppliers()->active()->orderBy('name')->get(['id', 'name', 'email']),
             'supplierOrders' => SupplierOrder::with('supplier')->orderBy('number', 'desc')->get(['id', 'number', 'supplier_id', 'total_amount']),
-            'hasDocument' => $supplierInvoice->document_path && Storage::disk('private')->exists($supplierInvoice->document_path),
-            'hasPaymentProof' => $supplierInvoice->payment_proof_path && Storage::disk('private')->exists($supplierInvoice->payment_proof_path),
+            'hasDocument' => $supplierInvoice->document_path && Storage::exists($supplierInvoice->document_path),
+            'hasPaymentProof' => $supplierInvoice->payment_proof_path && Storage::exists($supplierInvoice->payment_proof_path),
         ]);
     }
 
@@ -165,9 +165,9 @@ class SupplierInvoiceController extends Controller
                 if ($request->hasFile('document')) {
                     // Delete old document
                     if ($supplierInvoice->document_path) {
-                        Storage::disk('private')->delete($supplierInvoice->document_path);
+                        Storage::delete($supplierInvoice->document_path);
                     }
-                    $validated['document_path'] = $request->file('document')->store('invoices/documents', 'private');
+                    $validated['document_path'] = $request->file('document')->store('invoices/supplier/documents');
                 } else {
                     $validated['document_path'] = $supplierInvoice->document_path;
                 }
@@ -176,9 +176,9 @@ class SupplierInvoiceController extends Controller
                 if ($request->hasFile('payment_proof')) {
                     // Delete old payment proof
                     if ($supplierInvoice->payment_proof_path) {
-                        Storage::disk('private')->delete($supplierInvoice->payment_proof_path);
+                        Storage::delete($supplierInvoice->payment_proof_path);
                     }
-                    $validated['payment_proof_path'] = $request->file('payment_proof')->store('invoices/payment-proofs', 'private');
+                    $validated['payment_proof_path'] = $request->file('payment_proof')->store('invoices/supplier/payment-proofs');
                 } else {
                     $validated['payment_proof_path'] = $supplierInvoice->payment_proof_path;
                 }
@@ -212,10 +212,10 @@ class SupplierInvoiceController extends Controller
         try {
             // Delete files
             if ($supplierInvoice->document_path) {
-                Storage::disk('private')->delete($supplierInvoice->document_path);
+                Storage::delete($supplierInvoice->document_path);
             }
             if ($supplierInvoice->payment_proof_path) {
-                Storage::disk('private')->delete($supplierInvoice->payment_proof_path);
+                Storage::delete($supplierInvoice->payment_proof_path);
             }
 
             $supplierInvoice->delete();
@@ -230,21 +230,21 @@ class SupplierInvoiceController extends Controller
 
     public function downloadDocument(SupplierInvoice $supplierInvoice)
     {
-        if (!$supplierInvoice->document_path || !Storage::disk('private')->exists($supplierInvoice->document_path)) {
+        if (!$supplierInvoice->document_path || !Storage::exists($supplierInvoice->document_path)) {
             return back()->with('error', 'Documento não encontrado.');
         }
 
-        return Storage::disk('private')->download($supplierInvoice->document_path);
+        return Storage::download($supplierInvoice->document_path);
     }
 
 
     public function downloadPaymentProof(SupplierInvoice $supplierInvoice)
     {
-        if (!$supplierInvoice->payment_proof_path || !Storage::disk('private')->exists($supplierInvoice->payment_proof_path)) {
+        if (!$supplierInvoice->payment_proof_path || !Storage::exists($supplierInvoice->payment_proof_path)) {
             return back()->with('error', 'Comprovativo não encontrado.');
         }
 
-        return Storage::disk('private')->download($supplierInvoice->payment_proof_path);
+        return Storage::download($supplierInvoice->payment_proof_path);
     }
 
 

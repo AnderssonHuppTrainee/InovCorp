@@ -27,18 +27,18 @@ class DigitalArchiveController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        // Get document types for filter
+
         $documentTypes = DigitalArchive::select('document_type')
             ->distinct()
             ->pluck('document_type');
 
-        // Get archivable types for filter
+
         $archivableTypes = DigitalArchive::select('archivable_type')
             ->whereNotNull('archivable_type')
             ->distinct()
             ->pluck('archivable_type');
 
-        // Calculate statistics
+
         $stats = [
             'total' => DigitalArchive::count(),
             'total_size' => DigitalArchive::sum('file_size'),
@@ -72,11 +72,11 @@ class DigitalArchiveController extends Controller
 
         try {
             $archive = DB::transaction(function () use ($validated, $request) {
-                // Upload file
+
                 $file = $request->file('file');
                 $filePath = $file->store('digital-archive', 'private');
 
-                // Create archive record
+
                 $archiveData = [
                     'name' => $validated['name'],
                     'file_name' => $file->getClientOriginalName(),
@@ -156,10 +156,10 @@ class DigitalArchiveController extends Controller
     public function destroy(DigitalArchive $digitalArchive)
     {
         try {
-            // Delete physical file
+
             $digitalArchive->deleteFile();
 
-            // Delete record
+
             $digitalArchive->delete();
 
             return redirect()
@@ -170,9 +170,7 @@ class DigitalArchiveController extends Controller
         }
     }
 
-    /**
-     * Download the file.
-     */
+
     public function download(DigitalArchive $digitalArchive)
     {
         if (!$digitalArchive->fileExists()) {
@@ -183,15 +181,13 @@ class DigitalArchiveController extends Controller
             return back()->with('error', 'Ficheiro expirado.');
         }
 
-        return Storage::disk('private')->download(
+        return Storage::download(
             $digitalArchive->file_path,
             $digitalArchive->file_name
         );
     }
 
-    /**
-     * View/preview the file.
-     */
+
     public function view(DigitalArchive $digitalArchive)
     {
         if (!$digitalArchive->fileExists()) {
@@ -208,7 +204,7 @@ class DigitalArchiveController extends Controller
         ];
 
         return response()->file(
-            Storage::disk('private')->path($digitalArchive->file_path),
+            Storage::path($digitalArchive->file_path),
             $headers
         );
     }

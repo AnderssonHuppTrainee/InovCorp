@@ -23,7 +23,7 @@ class EntityFactory extends Factory
         $country = Country::inRandomOrder()->first() ?? Country::factory()->create();
 
         return [
-            'number' => fake()->unique()->numerify('######'),
+            'number' => Entity::nextNumber(),
             'tax_number' => Entity::generatePortugueseNif(),
             'types' => [fake()->randomElement(['client', 'supplier'])],
             'name' => fake()->company(),

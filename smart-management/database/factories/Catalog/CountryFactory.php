@@ -25,9 +25,14 @@ class CountryFactory extends Factory
             ['name' => 'France', 'code' => 'FR', 'phone_code' => '+33'],
             ['name' => 'Germany', 'code' => 'DE', 'phone_code' => '+49'],
             ['name' => 'Italy', 'code' => 'IT', 'phone_code' => '+39'],
+            ['name' => 'United Kingdom', 'code' => 'GB', 'phone_code' => '+44'],
+            ['name' => 'Belgium', 'code' => 'BE', 'phone_code' => '+32'],
+            ['name' => 'Netherlands', 'code' => 'NL', 'phone_code' => '+31'],
+            ['name' => 'Switzerland', 'code' => 'CH', 'phone_code' => '+41'],
+            ['name' => 'Poland', 'code' => 'PL', 'phone_code' => '+48'],
         ];
 
-        $country = fake()->randomElement($countries);
+        $country = fake()->unique()->randomElement($countries);
 
         return [
             'name' => $country['name'],

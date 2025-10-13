@@ -23,9 +23,13 @@ const fieldId = computed(() => `checkbox-${props.name}`)
                     :id="fieldId"
                     type="checkbox"
                     :name="name"
-                    :checked="Boolean(value)"
+                    :checked="value === true || value === 1 || value === '1'"
                     :disabled="disabled"
-                    @change="(event: Event) => handleChange((event.target as HTMLInputElement).checked)"
+                    @change="(event: Event) => {
+                        const checked = (event.target as HTMLInputElement).checked;
+                        console.log(`🔍 CheckboxField [${name}] mudou para:`, checked);
+                        handleChange(checked);
+                    }"
                     class="peer mt-1 h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-primary ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 />
             </FormControl>

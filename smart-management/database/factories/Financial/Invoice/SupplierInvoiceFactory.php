@@ -24,12 +24,19 @@ class SupplierInvoiceFactory extends Factory
         $invoiceDate = fake()->dateTimeBetween('-3 months', 'now');
         $dueDate = (clone $invoiceDate)->modify('+30 days');
 
+        // Criar supplier se não existir nenhum
+        $supplier = Entity::suppliers()->inRandomOrder()->first() 
+            ?? Entity::factory()->create(['types' => ['supplier']]);
+
+        // Criar supplier order se não existir nenhuma (opcional)
+        $supplierOrder = SupplierOrder::inRandomOrder()->first();
+
         return [
             'number' => SupplierInvoice::nextNumber(),
             'invoice_date' => $invoiceDate,
             'due_date' => $dueDate,
-            'supplier_id' => Entity::suppliers()->inRandomOrder()->first()?->id,
-            'supplier_order_id' => SupplierOrder::inRandomOrder()->first()?->id,
+            'supplier_id' => $supplier->id,
+            'supplier_order_id' => $supplierOrder?->id,
             'total_amount' => fake()->randomFloat(2, 100, 10000),
             'status' => fake()->randomElement(['pending_payment', 'paid']),
         ];

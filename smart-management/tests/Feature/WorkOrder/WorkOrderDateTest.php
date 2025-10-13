@@ -51,7 +51,7 @@ test('can update work order dates via HTTP request', function () {
     actingAs($this->user);
 
     $client = Entity::factory()->create(['types' => ['client']]);
-    
+
     $workOrder = WorkOrder::factory()->create([
         'client_id' => $client->id,
         'start_date' => '2025-10-13',

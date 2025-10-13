@@ -22,7 +22,7 @@ test('proposal converts to order via HTTP request preserving supplier_id', funct
     $client = Entity::factory()->create(['types' => ['client']]);
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
     $article = Article::factory()->create();
-    
+
     $proposal = Proposal::factory()->create([
         'client_id' => $client->id,
         'status' => 'draft',
@@ -68,11 +68,11 @@ test('proposal with multiple items converts preserving all supplier data', funct
     $supplier1 = Entity::factory()->create(['types' => ['supplier'], 'name' => 'Supplier A']);
     $supplier2 = Entity::factory()->create(['types' => ['supplier'], 'name' => 'Supplier B']);
     $supplier3 = Entity::factory()->create(['types' => ['supplier'], 'name' => 'Supplier C']);
-    
+
     $article1 = Article::factory()->create();
     $article2 = Article::factory()->create();
     $article3 = Article::factory()->create();
-    
+
     $proposal = Proposal::factory()->create([
         'client_id' => $client->id,
         'status' => 'draft',
@@ -143,7 +143,7 @@ test('cannot convert already converted proposal', function () {
 
     // Tentar converter novamente (não deve criar nova order)
     $response = $this->post(route('proposals.convert', $proposal->id));
-    
+
     // Deve haver apenas 1 order para esta proposal
     expect(Order::where('proposal_id', $proposal->id)->count())->toBe(1);
 });
@@ -155,7 +155,7 @@ test('converted order has correct totals', function () {
     $supplier = Entity::factory()->create(['types' => ['supplier']]);
     $article1 = Article::factory()->create();
     $article2 = Article::factory()->create();
-    
+
     $proposal = Proposal::factory()->create([
         'client_id' => $client->id,
         'status' => 'draft',
@@ -181,7 +181,7 @@ test('converted order has correct totals', function () {
     $response = $this->post(route('proposals.convert', $proposal->id));
 
     $order = Order::where('proposal_id', $proposal->id)->first();
-    
+
     // Total da order deve ser igual ao total da proposal
     expect($order->total_amount)->toBe($proposal->total_amount)
         ->and($order->total_amount)->toBe(850.0);

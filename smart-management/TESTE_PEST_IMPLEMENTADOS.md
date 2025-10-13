@@ -25,6 +25,7 @@
 ### Testes por Model
 
 #### ✅ ProposalTest (3/6 passando)
+
 - ✅ can create a proposal
 - ❌ can calculate total from items (tipo int vs float)
 - ❌ converts proposal to order preserving supplier_id (tipo int vs float)
@@ -33,6 +34,7 @@
 - ❌ can filter proposals by status (factory sem client_id)
 
 #### ✅ WorkOrderTest (2/6 passando)
+
 - ✅ can create a work order with dates
 - ❌ dates are persisted to database correctly (factory sem assigned_to)
 - ❌ can update work order dates (factory sem assigned_to)
@@ -41,6 +43,7 @@
 - ✅ belongs to client and assigned user
 
 #### ✅ SupplierInvoiceTest (4/7 passando)
+
 - ❌ can create a supplier invoice (SupplierOrderFactory sem order_id)
 - ✅ invoice dates are persisted correctly
 - ✅ can detect overdue invoices
@@ -69,6 +72,7 @@ test('can filter proposals by status')                             // ❌ Factor
 ```
 
 **Validações Críticas:**
+
 - ✅ supplier_id preservado na conversão
 - ✅ Múltiplos itens com múltiplos fornecedores
 - ✅ Status da proposta alterado para 'closed'
@@ -90,6 +94,7 @@ test('belongs to client and assigned user')                        // ✅ PASSOU
 ```
 
 **Validações Críticas:**
+
 - ✅ start_date salvo corretamente
 - ✅ end_date salvo corretamente
 - ✅ Datas persistem após updates
@@ -112,6 +117,7 @@ test('can update invoice status')                                  // ✅ PASSOU
 ```
 
 **Validações Críticas:**
+
 - ✅ invoice_date e due_date salvos
 - ✅ Lógica de overdue funcionando
 - ✅ Scopes (pendingPayment, paid, overdue)
@@ -126,6 +132,7 @@ test('can update invoice status')                                  // ✅ PASSOU
 **Objetivo:** Testar fluxo HTTP completo de conversão
 
 **Testes:**
+
 - `proposal converts to order via HTTP request preserving supplier_id`
 - `proposal with multiple items converts preserving all supplier data`
 - `cannot convert already converted proposal`
@@ -136,6 +143,7 @@ test('can update invoice status')                                  // ✅ PASSOU
 **Objetivo:** Testar fluxo HTTP de criação/edição com datas
 
 **Testes:**
+
 - `can create work order with dates via HTTP request`
 - `can update work order dates via HTTP request`
 - `dates persist across multiple operations`
@@ -148,6 +156,7 @@ test('can update invoice status')                                  // ✅ PASSOU
 **Objetivo:** Testar criação com upload de arquivos
 
 **Testes:**
+
 - `can create supplier invoice via HTTP request`
 - `can create supplier invoice with document upload`
 - `can create supplier invoice with payment proof`
@@ -161,6 +170,7 @@ test('can update invoice status')                                  // ✅ PASSOU
 **Objetivo:** Testar checkboxes em Settings
 
 **Testes:**
+
 - `can create tax rate with is_active checkbox`
 - `can create tax rate with is_active = false`
 - `can update tax rate is_active status`
@@ -269,6 +279,7 @@ $proposal = Proposal::create([  // ✅ Sem items
 ### Problema #1: Tipos Int vs Float
 
 **Erro:**
+
 ```
 Failed asserting that 350 is identical to 350.0.
 ```
@@ -276,6 +287,7 @@ Failed asserting that 350 is identical to 350.0.
 **Causa:** `toBe()` faz comparação estrita (===), mas banco retorna int
 
 **Solução:**
+
 ```php
 // ANTES
 expect($total)->toBe(350.0)
@@ -286,6 +298,7 @@ expect((float)$total)->toBe(350.0)
 ```
 
 **Arquivos Afetados:**
+
 - `tests/Unit/Models/ProposalTest.php` (linhas 61, 101)
 
 ---
@@ -293,6 +306,7 @@ expect((float)$total)->toBe(350.0)
 ### Problema #2: ProposalFactory sem client_id
 
 **Erro:**
+
 ```
 NOT NULL constraint failed: proposals.client_id
 ```
@@ -300,16 +314,18 @@ NOT NULL constraint failed: proposals.client_id
 **Causa:** ProposalFactory usa `Entity::clients()->inRandomOrder()->first()?->id` que retorna null se não houver clients
 
 **Solução:**
+
 ```php
 // ANTES
 'client_id' => Entity::clients()->inRandomOrder()->first()?->id,
 
 // DEPOIS
-'client_id' => Entity::clients()->inRandomOrder()->first()?->id 
+'client_id' => Entity::clients()->inRandomOrder()->first()?->id
     ?? Entity::factory()->create(['types' => ['client']])->id,
 ```
 
 **Arquivos Afetados:**
+
 - `database/factories/Core/Proposal/ProposalFactory.php` (linha 30)
 
 ---
@@ -317,6 +333,7 @@ NOT NULL constraint failed: proposals.client_id
 ### Problema #3: WorkOrderFactory sem assigned_to
 
 **Erro:**
+
 ```
 NOT NULL constraint failed: work_orders.assigned_to
 ```
@@ -324,6 +341,7 @@ NOT NULL constraint failed: work_orders.assigned_to
 **Causa:** WorkOrderFactory não cria `assigned_to` quando usa `create()` direto
 
 **Solução:**
+
 ```php
 // Em WorkOrderTest.php, sempre fornecer assigned_to:
 WorkOrder::create([
@@ -333,6 +351,7 @@ WorkOrder::create([
 ```
 
 **Arquivos Afetados:**
+
 - `tests/Unit/Models/WorkOrderTest.php` (linhas 34, 51, 70)
 
 ---
@@ -340,6 +359,7 @@ WorkOrder::create([
 ### Problema #4: SupplierOrderFactory sem order_id
 
 **Erro:**
+
 ```
 NOT NULL constraint failed: supplier_orders.order_id
 ```
@@ -347,6 +367,7 @@ NOT NULL constraint failed: supplier_orders.order_id
 **Causa:** SupplierOrderFactory precisa de um Order válido
 
 **Solução 1 (rápida):**
+
 ```php
 // Em SupplierInvoiceTest.php
 $order = Order::factory()->create();
@@ -354,12 +375,14 @@ $supplierOrder = SupplierOrder::factory()->create(['order_id' => $order->id]);
 ```
 
 **Solução 2 (melhor - na factory):**
+
 ```php
 // database/factories/Core/Order/SupplierOrderFactory.php
 'order_id' => Order::factory(),  // Cria automaticamente
 ```
 
 **Arquivos Afetados:**
+
 - `tests/Unit/Models/SupplierInvoiceTest.php` (linhas 12, 101, 115)
 - `database/factories/Core/Order/SupplierOrderFactory.php`
 
@@ -368,6 +391,7 @@ $supplierOrder = SupplierOrder::factory()->create(['order_id' => $order->id]);
 ### Problema #5: SupplierInvoiceFactory sem supplier_id
 
 **Erro:**
+
 ```
 NOT NULL constraint failed: supplier_invoices.supplier_id
 ```
@@ -375,13 +399,15 @@ NOT NULL constraint failed: supplier_invoices.supplier_id
 **Causa:** Mesmo problema das outras factories
 
 **Solução:**
+
 ```php
 // database/factories/Financial/Invoice/SupplierInvoiceFactory.php
-'supplier_id' => Entity::suppliers()->inRandomOrder()->first()?->id 
+'supplier_id' => Entity::suppliers()->inRandomOrder()->first()?->id
     ?? Entity::factory()->create(['types' => ['supplier']])->id,
 ```
 
 **Arquivos Afetados:**
+
 - `database/factories/Financial/Invoice/SupplierInvoiceFactory.php`
 
 ---
@@ -391,34 +417,35 @@ NOT NULL constraint failed: supplier_invoices.supplier_id
 ### Correções Rápidas (5-10 min)
 
 - [ ] **1. Tipos Int vs Float** (2 min)
-  - [ ] Trocar `toBe(350.0)` por `toEqual(350.0)` em ProposalTest
-  - [ ] Trocar `toBe(100.0)` por `toEqual(100.0)` em ProposalTest
+    - [ ] Trocar `toBe(350.0)` por `toEqual(350.0)` em ProposalTest
+    - [ ] Trocar `toBe(100.0)` por `toEqual(100.0)` em ProposalTest
 
 - [ ] **2. assigned_to em WorkOrderTest** (3 min)
-  - [ ] Adicionar `'assigned_to' => User::factory()->create()->id` em 3 testes
+    - [ ] Adicionar `'assigned_to' => User::factory()->create()->id` em 3 testes
 
 ### Correções Médias (10-20 min)
 
 - [ ] **3. ProposalFactory** (5 min)
-  - [ ] Adicionar fallback para `client_id`
+    - [ ] Adicionar fallback para `client_id`
 
 - [ ] **4. SupplierOrderFactory** (5 min)
-  - [ ] Adicionar `Order::factory()` para `order_id`
+    - [ ] Adicionar `Order::factory()` para `order_id`
 
 - [ ] **5. SupplierInvoiceFactory** (5 min)
-  - [ ] Adicionar fallback para `supplier_id`
+    - [ ] Adicionar fallback para `supplier_id`
 
 ### Executar Testes Novamente
 
 - [ ] **6. Rodar Unit Tests** (1 min)
-  ```bash
-  php artisan test --testsuite=Unit
-  ```
+
+    ```bash
+    php artisan test --testsuite=Unit
+    ```
 
 - [ ] **7. Rodar Feature Tests** (2 min)
-  ```bash
-  php artisan test --testsuite=Feature
-  ```
+    ```bash
+    php artisan test --testsuite=Feature
+    ```
 
 ---
 
@@ -434,15 +461,15 @@ NOT NULL constraint failed: supplier_invoices.supplier_id
 ### Curto Prazo
 
 1. ⏳ Adicionar testes para outros Models:
-   - Article
-   - Entity
-   - Order
-   - Contact
+    - Article
+    - Entity
+    - Order
+    - Contact
 
 2. ⏳ Adicionar testes de Controllers:
-   - ProposalController
-   - WorkOrderController
-   - SupplierInvoiceController
+    - ProposalController
+    - WorkOrderController
+    - SupplierInvoiceController
 
 3. ⏳ Adicionar testes de Settings controllers
 
@@ -536,10 +563,10 @@ uses(RefreshDatabase::class);
 test('describes what it tests', function () {
     // Arrange - preparar dados
     $entity = Entity::factory()->create(['types' => ['client']]);
-    
+
     // Act - executar ação
     $result = $entity->doSomething();
-    
+
     // Assert - verificar resultado
     expect($result)->toBeTrue();
 });
@@ -562,9 +589,9 @@ beforeEach(function () {
 
 test('describes HTTP flow', function () {
     actingAs($this->user);
-    
+
     $response = $this->post(route('resource.store'), $data);
-    
+
     $response->assertRedirect();
     assertDatabaseHas('table', ['field' => 'value']);
 });
@@ -577,7 +604,7 @@ public function definition(): array
 {
     // ✅ PADRÃO: Criar relacionamento se não existir
     $country = Country::inRandomOrder()->first() ?? Country::factory()->create();
-    
+
     return [
         'country_id' => $country->id,
         // ...
@@ -642,5 +669,3 @@ assertDatabaseMissing('table', ['id' => 999]);
 _Documento criado: 13/10/2025_  
 _Status: 45% dos testes passando_  
 _Próximo passo: Corrigir factories e rodar 100%_
-
-

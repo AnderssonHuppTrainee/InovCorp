@@ -159,7 +159,7 @@ test('checkbox defaults to false when not provided', function () {
     $response = $this->post(route('tax-rates.store'), $taxRateData);
 
     $taxRate = TaxRate::where('name', 'IVA Desativado')->first();
-    
+
     // Quando checkbox não é enviado, deve ser false/0
     expect($taxRate->is_active)->toBeFalse();
 });

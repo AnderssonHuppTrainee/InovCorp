@@ -21,11 +21,18 @@ class SupplierOrderFactory extends Factory
      */
     public function definition(): array
     {
+        // Criar supplier se não existir nenhum
+        $supplier = Entity::suppliers()->inRandomOrder()->first() 
+            ?? Entity::factory()->create(['types' => ['supplier']]);
+
+        // Criar order se não existir nenhuma
+        $order = Order::inRandomOrder()->first() ?? Order::factory()->create();
+
         return [
             'number' => SupplierOrder::nextNumber(),
             'order_date' => fake()->dateTimeBetween('-2 months', '+1 month'),
-            'supplier_id' => Entity::suppliers()->inRandomOrder()->first()?->id,
-            'order_id' => Order::inRandomOrder()->first()?->id,
+            'supplier_id' => $supplier->id,
+            'order_id' => $order->id,
             'total_amount' => fake()->randomFloat(2, 100, 5000),
             'status' => fake()->randomElement(['draft', 'closed']),
         ];

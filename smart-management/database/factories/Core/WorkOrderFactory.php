@@ -24,12 +24,19 @@ class WorkOrderFactory extends Factory
         $startDate = fake()->dateTimeBetween('-1 month', '+1 month');
         $endDate = (clone $startDate)->modify('+' . rand(1, 30) . ' days');
 
+        // Criar client se não existir nenhum
+        $client = Entity::clients()->inRandomOrder()->first() 
+            ?? Entity::factory()->create(['types' => ['client']]);
+
+        // Criar user se não existir nenhum
+        $user = User::inRandomOrder()->first() ?? User::factory()->create();
+
         return [
             'number' => WorkOrder::nextNumber(),
             'title' => fake()->sentence(4),
             'description' => fake()->paragraph(),
-            'client_id' => Entity::clients()->inRandomOrder()->first()?->id,
-            'assigned_to' => User::inRandomOrder()->first()?->id,
+            'client_id' => $client->id,
+            'assigned_to' => $user->id,
             'priority' => fake()->randomElement(['low', 'medium', 'high']),
             'start_date' => $startDate,
             'end_date' => $endDate,

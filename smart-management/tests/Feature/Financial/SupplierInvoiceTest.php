@@ -79,7 +79,7 @@ test('can create supplier invoice with document upload', function () {
 
     // 🔍 TESTE CRÍTICO: Verificar que o arquivo foi salvo
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
-    
+
     if ($invoice->document_path) {
         Storage::assertExists($invoice->document_path);
     }
@@ -117,7 +117,7 @@ test('can create supplier invoice with payment proof', function () {
     ]);
 
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
-    
+
     // Verificar que ambos os arquivos foram salvos
     if ($invoice->document_path) {
         Storage::assertExists($invoice->document_path);
@@ -231,7 +231,7 @@ test('storage uses local disk correctly', function () {
 
     // 🔍 TESTE CRÍTICO: Verificar que não há erro de disco inexistente
     $response->assertRedirect();
-    
+
     $invoice = SupplierInvoice::where('supplier_id', $supplier->id)->first();
     expect($invoice)->not->toBeNull();
 });

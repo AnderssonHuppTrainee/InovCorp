@@ -25,11 +25,18 @@ class OrderFactory extends Factory
         $orderDate = fake()->dateTimeBetween('-1 month', '+1 month');
         $deliveryDate = (clone $orderDate)->modify('+15 days');
 
+        // Criar client se não existir nenhum
+        $client = Entity::clients()->inRandomOrder()->first() 
+            ?? Entity::factory()->create(['types' => ['client']]);
+
+        // Proposal é opcional
+        $proposal = Proposal::inRandomOrder()->first();
+
         return [
             'number' => Order::nextNumber(),
             'order_date' => $orderDate,
-            'client_id' => Entity::clients()->inRandomOrder()->first()?->id,
-            'proposal_id' => Proposal::inRandomOrder()->first()?->id,
+            'client_id' => $client->id,
+            'proposal_id' => $proposal?->id,
             'delivery_date' => $deliveryDate,
             'status' => fake()->randomElement(['draft', 'closed']),
             'total_amount' => 0, // Será calculado pelos items

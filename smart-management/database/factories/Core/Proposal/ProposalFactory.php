@@ -24,10 +24,14 @@ class ProposalFactory extends Factory
         $proposalDate = fake()->dateTimeBetween('-2 months', 'now');
         $validityDate = (clone $proposalDate)->modify('+30 days');
 
+        // Criar client se não existir nenhum
+        $client = Entity::clients()->inRandomOrder()->first() 
+            ?? Entity::factory()->create(['types' => ['client']]);
+
         return [
             'number' => Proposal::nextNumber(),
             'proposal_date' => $proposalDate,
-            'client_id' => Entity::clients()->inRandomOrder()->first()?->id,
+            'client_id' => $client->id,
             'validity_date' => $validityDate,
             'status' => fake()->randomElement(['draft', 'closed']),
             'total_amount' => 0, // Será calculado pelos items

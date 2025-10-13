@@ -32,10 +32,9 @@ class DigitalArchive extends Model
         'file_size' => 'integer',
     ];
 
-    // Relationships
     public function archivable()
     {
-        return $this->morphTo(); // Relação polimórfica - pode pertencer a qualquer model
+        return $this->morphTo(); //relacao polimorfica, pode pertencer a qualquer model
     }
 
     public function uploadedBy()
@@ -43,7 +42,7 @@ class DigitalArchive extends Model
         return $this->belongsTo(User::class, 'uploaded_by');
     }
 
-    // Scopes
+
     public function scopePublic($query)
     {
         return $query->where('is_public', true);
@@ -94,7 +93,6 @@ class DigitalArchive extends Model
         });
     }
 
-    // Helper methods
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();
@@ -102,7 +100,7 @@ class DigitalArchive extends Model
 
     public function fileExists(): bool
     {
-        return Storage::disk('private')->exists($this->file_path);
+        return Storage::exists($this->file_path);
     }
 
     public function getFormattedFileSize(): string
@@ -148,7 +146,7 @@ class DigitalArchive extends Model
     public function deleteFile(): bool
     {
         if ($this->fileExists()) {
-            return Storage::disk('private')->delete($this->file_path);
+            return Storage::delete($this->file_path);
         }
 
         return true;

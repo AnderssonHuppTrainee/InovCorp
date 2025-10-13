@@ -284,16 +284,27 @@ const confirmEmailAndSubmit = () => {
 };
 
 const submitForm = () => {
+    console.log('🔍 [SUPPLIER INVOICE CREATE] submitForm chamado');
+    console.log('📋 formData:', JSON.stringify(formData, null, 2));
+    console.log('📅 invoice_date:', formData.invoice_date);
+    console.log('📅 due_date:', formData.due_date);
+    console.log('🏢 supplier_id:', formData.supplier_id);
+    console.log('💰 total_amount:', formData.total_amount);
+    console.log('📊 status:', formData.status);
+    
     // Se está como "paga" e tem comprovativo, mostrar dialog
     if (formData.status === 'paid' && paymentProofFile.value && !showEmailDialog.value) {
+        console.log('✉️ Mostrando dialog de email');
         showEmailDialog.value = true;
         return;
     }
 
+    console.log('➡️ Chamando performSubmit()');
     performSubmit();
 };
 
 const performSubmit = () => {
+    console.log('🚀 [SUPPLIER INVOICE CREATE] performSubmit iniciado');
     isSubmitting.value = true;
 
     const data = new FormData();
@@ -308,9 +319,29 @@ const performSubmit = () => {
     if (paymentProofFile.value) data.append('payment_proof', paymentProofFile.value);
     if (sendEmailConfirmed.value) data.append('send_email', '1');
 
+    console.log('📦 FormData construído:');
+    console.log('  invoice_date:', formData.invoice_date);
+    console.log('  due_date:', formData.due_date);
+    console.log('  supplier_id:', formData.supplier_id);
+    console.log('  total_amount:', formData.total_amount);
+    console.log('  status:', formData.status);
+    console.log('  document:', documentFile.value?.name || 'nenhum');
+    console.log('  payment_proof:', paymentProofFile.value?.name || 'nenhum');
+
+    console.log('🌐 Enviando POST para /supplier-invoices...');
+    
     router.post('/supplier-invoices', data, {
         preserveScroll: true,
-        onFinish: () => (isSubmitting.value = false),
+        onFinish: () => {
+            console.log('✅ Request finalizado');
+            isSubmitting.value = false;
+        },
+        onError: (errors) => {
+            console.error('❌ Erros na validação:', errors);
+        },
+        onSuccess: () => {
+            console.log('✅ Fatura criada com sucesso!');
+        }
     });
 };
 
@@ -321,6 +352,7 @@ const formatCurrency = (value: number) => {
     }).format(value);
 };
 </script>
+
 
 
 

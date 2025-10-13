@@ -182,15 +182,24 @@ const confirmEmailAndSubmit = () => {
 };
 
 const submitForm = () => {
+    console.log('🔍 [SUPPLIER INVOICE EDIT] submitForm chamado');
+    console.log('📋 formData:', JSON.stringify(formData, null, 2));
+    console.log('📅 invoice_date:', formData.invoice_date);
+    console.log('📅 due_date:', formData.due_date);
+    
     const statusChangedToPaid = previousStatus.value !== 'paid' && formData.status === 'paid';
     if (statusChangedToPaid && paymentProofFile.value) {
+        console.log('✉️ Mostrando dialog de email');
         showEmailDialog.value = true;
         return;
     }
+    console.log('➡️ Chamando performSubmit()');
     performSubmit();
 };
 
 const performSubmit = () => {
+    console.log('🚀 [SUPPLIER INVOICE EDIT] performSubmit iniciado');
+    console.log('🆔 Invoice ID:', props.invoice.id);
     isSubmitting.value = true;
 
     const data = new FormData();
@@ -206,12 +215,31 @@ const performSubmit = () => {
     if (paymentProofFile.value) data.append('payment_proof', paymentProofFile.value);
     if (sendEmailConfirmed.value) data.append('send_email', '1');
 
+    console.log('📦 FormData construído:');
+    console.log('  invoice_date:', formData.invoice_date);
+    console.log('  due_date:', formData.due_date);
+    console.log('  supplier_id:', formData.supplier_id);
+    console.log('  total_amount:', formData.total_amount);
+    console.log('  _method: PUT');
+
+    console.log(`🌐 Enviando POST para /supplier-invoices/${props.invoice.id}...`);
+    
     router.post(`/supplier-invoices/${props.invoice.id}`, data, {
         preserveScroll: true,
-        onFinish: () => (isSubmitting.value = false),
+        onFinish: () => {
+            console.log('✅ Request finalizado');
+            isSubmitting.value = false;
+        },
+        onError: (errors) => {
+            console.error('❌ Erros na validação:', errors);
+        },
+        onSuccess: () => {
+            console.log('✅ Fatura atualizada com sucesso!');
+        }
     });
 };
 </script>
+
 
 
 

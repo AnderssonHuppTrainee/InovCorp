@@ -52,18 +52,26 @@ class SupplierInvoiceController extends Controller
     {
         $validated = $request->validated();
 
+        \Log::info('🔍 [SUPPLIER INVOICE STORE] Dados validados:', $validated);
+
         try {
             $invoice = DB::transaction(function () use ($validated, $request) {
+                \Log::info('📦 [SUPPLIER INVOICE STORE] Iniciando transação...');
+                
                 // Upload document if provided
                 $documentPath = null;
                 if ($request->hasFile('document')) {
+                    \Log::info('📄 Uploading document...');
                     $documentPath = $request->file('document')->store('invoices/documents', 'private');
+                    \Log::info('✅ Document uploaded:', ['path' => $documentPath]);
                 }
 
                 // Upload payment proof if provided
                 $paymentProofPath = null;
                 if ($request->hasFile('payment_proof')) {
+                    \Log::info('💳 Uploading payment proof...');
                     $paymentProofPath = $request->file('payment_proof')->store('invoices/payment-proofs', 'private');
+                    \Log::info('✅ Payment proof uploaded:', ['path' => $paymentProofPath]);
                 }
 
                 // Create invoice
@@ -79,11 +87,14 @@ class SupplierInvoiceController extends Controller
                     'status' => $validated['status'],
                 ];
 
+                \Log::info('💾 Criando invoice com dados:', $invoiceData);
                 $invoice = SupplierInvoice::create($invoiceData);
+                \Log::info('✅ Invoice criada:', ['id' => $invoice->id, 'number' => $invoice->number]);
 
                 // Send email if requested and status is paid
-                if ($validated['status'] === 'paid' && $validated['send_email'] ?? false) {
+                if ($validated['status'] === 'paid' && ($validated['send_email'] ?? false)) {
                     if ($paymentProofPath) {
+                        \Log::info('✉️ Enviando email de comprovativo...');
                         $invoice->sendPaymentProofEmail();
                     }
                 }
@@ -91,10 +102,17 @@ class SupplierInvoiceController extends Controller
                 return $invoice;
             });
 
+            \Log::info('✅ [SUPPLIER INVOICE STORE] Fatura criada com sucesso!', ['invoice_id' => $invoice->id]);
+
             return redirect()
                 ->route('supplier-invoices.show', $invoice)
                 ->with('success', 'Fatura criada com sucesso!');
         } catch (\Exception $e) {
+            \Log::error('❌ [SUPPLIER INVOICE STORE] Erro ao criar fatura:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return back()
                 ->withInput()
                 ->with('error', 'Erro ao criar fatura: ' . $e->getMessage());
@@ -210,9 +228,6 @@ class SupplierInvoiceController extends Controller
         }
     }
 
-    /**
-     * Download document.
-     */
     public function downloadDocument(SupplierInvoice $supplierInvoice)
     {
         if (!$supplierInvoice->document_path || !Storage::disk('private')->exists($supplierInvoice->document_path)) {
@@ -222,9 +237,7 @@ class SupplierInvoiceController extends Controller
         return Storage::disk('private')->download($supplierInvoice->document_path);
     }
 
-    /**
-     * Download payment proof.
-     */
+
     public function downloadPaymentProof(SupplierInvoice $supplierInvoice)
     {
         if (!$supplierInvoice->payment_proof_path || !Storage::disk('private')->exists($supplierInvoice->payment_proof_path)) {
@@ -234,9 +247,7 @@ class SupplierInvoiceController extends Controller
         return Storage::disk('private')->download($supplierInvoice->payment_proof_path);
     }
 
-    /**
-     * Send payment proof email.
-     */
+
     public function sendPaymentProof(SupplierInvoice $supplierInvoice)
     {
         try {

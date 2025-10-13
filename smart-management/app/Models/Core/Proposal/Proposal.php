@@ -26,7 +26,6 @@ class Proposal extends Model
     ];
 
     protected $casts = [
-        'number' => 'encrypted',
         'proposal_date' => 'date',
         'validity_date' => 'date'
     ];

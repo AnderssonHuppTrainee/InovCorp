@@ -62,13 +62,13 @@ class OrderController extends Controller
                 \Log::info('📊 Total de Orders no DB (antes)', [
                     'total' => $totalOrdersBefore
                 ]);
-                
+
                 // Gerar número
                 $number = Order::nextNumber();
                 \Log::info('📝 OrderController - Número gerado', [
                     'number' => $number
                 ]);
-                
+
                 // Criar encomenda
                 $orderData = [
                     'number' => $number,
@@ -85,7 +85,7 @@ class OrderController extends Controller
                 ]);
 
                 $order = Order::create($orderData);
-                
+
                 \Log::info('✅ OrderController - Order CRIADA', [
                     'id' => $order->id,
                     'number' => $order->number

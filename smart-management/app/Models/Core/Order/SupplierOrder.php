@@ -22,7 +22,6 @@ class SupplierOrder extends Model
     ];
 
     protected $casts = [
-        'number' => 'encrypted',
         'order_date' => 'date'
     ];
 

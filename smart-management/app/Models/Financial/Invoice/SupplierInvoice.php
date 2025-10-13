@@ -26,7 +26,6 @@ class SupplierInvoice extends Model
     ];
 
     protected $casts = [
-        'number' => 'encrypted',
         'invoice_date' => 'date',
         'due_date' => 'date'
     ];

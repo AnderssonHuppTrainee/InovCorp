@@ -13,6 +13,7 @@
 **Arquivo:** `app/Models/Core/Order/Order.php`
 
 **Logs adicionados:**
+
 ```php
 ✅ 📋 Orders existentes no DB
    - Total de orders
@@ -37,6 +38,7 @@
 **Arquivo:** `app/Http/Controllers/Core/OrderController.php`
 
 **Logs adicionados:**
+
 ```php
 ✅ 📝 OrderController::store - INICIANDO
 
@@ -73,6 +75,7 @@ Get-Content storage/logs/laravel.log -Wait -Tail 50
 **Local:** `storage/logs/laravel.log`
 
 **Procure por:**
+
 ```
 🔢 Order::nextNumber()
 📝 OrderController
@@ -169,6 +172,7 @@ grep "Order" storage/logs/laravel.log | tail -50
 ### Cenário 1: Número CORRETO (000003 após 000002)
 
 **Logs esperados:**
+
 ```
 lastNumber: "000002"
 nextNumber: 3
@@ -184,17 +188,21 @@ formattedNumber: "000003"
 **Possíveis causas:**
 
 #### Causa A: Banco vazio
+
 ```
 lastNumber: null
 nextNumber: 1
 formattedNumber: "000001"
 ```
+
 **Solução:** Verificar se há orders no banco:
+
 ```sql
 SELECT id, number FROM orders;
 ```
 
 #### Causa B: Campo 'number' está NULL
+
 ```
 total: 2
 numbers: {
@@ -203,7 +211,9 @@ numbers: {
 }
 lastNumber: null
 ```
+
 **Solução:** Orders antigas sem número! Precisam ser corrigidas:
+
 ```php
 // Adicionar números às orders existentes
 Order::whereNull('number')->each(function($order) {
@@ -212,10 +222,12 @@ Order::whereNull('number')->each(function($order) {
 ```
 
 #### Causa C: Conversão incorreta
+
 ```
 lastNumber: "abc123" (tipo: string)
 nextNumber: 1 (intval falhou)
 ```
+
 **Solução:** Números no formato errado no banco!
 
 ---
@@ -340,4 +352,3 @@ Quando compartilhar os logs, inclua:
 **🔍 Logs adicionados! Agora é só criar uma order e verificar!**
 
 _Para remover os logs depois, basta reverter o commit._
-

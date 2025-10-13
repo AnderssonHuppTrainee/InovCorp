@@ -24,7 +24,6 @@ class WorkOrder extends Model
         'status'
     ];
     protected $casts = [
-        'number' => 'encrypted',
         'start_date' => 'date',
         'end_date' => 'date'
     ];

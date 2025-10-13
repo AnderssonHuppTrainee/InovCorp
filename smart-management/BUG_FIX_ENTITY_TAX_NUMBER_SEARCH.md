@@ -9,9 +9,11 @@
 ## 📋 Descrição do Problema
 
 ### Sintoma
+
 A busca por NIF (Número de Identificação Fiscal) na listagem de Clientes e Fornecedores **não encontrava nenhum resultado**, mesmo quando o NIF existia no banco de dados.
 
 ### Causa Raiz
+
 O campo `tax_number` estava configurado com cast `'encrypted'` no modelo `Entity`:
 
 ```php
@@ -31,22 +33,23 @@ protected $casts = [
 ### Por que não funcionava?
 
 1. **Armazenamento Encriptado:**
-   - O Laravel encriptava o NIF como JSON:
-     ```json
-     eyJpdiI6InUwUUo0VnlSbU5DUVdUTndhUm1uekE9PSIsInZhbHVlIjoi...
-     ```
+    - O Laravel encriptava o NIF como JSON:
+        ```json
+        eyJpdiI6InUwUUo0VnlSbU5DUVdUTndhUm1uekE9PSIsInZhbHVlIjoi...
+        ```
 
 2. **Query LIKE em Campo Encriptado:**
-   ```php
-   // app/Models/Core/Entity.php - scopeFilter
-   ->orWhere('tax_number', 'like', "%{$search}%")  // ❌ Não funciona!
-   ```
+
+    ```php
+    // app/Models/Core/Entity.php - scopeFilter
+    ->orWhere('tax_number', 'like', "%{$search}%")  // ❌ Não funciona!
+    ```
 
 3. **Resultado:**
-   - Buscar por `"123456789"` ou `"PT123456789"` retornava 0 resultados
-   - O Laravel tentava fazer `WHERE tax_number LIKE '%123456789%'`
-   - Mas no banco estava: `"eyJpdiI6InpXSWlpT2Ntcm5oZ2..."`
-   - **NUNCA** encontrava match!
+    - Buscar por `"123456789"` ou `"PT123456789"` retornava 0 resultados
+    - O Laravel tentava fazer `WHERE tax_number LIKE '%123456789%'`
+    - Mas no banco estava: `"eyJpdiI6InpXSWlpT2Ntcm5oZ2..."`
+    - **NUNCA** encontrava match!
 
 ---
 
@@ -71,6 +74,7 @@ protected $casts = [
 ```
 
 **Justificativa:**
+
 - ✅ NIF é **dado público** em Portugal (empresas)
 - ✅ Necessário para **queries e filtros**
 - ✅ Não contém informação sensível
@@ -83,6 +87,7 @@ protected $casts = [
 Comando criado: `php artisan fix:entity-tax-numbers`
 
 **Funcionalidades:**
+
 - ✅ Detecta tax_numbers encriptados automaticamente
 - ✅ Decripta os valores existentes
 - ✅ Atualiza diretamente no banco de dados
@@ -91,6 +96,7 @@ Comando criado: `php artisan fix:entity-tax-numbers`
 - ✅ Relatório detalhado de alterações
 
 **Uso:**
+
 ```bash
 # Modo teste (sem alterações)
 php artisan fix:entity-tax-numbers --dry-run
@@ -102,6 +108,7 @@ php artisan fix:entity-tax-numbers
 ### 3. Executar Correção no Banco de Dados
 
 **Registros Afetados:**
+
 ```
 📊 Total de entities: 86
   ✅ Decriptados: 86
@@ -110,6 +117,7 @@ php artisan fix:entity-tax-numbers
 ```
 
 **Exemplos de Correções:**
+
 ```
 Entity #1:  '859193241'         (sem prefixo)
 Entity #81: 'PT501525882'       (com prefixo PT)
@@ -125,22 +133,23 @@ Entity #82: 'PT502030712'       (com prefixo PT)
 Agora a busca por NIF funciona com:
 
 1. **Número simples:**
-   - Buscar: `"123456789"` ✅
-   - Encontra: Entity com tax_number = `"123456789"`
+    - Buscar: `"123456789"` ✅
+    - Encontra: Entity com tax_number = `"123456789"`
 
 2. **Com prefixo PT:**
-   - Buscar: `"PT501525882"` ✅
-   - Encontra: Entity com tax_number = `"PT501525882"`
+    - Buscar: `"PT501525882"` ✅
+    - Encontra: Entity com tax_number = `"PT501525882"`
 
 3. **Busca parcial:**
-   - Buscar: `"5015"` ✅
-   - Encontra: Entities com NIFs contendo "5015"
+    - Buscar: `"5015"` ✅
+    - Encontra: Entities com NIFs contendo "5015"
 
 ### 🔒 Segurança Mantida
 
 Campos sensíveis continuam encriptados:
+
 - ✅ `phone` - Telefone
-- ✅ `mobile` - Telemóvel  
+- ✅ `mobile` - Telemóvel
 - ✅ `email` - Email
 - ✅ `address` - Morada
 - ✅ `observations` - Observações
@@ -150,6 +159,7 @@ Campos sensíveis continuam encriptados:
 ## 📊 Arquivos Modificados
 
 ### Backend
+
 ```
 ✅ app/Models/Core/Entity.php
    - Removido 'tax_number' => 'encrypted'
@@ -161,6 +171,7 @@ Campos sensíveis continuam encriptados:
 ```
 
 ### Banco de Dados
+
 ```
 ✅ 86 registros corrigidos
    - tax_numbers decriptados
@@ -172,6 +183,7 @@ Campos sensíveis continuam encriptados:
 ## 🧪 Como Testar
 
 ### 1. Buscar por NIF sem prefixo
+
 ```
 1. Ir para: http://seu-site.test/entities?type=client
 2. Digitar no campo de busca: "859193241"
@@ -179,6 +191,7 @@ Campos sensíveis continuam encriptados:
 ```
 
 ### 2. Buscar por NIF com prefixo PT
+
 ```
 1. Ir para: http://seu-site.test/entities?type=supplier
 2. Digitar no campo de busca: "PT501525882"
@@ -186,6 +199,7 @@ Campos sensíveis continuam encriptados:
 ```
 
 ### 3. Busca parcial
+
 ```
 1. Ir para: http://seu-site.test/entities?type=client
 2. Digitar no campo de busca: "5015"
@@ -199,12 +213,14 @@ Campos sensíveis continuam encriptados:
 ### ❌ Nunca Encriptar Campos Usados em Queries
 
 **Não encriptar:**
+
 - ✅ Campos usados em `WHERE`, `LIKE`, `ORDER BY`
 - ✅ Dados públicos (NIF de empresas)
 - ✅ IDs, códigos, referências
 - ✅ Status, tipos, categorias
 
 **Encriptar:**
+
 - ✅ Dados pessoais sensíveis
 - ✅ Informações de contato privadas
 - ✅ Dados financeiros privados
@@ -217,7 +233,7 @@ Performance:
   ❌ Mais lento: Precisa decriptar em cada query
   ❌ Índices: Não funcionam em campos encriptados
   ❌ Buscas: Impossível fazer LIKE, comparações
-  
+
 Funcionalidade:
   ❌ Filtros: Não funcionam
   ❌ Ordenação: Não funciona corretamente
@@ -263,6 +279,7 @@ git commit -m "fix: remover encriptacao de tax_number..."
 ## 📈 Métricas
 
 ### Tempo de Correção
+
 ```
 Diagnóstico:     5 min
 Implementação:   10 min
@@ -274,6 +291,7 @@ TOTAL:           31 min
 ```
 
 ### Impacto
+
 ```
 ✅ 86 entities corrigidas
 ✅ Busca por NIF funcionando 100%
@@ -287,7 +305,7 @@ TOTAL:           31 min
 ## ✅ Checklist de Validação
 
 - [x] Busca por NIF sem prefixo funciona
-- [x] Busca por NIF com prefixo PT funciona  
+- [x] Busca por NIF com prefixo PT funciona
 - [x] Busca parcial funciona
 - [x] Campos sensíveis ainda encriptados
 - [x] 86 registros corrigidos no banco
@@ -333,4 +351,3 @@ TOTAL:           31 min
 **Status:** ✅ **PRODUCTION-READY**
 
 🎉 **Busca por NIF 100% Funcional!**
-

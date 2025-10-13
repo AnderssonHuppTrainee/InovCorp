@@ -65,7 +65,7 @@ test('pode criar entity com multiplos tipos', function () {
     $entity = Entity::create([
         'number' => Entity::nextNumber(),
         'tax_number' => Entity::generatePortugueseNif(),
-        'types' => ['client', 'supplier'],  // Ambos!
+        'types' => ['client', 'supplier'],  // ambos
         'name' => 'Empresa Multi-Tipo Lda',
         'address' => 'Rua Multi, 789',
         'postal_code' => '3000-001',
@@ -92,7 +92,7 @@ test('scope clients retorna apenas clientes', function () {
 
     $clients = Entity::clients()->get();
 
-    expect($clients)->toHaveCount(2); // client e client+supplier
+    expect($clients)->toHaveCount(2);
 });
 
 test('scope suppliers retorna apenas fornecedores', function () {
@@ -104,7 +104,7 @@ test('scope suppliers retorna apenas fornecedores', function () {
 
     $suppliers = Entity::suppliers()->get();
 
-    expect($suppliers)->toHaveCount(2); // supplier e client+supplier
+    expect($suppliers)->toHaveCount(2);
 });
 
 test('scope active retorna apenas entidades ativas', function () {
@@ -122,14 +122,14 @@ test('scope active retorna apenas entidades ativas', function () {
 test('gera NIF portugues valido', function () {
     $nif = Entity::generatePortugueseNif();
 
-    // NIF deve ter 9 dígitos
+
     expect($nif)->toMatch('/^\d{9}$/');
 
-    // Primeiro dígito deve ser válido (1,2,3,5,6,8)
+
     $firstDigit = (int) $nif[0];
     expect($firstDigit)->toBeIn([1, 2, 3, 5, 6, 8]);
 
-    // Validar algoritmo de check digit
+
     $sum = 0;
     for ($i = 0; $i < 8; $i++) {
         $sum += (int) $nif[$i] * (9 - $i);
@@ -214,14 +214,14 @@ test('entity com soft delete pode ser restaurada', function () {
     $entity = Entity::factory()->create(['types' => ['client']]);
     $entityId = $entity->id;
 
-    // Soft delete
+
     $entity->delete();
 
-    // Verificar que foi deletada
+
     expect(Entity::find($entityId))->toBeNull();
     expect(Entity::withTrashed()->find($entityId))->not->toBeNull();
 
-    // Restaurar
+
     $entity->restore();
 
     expect(Entity::find($entityId))->not->toBeNull();

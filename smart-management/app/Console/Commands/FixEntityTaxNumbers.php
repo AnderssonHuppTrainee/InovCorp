@@ -60,19 +60,19 @@ class FixEntityTaxNumbers extends Command
                 try {
                     // Tentar decriptar
                     $decryptedTaxNumber = Crypt::decryptString($rawTaxNumber);
-                    
+
                     if (!$isDryRun) {
                         // Atualizar diretamente no banco sem usar o modelo
                         // (para evitar re-encriptar)
                         DB::table('entities')
                             ->where('id', $entity->id)
                             ->update(['tax_number' => $decryptedTaxNumber]);
-                        
+
                         $this->info("  ✅ Entity #{$entity->id} ({$entity->name}): '{$rawTaxNumber}' → '{$decryptedTaxNumber}'");
                     } else {
                         $this->info("  🔓 Entity #{$entity->id} ({$entity->name}): seria decriptado para '{$decryptedTaxNumber}'");
                     }
-                    
+
                     $fixed++;
                 } catch (\Exception $e) {
                     $this->error("  ❌ Entity #{$entity->id} ({$entity->name}): Erro ao decriptar - {$e->getMessage()}");

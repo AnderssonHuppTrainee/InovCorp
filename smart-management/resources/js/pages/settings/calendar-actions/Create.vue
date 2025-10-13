@@ -37,19 +37,11 @@
                             </FormItem>
                         </FormField>
 
-                        <FormField v-slot="{ value, handleChange }" name="is_active">
-                            <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                <FormControl>
-                                    <Checkbox :checked="value" @update:checked="handleChange" />
-                                </FormControl>
-                                <div class="space-y-1 leading-none">
-                                    <FormLabel>Ação Ativa</FormLabel>
-                                    <FormDescription>
-                                        Esta ação estará disponível para seleção
-                                    </FormDescription>
-                                </div>
-                            </FormItem>
-                        </FormField>
+                        <CheckboxField
+                            name="is_active"
+                            label="Ação Ativa"
+                            description="Esta ação estará disponível para seleção"
+                        />
 
                         <div class="flex justify-end gap-4">
                             <Button type="button" variant="outline" @click="handleCancel">
@@ -77,7 +69,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
+import CheckboxField from '@/components/common/CheckboxField.vue'
 import {
     FormControl,
     FormDescription,
@@ -116,5 +108,6 @@ const handleCancel = () => {
     router.visit(calendarActions.index().url)
 }
 </script>
+
 
 

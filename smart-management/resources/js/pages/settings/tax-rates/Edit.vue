@@ -32,16 +32,10 @@
                                 </FormItem>
                             </FormField>
 
-                            <FormField v-slot="{ value, handleChange }" name="is_active">
-                                <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                    <FormControl>
-                                        <Checkbox :checked="value" @update:checked="(checked: boolean) => handleChange(checked)" />
-                                    </FormControl>
-                                    <div class="space-y-1 leading-none">
-                                        <FormLabel>Taxa Ativa</FormLabel>
-                                    </div>
-                                </FormItem>
-                            </FormField>
+                            <CheckboxField
+                                name="is_active"
+                                label="Taxa Ativa"
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -63,7 +57,7 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
+import CheckboxField from '@/components/common/CheckboxField.vue';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -101,6 +95,7 @@ const onSubmit = form.handleSubmit((values) => {
 
 const goBack = () => router.get('/tax-rates');
 </script>
+
 
 
 

@@ -100,11 +100,6 @@ const { showSuccess, showError, showInfo, showWarning } = useToast();
 const profit =
     (props.stats.financials.revenue.total || 0) -
     (props.stats.financials.expenses.total || 0);
-
-// Exemplo de teste do Toast (remover depois se desejar)
-const testToast = () => {
-    showSuccess('Toast funcionando!', 'Sistema de notificações configurado corretamente.');
-};
 </script>
 
 <template>
@@ -523,8 +518,8 @@ const testToast = () => {
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma encomenda ainda
-                </div>
-                <div
+                            </div>
+                            <div
                                 v-for="order in recent_activities.orders"
                                 :key="order.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -578,8 +573,8 @@ const testToast = () => {
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma work order ainda
-                </div>
-                <div
+                            </div>
+                            <div
                                 v-for="wo in recent_activities.work_orders"
                                 :key="wo.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -864,8 +859,8 @@ const testToast = () => {
                                         Processar pagamentos urgentemente
                                     </p>
                                 </div>
-                </div>
-            </div>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 

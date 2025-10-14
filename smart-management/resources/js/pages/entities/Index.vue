@@ -1,6 +1,6 @@
 <template>
     <Head :title="type === 'client' ? 'Clientes' : 'Fornecedores'" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
@@ -9,11 +9,7 @@
             >
                 <Button @click="handleCreate">
                     <PlusIcon class="mr-2 h-4 w-4" />
-                    {{
-                        type === 'client'
-                            ? 'Novo Cliente'
-                            : 'Novo Fornecedor'
-                    }}
+                    {{ type === 'client' ? 'Novo Cliente' : 'Novo Fornecedor' }}
                 </Button>
             </PageHeader>
 
@@ -24,9 +20,9 @@
                     >
                         <div class="flex flex-1 gap-2">
                             <!-- Busca -->
-                            <div class="relative flex-1 max-w-sm">
+                            <div class="relative max-w-sm flex-1">
                                 <SearchIcon
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                                    class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     type="search"
@@ -38,13 +34,18 @@
                             </div>
 
                             <!-- Filtro de Status -->
-                            <Select v-model="statusFilter" @update:modelValue="handleFilterChange">
+                            <Select
+                                v-model="statusFilter"
+                                @update:modelValue="handleFilterChange"
+                            >
                                 <SelectTrigger class="w-[150px]">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
-                                    <SelectItem value="active">Ativos</SelectItem>
+                                    <SelectItem value="active"
+                                        >Ativos</SelectItem
+                                    >
                                     <SelectItem value="inactive"
                                         >Inativos</SelectItem
                                     >
@@ -60,7 +61,9 @@
                                     <SelectValue placeholder="País" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Todos os países</SelectItem>
+                                    <SelectItem value="all"
+                                        >Todos os países</SelectItem
+                                    >
                                     <SelectItem
                                         v-for="country in countries"
                                         :key="country.id"
@@ -148,10 +151,10 @@
 </template>
 
 <script setup lang="ts">
-import DataTable from '@/components/ui/data-table/DataTable.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -301,7 +304,7 @@ const clearFilters = () => {
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 

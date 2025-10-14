@@ -12,11 +12,13 @@
 **Resposta:** Não diretamente, **MAS AGORA SIM!** ✅
 
 **ANTES da integração:**
+
 - ❌ Flash Messages e Toast eram **sistemas separados**
 - ❌ `->with('success', '...')` no backend → **não aparecia nada**
 - ❌ Tinha que usar `showSuccess()` manualmente no frontend
 
 **DEPOIS da integração:**
+
 - ✅ Flash Messages **automaticamente** viram Toast
 - ✅ `->with('success', '...')` no backend → **toast verde aparece**
 - ✅ **Sem código extra** no frontend!
@@ -46,6 +48,7 @@ public function share(Request $request): array
 ```
 
 **O que isso faz:**
+
 - ✅ Disponibiliza flash messages em `$page.props.flash`
 - ✅ Acessível em **qualquer** componente Vue
 - ✅ Atualiza automaticamente em cada navegação
@@ -56,25 +59,26 @@ public function share(Request $request): array
 
 ```typescript
 export function useFlashMessages() {
-    const page = usePage()
-    const { showSuccess, showError, showInfo, showWarning } = useToast()
+    const page = usePage();
+    const { showSuccess, showError, showInfo, showWarning } = useToast();
 
     watch(
         () => page.props.flash,
         (flash: any) => {
-            if (!flash) return
+            if (!flash) return;
 
-            if (flash.success) showSuccess(flash.success)
-            if (flash.error) showError(flash.error)
-            if (flash.info) showInfo(flash.info)
-            if (flash.warning) showWarning(flash.warning)
+            if (flash.success) showSuccess(flash.success);
+            if (flash.error) showError(flash.error);
+            if (flash.info) showInfo(flash.info);
+            if (flash.warning) showWarning(flash.warning);
         },
-        { deep: true, immediate: true }
-    )
+        { deep: true, immediate: true },
+    );
 }
 ```
 
 **O que isso faz:**
+
 - ✅ Monitora mudanças em `$page.props.flash`
 - ✅ Quando detecta flash message → exibe toast
 - ✅ Executa automaticamente em cada navegação
@@ -93,6 +97,7 @@ useFlashMessages();
 ```
 
 **O que isso faz:**
+
 - ✅ Ativa o watcher quando o layout carrega
 - ✅ Funciona em **todas as páginas** que usam AppLayout
 - ✅ Configuração única, benefício global
@@ -104,6 +109,7 @@ useFlashMessages();
 ### No Backend (Laravel)
 
 #### ✅ Sucesso
+
 ```php
 // EntityController.php
 return redirect()
@@ -112,6 +118,7 @@ return redirect()
 ```
 
 **Resultado no Frontend:**
+
 ```
 ┌─────────────────────────────────────┐
 │ ✅ Cliente criado com sucesso!      │
@@ -119,12 +126,14 @@ return redirect()
 ```
 
 #### ❌ Erro
+
 ```php
 return back()
     ->with('error', 'Erro ao criar cliente: ' . $e->getMessage());
 ```
 
 **Resultado no Frontend:**
+
 ```
 ┌─────────────────────────────────────┐
 │ ❌ Erro ao criar cliente: ...       │
@@ -132,6 +141,7 @@ return back()
 ```
 
 #### ℹ️ Info
+
 ```php
 return redirect()
     ->route('orders.index')
@@ -139,6 +149,7 @@ return redirect()
 ```
 
 **Resultado no Frontend:**
+
 ```
 ┌─────────────────────────────────────┐
 │ ℹ️ Encomenda enviada para aprovação │
@@ -146,12 +157,14 @@ return redirect()
 ```
 
 #### ⚠️ Warning
+
 ```php
 return back()
     ->with('warning', 'Atenção: Stock baixo para este artigo');
 ```
 
 **Resultado no Frontend:**
+
 ```
 ┌─────────────────────────────────────┐
 │ ⚠️ Atenção: Stock baixo...          │
@@ -165,6 +178,7 @@ return back()
 ### Use Flash Messages (Backend) Para:
 
 ✅ **Redirects após CRUD:**
+
 ```php
 // Após criar
 return redirect()->route('entities.index')
@@ -180,6 +194,7 @@ return redirect()->route('proposals.index')
 ```
 
 ✅ **Erros de operações:**
+
 ```php
 catch (\Exception $e) {
     return back()->with('error', 'Erro: ' . $e->getMessage());
@@ -189,23 +204,25 @@ catch (\Exception $e) {
 ### Use Toast Direto (Frontend) Para:
 
 ✅ **Operações SEM redirect:**
+
 ```typescript
 // Validações inline
-showWarning('Preencha todos os campos obrigatórios')
+showWarning('Preencha todos os campos obrigatórios');
 
 // Operações assíncronas
-showLoading('A processar...')
+showLoading('A processar...');
 
 // Feedback imediato
-showInfo('Ficheiro a ser processado em segundo plano')
+showInfo('Ficheiro a ser processado em segundo plano');
 ```
 
 ✅ **Operações com Inertia (sem flash):**
+
 ```typescript
 router.post(route, data, {
     onSuccess: () => showSuccess('Criado!'),
-    onError: () => showError('Erro!')
-})
+    onError: () => showError('Erro!'),
+});
 ```
 
 ---
@@ -215,6 +232,7 @@ router.post(route, data, {
 ### Exemplo 1: CRUD Completo com Flash Messages
 
 **Backend:**
+
 ```php
 // app/Http/Controllers/Core/EntityController.php
 
@@ -222,11 +240,11 @@ public function store(StoreEntityRequest $request)
 {
     try {
         Entity::create($request->validated());
-        
+
         return redirect()
             ->route('entities.index')
             ->with('success', 'Cliente criado com sucesso!'); // ✅ Toast verde
-            
+
     } catch (\Exception $e) {
         return back()
             ->with('error', 'Erro ao criar cliente: ' . $e->getMessage()); // ❌ Toast vermelho
@@ -237,11 +255,11 @@ public function update(UpdateEntityRequest $request, Entity $entity)
 {
     try {
         $entity->update($request->validated());
-        
+
         return redirect()
             ->route('entities.index')
             ->with('success', 'Cliente atualizado com sucesso!'); // ✅ Toast verde
-            
+
     } catch (\Exception $e) {
         return back()
             ->with('error', 'Erro ao atualizar: ' . $e->getMessage()); // ❌ Toast vermelho
@@ -252,11 +270,11 @@ public function destroy(Entity $entity)
 {
     try {
         $entity->delete();
-        
+
         return redirect()
             ->route('entities.index')
             ->with('success', 'Cliente eliminado com sucesso!'); // ✅ Toast verde
-            
+
     } catch (\Exception $e) {
         return back()
             ->with('error', 'Erro ao eliminar: Este cliente tem registros associados'); // ❌ Toast vermelho
@@ -265,6 +283,7 @@ public function destroy(Entity $entity)
 ```
 
 **Frontend:**
+
 ```vue
 <!-- Nenhum código necessário! -->
 <!-- Toasts aparecem automaticamente! ✨ -->
@@ -273,6 +292,7 @@ public function destroy(Entity $entity)
 ### Exemplo 2: Avisos e Informações
 
 **Backend:**
+
 ```php
 // Avisos
 return redirect()
@@ -286,6 +306,7 @@ return redirect()
 ```
 
 **Resultado:**
+
 ```
 ⚠️  Artigo com stock baixo...
 ℹ️  Encomenda #000026 enviada...
@@ -294,6 +315,7 @@ return redirect()
 ### Exemplo 3: Combinado com Toast Manual
 
 **Backend:**
+
 ```php
 return redirect()
     ->route('dashboard')
@@ -301,16 +323,18 @@ return redirect()
 ```
 
 **Frontend (Adicional):**
+
 ```typescript
 // Se quiser adicionar mais feedback no frontend
-const { showInfo } = useToast()
+const { showInfo } = useToast();
 
 onMounted(() => {
-    showInfo('Bem-vindo de volta!')
-})
+    showInfo('Bem-vindo de volta!');
+});
 ```
 
 **Resultado:**
+
 ```
 ✅ Dados sincronizados!  (do backend)
 ℹ️  Bem-vindo de volta!  (do frontend)
@@ -366,6 +390,7 @@ onMounted(() => {
 ### ANTES da Integração ❌
 
 **Backend:**
+
 ```php
 return redirect()
     ->with('success', 'Cliente criado!');
@@ -374,16 +399,18 @@ return redirect()
 **Resultado:** Flash message existe mas **não aparece visualmente**
 
 **Solução Manual:**
+
 ```typescript
 // Frontend - tinha que fazer manualmente
 router.post(route, data, {
-    onSuccess: () => showSuccess('Cliente criado!')
-})
+    onSuccess: () => showSuccess('Cliente criado!'),
+});
 ```
 
 ### DEPOIS da Integração ✅
 
 **Backend:**
+
 ```php
 return redirect()
     ->with('success', 'Cliente criado!');
@@ -391,7 +418,8 @@ return redirect()
 
 **Resultado:** Toast verde aparece **automaticamente**! 🎉
 
-**Frontend:** 
+**Frontend:**
+
 ```vue
 <!-- NENHUM código necessário! -->
 ```
@@ -400,18 +428,19 @@ return redirect()
 
 ## 🎨 Tipos de Flash Messages Suportadas
 
-| Tipo | Backend | Toast Resultado |
-|------|---------|-----------------|
-| **Success** | `->with('success', '...')` | ✅ Toast verde |
-| **Error** | `->with('error', '...')` | ❌ Toast vermelho |
-| **Info** | `->with('info', '...')` | ℹ️ Toast azul |
-| **Warning** | `->with('warning', '...')` | ⚠️ Toast laranja |
+| Tipo        | Backend                    | Toast Resultado   |
+| ----------- | -------------------------- | ----------------- |
+| **Success** | `->with('success', '...')` | ✅ Toast verde    |
+| **Error**   | `->with('error', '...')`   | ❌ Toast vermelho |
+| **Info**    | `->with('info', '...')`    | ℹ️ Toast azul     |
+| **Warning** | `->with('warning', '...')` | ⚠️ Toast laranja  |
 
 ---
 
 ## 🔧 Arquivos Modificados
 
 ### Backend
+
 ```
 ✅ app/Http/Middleware/HandleInertiaRequests.php
    - Adicionado 'flash' ao array share()
@@ -420,6 +449,7 @@ return redirect()
 ```
 
 ### Frontend
+
 ```
 ✅ resources/js/composables/useFlashMessages.ts (NOVO)
    - Watcher automático de flash messages
@@ -439,6 +469,7 @@ return redirect()
 ### Teste 1: Success Message
 
 **Backend:**
+
 ```php
 // Qualquer controller
 return redirect()->route('dashboard')
@@ -446,6 +477,7 @@ return redirect()->route('dashboard')
 ```
 
 **Ou via Tinker:**
+
 ```bash
 php artisan tinker
 > session()->flash('success', 'Teste de sucesso!');
@@ -453,6 +485,7 @@ php artisan tinker
 ```
 
 **Resultado:**
+
 ```
 ✅ Toast verde: "Teste de sucesso!"
 ```
@@ -460,12 +493,14 @@ php artisan tinker
 ### Teste 2: Error Message
 
 **Simular erro:**
+
 ```php
 return back()
     ->with('error', 'Teste de erro!');
 ```
 
 **Resultado:**
+
 ```
 ❌ Toast vermelho: "Teste de erro!"
 ```
@@ -482,6 +517,7 @@ return redirect()
 ```
 
 **Teste:**
+
 ```
 1. Ir para: /entities?type=client
 2. Clicar em "Novo Cliente"
@@ -495,6 +531,7 @@ return redirect()
 ## 💡 Exemplos de Uso em Todos os Controllers
 
 ### EntityController
+
 ```php
 // Já está usando! ✅
 ->with('success', 'Entidade criada com sucesso!')
@@ -503,6 +540,7 @@ return redirect()
 ```
 
 ### OrderController
+
 ```php
 return redirect()
     ->route('orders.index')
@@ -510,6 +548,7 @@ return redirect()
 ```
 
 ### ProposalController
+
 ```php
 return redirect()
     ->route('proposals.index')
@@ -517,6 +556,7 @@ return redirect()
 ```
 
 ### WorkOrderController
+
 ```php
 return redirect()
     ->route('work-orders.index')
@@ -524,6 +564,7 @@ return redirect()
 ```
 
 ### SupplierInvoiceController
+
 ```php
 return redirect()
     ->route('supplier-invoices.index')
@@ -537,18 +578,21 @@ return redirect()
 ### Use Flash Messages (Backend) ✅ RECOMENDADO
 
 **Para:**
+
 - ✅ Operações CRUD (create, update, delete)
 - ✅ Após redirects
 - ✅ Mensagens de sucesso/erro de operações
 - ✅ Validações de negócio
 
 **Vantagens:**
+
 - ✅ Padrão do Laravel
 - ✅ Automático (sem código frontend)
 - ✅ Funciona com redirects
 - ✅ Mais simples
 
 **Exemplo:**
+
 ```php
 // Backend
 return redirect()->with('success', 'Salvo!');
@@ -559,24 +603,27 @@ return redirect()->with('success', 'Salvo!');
 ### Use Toast Direto (Frontend) Para:
 
 **Para:**
+
 - ✅ Validações inline (sem submit)
 - ✅ Feedback imediato (sem reload)
 - ✅ Operações assíncronas complexas
 - ✅ Loading states
 
 **Vantagens:**
+
 - ✅ Mais controle
 - ✅ Não precisa redirect
 - ✅ Pode usar showLoading() e showPromise()
 
 **Exemplo:**
+
 ```typescript
 // Frontend
-const { showSuccess } = useToast()
+const { showSuccess } = useToast();
 
 const validateNIF = async () => {
-    showSuccess('NIF válido!')
-}
+    showSuccess('NIF válido!');
+};
 ```
 
 ---
@@ -591,11 +638,11 @@ public function store(StoreEntityRequest $request)
 {
     try {
         Entity::create($request->validated());
-        
+
         return redirect()
             ->route('entities.index')
             ->with('success', 'Cliente criado com sucesso!'); // ✅ Toast automático
-            
+
     } catch (\Exception $e) {
         return back()
             ->withInput()
@@ -607,29 +654,30 @@ public function store(StoreEntityRequest $request)
 ```vue
 <!-- Frontend - entities/Create.vue -->
 <script setup lang="ts">
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/composables/useToast';
 
-const { showSuccess, showWarning } = useToast()
+const { showSuccess, showWarning } = useToast();
 
 // Validação VIES (antes de submit)
 const validateVat = async () => {
-    const result = await checkVIES(taxNumber)
-    
+    const result = await checkVIES(taxNumber);
+
     if (result.valid) {
-        showSuccess('NIF válido!', 'Empresa: ' + result.name) // ℹ️ Toast manual
+        showSuccess('NIF válido!', 'Empresa: ' + result.name); // ℹ️ Toast manual
     } else {
-        showWarning('NIF inválido') // ⚠️ Toast manual
+        showWarning('NIF inválido'); // ⚠️ Toast manual
     }
-}
+};
 
 // Submit (após submit)
 const submitForm = form.handleSubmit((values) => {
-    router.post(route, values) // Backend retorna flash message → toast automático ✅
-})
+    router.post(route, values); // Backend retorna flash message → toast automático ✅
+});
 </script>
 ```
 
 **Resultado:**
+
 1. **Validação VIES** → Toast manual: "NIF válido!" (verde)
 2. **Submit** → Redirect com flash
 3. **Nova página** → Toast automático: "Cliente criado!" (verde)
@@ -660,6 +708,7 @@ Verifiquei que **TODOS os controllers** já usam flash messages! 🎉
 ## 🎉 Benefícios da Integração
 
 ### ✅ Antes:
+
 ```
 1. Backend: ->with('success', 'Criado!')
 2. Frontend: Nada aparecia
@@ -668,6 +717,7 @@ Verifiquei que **TODOS os controllers** já usam flash messages! 🎉
 ```
 
 ### ✅ Depois:
+
 ```
 1. Backend: ->with('success', 'Criado!')
 2. Frontend: Toast aparece AUTOMATICAMENTE! ✨
@@ -676,6 +726,7 @@ Verifiquei que **TODOS os controllers** já usam flash messages! 🎉
 ```
 
 ### Estatísticas:
+
 ```
 ✅ ~40 controllers já usando flash messages
 ✅ ~120 operações CRUD com feedback automático
@@ -688,6 +739,7 @@ Verifiquei que **TODOS os controllers** já usam flash messages! 🎉
 ## 🚀 Migração de Controllers Existentes
 
 ### ANTES (alguns controllers sem flash)
+
 ```php
 public function store($request)
 {
@@ -697,16 +749,17 @@ public function store($request)
 ```
 
 ### DEPOIS (com flash messages)
+
 ```php
 public function store($request)
 {
     try {
         Entity::create($request->validated());
-        
+
         return redirect()
             ->route('entities.index')
             ->with('success', 'Entidade criada com sucesso!'); // ✅ Toast verde
-            
+
     } catch (\Exception $e) {
         return back()
             ->with('error', 'Erro ao criar: ' . $e->getMessage()); // ❌ Toast vermelho
@@ -780,12 +833,12 @@ class EntityController extends Controller
     {
         try {
             $entity = Entity::create($request->validated());
-            
+
             // ✅ Toast verde automático
             return redirect()
                 ->route('entities.index')
                 ->with('success', 'Cliente criado com sucesso!');
-                
+
         } catch (\Exception $e) {
             // ❌ Toast vermelho automático
             return back()
@@ -798,12 +851,12 @@ class EntityController extends Controller
     {
         try {
             $entity->update($request->validated());
-            
+
             // ✅ Toast verde automático
             return redirect()
                 ->route('entities.index')
                 ->with('success', 'Cliente atualizado com sucesso!');
-                
+
         } catch (\Exception $e) {
             // ❌ Toast vermelho automático
             return back()
@@ -821,14 +874,14 @@ class EntityController extends Controller
                 return back()
                     ->with('warning', 'Atenção: Este cliente tem encomendas associadas!');
             }
-            
+
             $entity->delete();
-            
+
             // ✅ Toast verde automático
             return redirect()
                 ->route('entities.index')
                 ->with('success', 'Cliente eliminado com sucesso!');
-                
+
         } catch (\Exception $e) {
             // ❌ Toast vermelho automático
             return back()
@@ -843,6 +896,7 @@ class EntityController extends Controller
 ## 🚀 Teste Agora!
 
 ### 1. Criar Entity
+
 ```
 1. Ir para: /entities?type=client
 2. Clicar em "Novo Cliente"
@@ -851,6 +905,7 @@ class EntityController extends Controller
 ```
 
 ### 2. Editar Entity
+
 ```
 1. Editar qualquer cliente
 2. Alterar nome
@@ -859,6 +914,7 @@ class EntityController extends Controller
 ```
 
 ### 3. Erro Proposital
+
 ```
 1. Editar cliente
 2. Alterar NIF para um que já existe
@@ -873,4 +929,3 @@ class EntityController extends Controller
 **Benefit:** Flash messages agora têm feedback visual automático!
 
 🎉 **Agora TODAS as operações mostram toasts automaticamente!** ✨
-

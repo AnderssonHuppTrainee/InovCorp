@@ -101,17 +101,17 @@ class EntityController extends Controller
                         ->with('error', 'Este email já está registado no sistema.');
                 }
             }
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Erro ao criar entidade. Por favor, verifique os dados e tente novamente.');
-                
+
         } catch (\Exception $e) {
             \Log::error('Erro ao criar entidade:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Erro inesperado ao criar entidade. Contacte o suporte.');
@@ -172,18 +172,18 @@ class EntityController extends Controller
                         ->with('error', 'Este email já está registado no sistema.');
                 }
             }
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Erro ao atualizar entidade. Por favor, verifique os dados e tente novamente.');
-                
+
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar entidade:', [
                 'entity_id' => $entity->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Erro inesperado ao atualizar entidade. Contacte o suporte.');
@@ -208,16 +208,16 @@ class EntityController extends Controller
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Esta entidade não pode ser eliminada pois está associada a outros registos (propostas, encomendas, etc).');
             }
-            
+
             return back()->with('error', 'Erro ao eliminar entidade. Por favor, tente novamente.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao eliminar entidade:', [
                 'entity_id' => $entity->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Erro inesperado ao eliminar entidade. Contacte o suporte.');
         }
     }

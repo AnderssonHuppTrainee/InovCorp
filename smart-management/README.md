@@ -93,6 +93,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - ✅ Dados encriptados (GDPR compliant)
 
 **Campos:**
+
 - Informações básicas (nome, NIF, contactos)
 - Endereço completo
 - Website e email
@@ -103,6 +104,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### 2. 💼 Gestão Comercial
 
 #### 📄 Propostas Comerciais
+
 - Criação de propostas profissionais
 - Conversão automática para encomendas
 - Template personalizável
@@ -110,6 +112,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Histórico de versões
 
 #### 🛒 Encomendas de Clientes
+
 - Gestão de encomendas de venda
 - Linhas de artigos com preços e quantidades
 - Cálculo automático de impostos
@@ -117,6 +120,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Status workflow (rascunho, confirmada, processada, concluída)
 
 #### 📦 Encomendas a Fornecedores
+
 - Gestão de compras
 - Controlo de receção de mercadorias
 - Integração com faturas de fornecedor
@@ -124,6 +128,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### 3. 🔧 Gestão de Trabalho
 
 #### 📋 Ordens de Trabalho
+
 - Criação e gestão de OTs
 - Atribuição a utilizadores/técnicos
 - Prioridades (baixa, média, alta, urgente)
@@ -132,6 +137,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Notas técnicas e relatórios
 
 #### 📅 Calendário Integrado
+
 - Visualização de eventos (mensal, semanal, diária)
 - Tipos de evento personalizáveis com cores
 - Drag & drop para reagendar
@@ -141,6 +147,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### 4. 💰 Gestão Financeira
 
 #### 📊 Faturas de Clientes
+
 - Emissão de faturas profissionais
 - Numeração automática sequencial
 - Cálculo de impostos (IVA, retenção)
@@ -149,12 +156,14 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Exportação PDF
 
 #### 📄 Faturas de Fornecedores
+
 - Registo de faturas recebidas
 - Controlo de pagamentos
 - Conciliação bancária
 - Alertas de vencimento
 
 #### 🏦 Contas Bancárias
+
 - Múltiplas contas bancárias
 - Saldo atual
 - Histórico de movimentos
@@ -172,6 +181,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### 6. 📦 Catálogo
 
 #### 🏷️ Artigos
+
 - Gestão de produtos/serviços
 - Preços e taxas de IVA
 - Descrições detalhadas
@@ -179,12 +189,14 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Status (ativo/inativo)
 
 #### 🌍 Países
+
 - Lista de países
 - Códigos ISO
 - Taxas de IVA por país
 - União Europeia (validação VIES)
 
 #### 💵 Taxas de IVA
+
 - Gestão de taxas fiscais
 - Histórico de alterações
 - Aplicação automática
@@ -200,18 +212,21 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### 8. ⚙️ Configurações
 
 #### 🏢 Empresa
+
 - Dados da empresa
 - Logotipo e identidade visual
 - Configurações fiscais
 - Séries de documentos
 
 #### 👤 Utilizadores
+
 - Gestão de utilizadores do sistema
 - Funções e permissões
 - Autenticação de 2 fatores (2FA)
 - Logs de atividade
 
 #### 🔐 Controlo de Acesso
+
 - Roles (Administrador, Gestor, Utilizador)
 - Permissões granulares
 - Políticas de acesso por módulo
@@ -242,19 +257,21 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### Para Pequenas e Médias Empresas
 
 #### ✅ Redução de Custos
+
 ```
 ❌ Antes: Múltiplas ferramentas desconectadas
    - CRM: €50/mês
-   - ERP: €100/mês  
+   - ERP: €100/mês
    - Gestão de Trabalho: €30/mês
    - Total: €180/mês
-   
+
 ✅ Depois: SmartManagement All-in-One
    - Tudo integrado: €99/mês
    - Poupança: €81/mês (45%)
 ```
 
 #### ⚡ Ganho de Produtividade
+
 ```
 ✅ Redução de 70% no tempo de criação de propostas
 ✅ Redução de 60% no tempo de faturação
@@ -264,6 +281,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ```
 
 #### 📈 Crescimento do Negócio
+
 ```
 ✅ Visão 360° dos clientes
 ✅ Identificação de oportunidades
@@ -275,6 +293,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ### Para Utilizadores
 
 #### 🎨 Experiência do Utilizador
+
 - Interface intuitiva e moderna
 - Curva de aprendizagem reduzida
 - Feedback visual constante
@@ -282,6 +301,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - Responsivo em qualquer dispositivo
 
 #### ⚡ Eficiência
+
 - Ações rápidas em 1-2 cliques
 - Busca e filtros poderosos
 - Navegação fluida (SPA)
@@ -293,6 +313,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 ## 🛠 Stack Tecnológica
 
 ### Backend
+
 - **Framework:** Laravel 11.x
 - **Linguagem:** PHP 8.2+
 - **Base de Dados:** MySQL 8.0+
@@ -301,6 +322,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - **Testes:** Pest PHP
 
 ### Frontend
+
 - **Framework:** Vue.js 3.x (Composition API)
 - **Linguagem:** TypeScript 5.x
 - **Build Tool:** Vite 5.x
@@ -314,6 +336,7 @@ Gestão completa de **Clientes** e **Fornecedores** com:
 - **Icons:** Lucide Icons
 
 ### DevOps & Ferramentas
+
 - **Package Manager:** Composer (PHP) + npm (Node.js)
 - **Code Quality:** PHP CS Fixer, ESLint, Prettier
 - **Version Control:** Git
@@ -592,20 +615,24 @@ smart-management/
 ## 🎨 Screenshots
 
 ### Dashboard
+
 ![Dashboard](docs/screenshots/dashboard.png)
-*Dashboard profissional com estatísticas em tempo real*
+_Dashboard profissional com estatísticas em tempo real_
 
 ### Gestão de Clientes
+
 ![Clientes](docs/screenshots/entities.png)
-*Listagem com busca avançada e filtros*
+_Listagem com busca avançada e filtros_
 
 ### Propostas Comerciais
+
 ![Propostas](docs/screenshots/proposals.png)
-*Criação de propostas profissionais*
+_Criação de propostas profissionais_
 
 ### Calendário
+
 ![Calendário](docs/screenshots/calendar.png)
-*Calendário integrado com cores por tipo de evento*
+_Calendário integrado com cores por tipo de evento_
 
 ---
 
@@ -663,7 +690,7 @@ php artisan test --coverage
 # Apenas Feature tests
 php artisan test --testsuite=Feature
 
-# Apenas Unit tests  
+# Apenas Unit tests
 php artisan test --testsuite=Unit
 
 # Teste específico
@@ -781,6 +808,7 @@ php artisan test --filter EntityTest
 Contribuições são bem-vindas! Veja como você pode ajudar:
 
 ### 1. Fork o Projeto
+
 ### 2. Crie uma Branch
 
 ```bash
@@ -1137,4 +1165,3 @@ Se este projeto foi útil para você, considere dar uma ⭐!
 [⬆ Voltar ao topo](#-smartmanagement)
 
 </div>
-

@@ -8,6 +8,7 @@
 ## 🎊 CONFIRMAÇÃO
 
 ### Logs do Console Mostram:
+
 ```javascript
 ✅ useFlashMessages INICIALIZADO
 ✅ Flash watcher triggered: {success: 'Entidade atualizada com sucesso!'}
@@ -16,9 +17,10 @@
 ```
 
 ### Testes Realizados:
+
 ```
 ✅ Create Entity → Toast de sucesso aparece
-✅ Update Entity → Toast de sucesso aparece  
+✅ Update Entity → Toast de sucesso aparece
 ✅ Delete Entity → Toast de sucesso aparece
 ✅ Duplicate NIF → Toast de ERRO aparece (amigável)
 ✅ Foreign Key → Toast de ERRO aparece (amigável)
@@ -31,11 +33,13 @@
 ### 1. Tratamento de Erros Amigável
 
 **Antes ❌:**
+
 ```
 Erro: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'PT500625980' for key 'entities.entities_tax_number_unique' (Connection: mysql, SQL: insert into `entities`...)
 ```
 
 **Depois ✅:**
+
 ```
 Este NIF já está registado no sistema.
 ```
@@ -43,6 +47,7 @@ Este NIF já está registado no sistema.
 ### 2. Tipos de Erro Tratados
 
 #### Duplicate Entry (NIF)
+
 ```php
 if (str_contains($e->getMessage(), 'tax_number')) {
     return back()
@@ -52,6 +57,7 @@ if (str_contains($e->getMessage(), 'tax_number')) {
 ```
 
 #### Duplicate Entry (Email)
+
 ```php
 if (str_contains($e->getMessage(), 'email')) {
     return back()
@@ -61,15 +67,17 @@ if (str_contains($e->getMessage(), 'email')) {
 ```
 
 #### Foreign Key Constraint (Delete)
+
 ```php
 if ($e->getCode() === '23000') {
-    return back()->with('error', 
+    return back()->with('error',
         'Esta entidade não pode ser eliminada pois está associada a outros registos (propostas, encomendas, etc).'
     );
 }
 ```
 
 #### Erro Genérico
+
 ```php
 return back()
     ->withInput()
@@ -90,6 +98,7 @@ return back()
 ## 📋 ARQUIVOS MODIFICADOS
 
 ### Backend
+
 ```
 ✅ app/Http/Controllers/Core/EntityController.php
    - store() com tratamento de erros
@@ -98,6 +107,7 @@ return back()
 ```
 
 ### Frontend
+
 ```
 ✅ resources/js/composables/useFlashMessages.ts
    - Logs de debug removidos
@@ -116,6 +126,7 @@ return back()
 ## 🎯 MENSAGENS DE TOAST
 
 ### Sucesso (Verde)
+
 ```
 ✅ "Entidade criada com sucesso!"
 ✅ "Entidade atualizada com sucesso!"
@@ -123,6 +134,7 @@ return back()
 ```
 
 ### Erro (Vermelho)
+
 ```
 ❌ "Este NIF já está registado no sistema."
 ❌ "Este email já está registado no sistema."
@@ -132,11 +144,13 @@ return back()
 ```
 
 ### Info (Azul)
+
 ```
 ℹ️ "Filtros limpos" (em Index.vue)
 ```
 
 ### Warning (Laranja)
+
 ```
 ⚠️ Disponível para uso futuro
 ```
@@ -148,27 +162,33 @@ return back()
 ### Como Funciona?
 
 1. **Backend envia Flash Message:**
-   ```php
-   return redirect()
-       ->with('success', 'Operação bem-sucedida!');
-   ```
+
+    ```php
+    return redirect()
+        ->with('success', 'Operação bem-sucedida!');
+    ```
 
 2. **Middleware compartilha com Inertia:**
-   ```php
-   'flash' => [
-       'success' => $request->session()->get('success'),
-       'error' => $request->session()->get('error'),
-       // ...
-   ]
-   ```
+
+    ```php
+    'flash' => [
+        'success' => $request->session()->get('success'),
+        'error' => $request->session()->get('error'),
+        // ...
+    ]
+    ```
 
 3. **Frontend escuta automaticamente:**
-   ```typescript
-   watch(() => page.props.flash, (flash) => {
-       if (flash.success) showSuccess(flash.success)
-       if (flash.error) showError(flash.error)
-   })
-   ```
+
+    ```typescript
+    watch(
+        () => page.props.flash,
+        (flash) => {
+            if (flash.success) showSuccess(flash.success);
+            if (flash.error) showError(flash.error);
+        },
+    );
+    ```
 
 4. **Toast aparece na tela! 🎉**
 
@@ -177,6 +197,7 @@ return back()
 ## 💡 BENEFÍCIOS
 
 ### Para o Desenvolvedor
+
 ```
 ✅ 0 código extra necessário no frontend
 ✅ Apenas usar ->with('success', 'mensagem') no backend
@@ -186,6 +207,7 @@ return back()
 ```
 
 ### Para o Usuário
+
 ```
 ✅ Feedback visual instantâneo
 ✅ Mensagens claras e compreensíveis
@@ -199,6 +221,7 @@ return back()
 ## 📊 COBERTURA ATUAL
 
 ### Entities (100% ✅)
+
 ```
 ✅ Create → Toast de sucesso/erro
 ✅ Update → Toast de sucesso/erro
@@ -208,6 +231,7 @@ return back()
 ```
 
 ### Outros Módulos
+
 ```
 ⏳ Orders, Proposals, Work Orders, etc.
    → Já têm ->with('success') no backend
@@ -222,6 +246,7 @@ return back()
 ### Aplicar Mesmo Padrão em Outros Controllers
 
 **Lista de Controllers para melhorar:**
+
 ```
 1. OrderController
 2. ProposalController
@@ -237,18 +262,19 @@ return back()
 ```
 
 **Padrão a aplicar:**
+
 ```php
 try {
     // Operação
     return redirect()->with('success', 'Mensagem amigável');
-    
+
 } catch (\Illuminate\Database\QueryException $e) {
     // Tratar duplicate entry, foreign key, etc
     if ($e->getCode() === '23000') {
         return back()->with('error', 'Mensagem amigável específica');
     }
     return back()->with('error', 'Mensagem amigável genérica');
-    
+
 } catch (\Exception $e) {
     \Log::error('Contexto do erro', ['details' => ...]);
     return back()->with('error', 'Erro inesperado. Contacte o suporte.');
@@ -278,4 +304,3 @@ try {
 
 **Status:** ✅ **SISTEMA DE TOAST COMPLETO E PRODUCTION-READY!**  
 **Próximo:** Aplicar o mesmo padrão de tratamento de erros nos outros controllers.
-

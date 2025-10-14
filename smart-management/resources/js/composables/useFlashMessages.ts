@@ -2,21 +2,7 @@ import { router, usePage } from '@inertiajs/vue3'
 import { watch } from 'vue'
 import { useToast } from './useToast'
 
-/**
- * Composable para integrar Flash Messages do Laravel com Toast (Sonner)
- * 
- * Monitora automaticamente as flash messages do Laravel e as exibe como toast.
- * 
- * @example
- * // No setup de um layout ou componente principal
- * useFlashMessages()
- * 
- * // No backend Laravel (qualquer controller)
- * return redirect()->with('success', 'Cliente criado com sucesso!')
- * return back()->with('error', 'Erro ao eliminar fornecedor')
- * return redirect()->with('info', 'Processamento em andamento...')
- * return back()->with('warning', 'Atenção: Esta ação não pode ser revertida')
- */
+
 export function useFlashMessages() {
     const page = usePage()
     const { showSuccess, showError, showInfo, showWarning } = useToast()
@@ -24,8 +10,10 @@ export function useFlashMessages() {
     console.log('🔧 useFlashMessages ATIVADO')
     console.log('📦 page.props.flash:', page.props.flash)
 
+    
+
     /**
-     * Watch para flash messages
+     * 
      * Exibe automaticamente as mensagens quando mudam
      */
     watch(

@@ -26,6 +26,10 @@ useFlashMessages();
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
         </AppContent>
-        <Toaster />
+        <Toaster
+            position="top-right"
+            :duration="3000"
+            class="fixed top-4 right-4 z-[9999]"
+        />
     </AppShell>
 </template>

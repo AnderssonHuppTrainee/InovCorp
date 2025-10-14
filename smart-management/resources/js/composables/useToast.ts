@@ -1,107 +1,76 @@
 import { toast } from 'vue-sonner'
 
-/**
- * Composable para facilitar o uso de notificações toast
- * Baseado no Sonner (vue-sonner)
- * 
- * @example
- * const { showSuccess, showError, showInfo } = useToast()
- * 
- * showSuccess('Cliente criado com sucesso!')
- * showError('Erro ao eliminar fornecedor')
- * showInfo('A processar...')
- */
 export function useToast() {
-    /**
-     * Mostra notificação de sucesso
-     */
-    const showSuccess = (message: string, description?: string) => {
-        toast.success(message, {
-            description,
-            duration: 4000,
-        })
-    }
+  const baseClass =
+    'flex items-center gap-2 px-4 py-3 rounded-lg shadow-md font-medium text-sm'
 
-    /**
-     * Mostra notificação de erro
-     */
-    const showError = (message: string, description?: string) => {
-        toast.error(message, {
-            description,
-            duration: 5000,
-        })
-    }
+  const variants = {
+    success: 'bg-green-600 text-white',
+    error: 'bg-red-600 text-white',
+    info: 'bg-blue-600 text-white',
+    warning: 'bg-yellow-400 text-black',
+  }
 
-    /**
-     * Mostra notificação informativa
-     */
-    const showInfo = (message: string, description?: string) => {
-        toast.info(message, {
-            description,
-            duration: 4000,
-        })
-    }
+  const showSuccess = (message: string, description?: string) => {
+    toast.success(message, {
+      unstyled: true,
+      description,
+      duration: 4000,
+      class: `${baseClass} ${variants.success}`,
+    })
+  }
 
-    /**
-     * Mostra notificação de aviso
-     */
-    const showWarning = (message: string, description?: string) => {
-        toast.warning(message, {
-            description,
-            duration: 4000,
-        })
-    }
+  const showError = (message: string, description?: string) => {
+    toast.error(message, {
+      unstyled: true,
+      description,
+      duration: 5000,
+      class: `${baseClass} ${variants.error}`,
+    })
+  }
 
-    /**
-     * Mostra notificação de loading
-     * Retorna ID para poder dismissar depois
-     */
-    const showLoading = (message: string, description?: string) => {
-        return toast.loading(message, {
-            description,
-        })
-    }
+  const showInfo = (message: string, description?: string) => {
+    toast(message, {
+      unstyled: true,
+      description,
+      duration: 4000,
+      class: `${baseClass} ${variants.info}`,
+    })
+  }
 
-    /**
-     * Mostra notificação com promessa
-     * Útil para ações assíncronas
-     */
-    const showPromise = <T,>(
-        promise: Promise<T>,
-        messages: {
-            loading: string
-            success: string | ((data: T) => string)
-            error: string | ((error: Error) => string)
-        }
-    ) => {
-        return toast.promise(promise, messages)
-    }
+  const showWarning = (message: string, description?: string) => {
+    toast.warning(message, {
+      unstyled: true,
+      description,
+      duration: 4000,
+      class: `${baseClass} ${variants.warning}`,
+    })
+  }
 
-    /**
-     * Dismissar uma notificação específica
-     */
-    const dismiss = (id?: string | number) => {
-        toast.dismiss(id)
-    }
+  const showLoading = (message: string, description?: string) =>
+    toast.loading(message, { description, class: `${baseClass} bg-gray-800 text-white` })
 
-    /**
-     * Dismissar todas as notificações
-     */
-    const dismissAll = () => {
-        toast.dismiss()
+  const showPromise = <T,>(
+    promise: Promise<T>,
+    messages: {
+      loading: string
+      success: string | ((data: T) => string)
+      error: string | ((error: Error) => string)
     }
+  ) => toast.promise(promise, messages)
 
-    return {
-        showSuccess,
-        showError,
-        showInfo,
-        showWarning,
-        showLoading,
-        showPromise,
-        dismiss,
-        dismissAll,
-        // Exportar toast original para casos avançados
-        toast,
-    }
+  const dismiss = (id?: string | number) => toast.dismiss(id)
+  const dismissAll = () => toast.dismiss()
+
+  return {
+    showSuccess,
+    showError,
+    showInfo,
+    showWarning,
+    showLoading,
+    showPromise,
+    dismiss,
+    dismissAll,
+    toast,
+  }
 }
-

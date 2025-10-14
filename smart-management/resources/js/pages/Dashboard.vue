@@ -104,7 +104,6 @@ const profit =
 
 // Função de teste do Toast
 const testToast = () => {
-    console.log('🧪 Testando toast...');
     showSuccess('Toast funcionando!', 'Sistema de notificações configurado corretamente.');
     setTimeout(() => showError('Teste de erro', 'Este é um erro de teste'), 500);
     setTimeout(() => showInfo('Teste de info', 'Esta é uma informação'), 1000);

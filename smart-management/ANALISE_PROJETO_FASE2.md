@@ -9,6 +9,7 @@
 ## 📊 RESUMO EXECUTIVO
 
 ### ✅ O que está FUNCIONANDO
+
 ```
 ✅ 21 páginas Index.vue padronizadas com Head e breadcrumbs
 ✅ Dashboard profissional implementada
@@ -20,6 +21,7 @@
 ```
 
 ### ⚠️ O que precisa MELHORAR
+
 ```
 ⚠️ Código ALTAMENTE DUPLICADO em páginas CRUD
 ⚠️ Falta de componentes wrapper reutilizáveis
@@ -34,6 +36,7 @@
 ## 🎯 FASE 2: PLANO DE REFATORAÇÃO
 
 ### Objetivos Principais
+
 1. **Reduzir duplicação de código em 70%**
 2. **Criar componentes wrapper reutilizáveis**
 3. **Melhorar manutenibilidade**
@@ -48,6 +51,7 @@
 ❌ **Problema:** Apenas páginas Index.vue têm Head e breadcrumbs
 
 **Páginas afetadas (aproximadamente 40 arquivos):**
+
 ```
 ❌ entities/Create.vue - SEM Head/breadcrumbs
 ❌ entities/Edit.vue - SEM Head/breadcrumbs
@@ -72,6 +76,7 @@
 ```
 
 ✅ **Solução:**
+
 - Adicionar `<Head title="...">` em todas as páginas
 - Adicionar `breadcrumbs` prop no AppLayout
 - Padrão: `Listagem > Criar` ou `Listagem > Editar > Item`
@@ -85,6 +90,7 @@
 ❌ **Problema:** Páginas de visualização também sem padrão
 
 **Páginas afetadas (~16 arquivos):**
+
 ```
 ❌ entities/Show.vue
 ❌ orders/Show.vue
@@ -97,6 +103,7 @@
 ```
 
 ✅ **Solução:**
+
 - Padronizar igual Create/Edit
 - Breadcrumb: `Listagem > Ver > Nome do Item`
 
@@ -111,6 +118,7 @@
 ❌ **Problema:** Código IDÊNTICO repetido 15x
 
 **Código duplicado:**
+
 ```vue
 <!-- Repetido em TODOS os Index.vue -->
 <div class="flex items-center space-x-2">
@@ -154,6 +162,7 @@
 ```
 
 **Arquivos afetados:**
+
 ```
 1. entities/Index.vue (80 linhas de paginação)
 2. orders/Index.vue (80 linhas de paginação)
@@ -177,12 +186,13 @@ TOTAL: ~1,200 linhas de código duplicado!
 ✅ **Solução:** Criar `<PaginationControls>` component
 
 **Novo componente:**
+
 ```vue
 <!-- components/PaginationControls.vue -->
 <script setup lang="ts">
 interface Props {
-    data: PaginatedData
-    onPageChange: (page: number) => void
+    data: PaginatedData;
+    onPageChange: (page: number) => void;
 }
 </script>
 
@@ -194,6 +204,7 @@ interface Props {
 ```
 
 **Uso:**
+
 ```vue
 <!-- De 80 linhas para 2 linhas! -->
 <PaginationControls :data="entities" @page-change="goToPage" />
@@ -211,6 +222,7 @@ interface Props {
 ❌ **Problema:** Lógica de filtros repetida em cada página
 
 **Código duplicado:**
+
 ```vue
 <!-- Repetido 20x com pequenas variações -->
 <div class="flex flex-1 gap-2">
@@ -266,24 +278,26 @@ const clearFilters = () => {
 ✅ **Solução:** Criar `<SearchFilters>` component
 
 **Novo componente:**
+
 ```vue
 <!-- components/SearchFilters.vue -->
 <script setup lang="ts">
 interface Filter {
-    key: string
-    label: string
-    options: { value: string, label: string }[]
+    key: string;
+    label: string;
+    options: { value: string; label: string }[];
 }
 
 interface Props {
-    filters: Record<string, any>
-    availableFilters: Filter[]
-    searchPlaceholder?: string
+    filters: Record<string, any>;
+    availableFilters: Filter[];
+    searchPlaceholder?: string;
 }
 </script>
 ```
 
 **Uso:**
+
 ```vue
 <!-- De ~100 linhas para 5 linhas! -->
 <SearchFilters
@@ -306,21 +320,22 @@ interface Props {
 ❌ **Problema:** Funções IDÊNTICAS repetidas 36x
 
 **Código duplicado:**
+
 ```typescript
 // Repetido em 36 páginas Show.vue e Index.vue
 const handleCreate = () => {
-    router.visit(route('entities.create', { type: props.type }))
-}
+    router.visit(route('entities.create', { type: props.type }));
+};
 
 const handleEdit = (id: number) => {
-    router.visit(route('entities.edit', id))
-}
+    router.visit(route('entities.edit', id));
+};
 
 const handleDelete = (id: number) => {
     if (confirm('Tem certeza que deseja eliminar?')) {
-        router.delete(route('entities.destroy', id))
+        router.delete(route('entities.destroy', id));
     }
-}
+};
 ```
 
 **Arquivos afetados:** 36 arquivos (Index + Show)
@@ -330,33 +345,36 @@ const handleDelete = (id: number) => {
 ✅ **Solução:** Criar composable `useResourceActions`
 
 **Novo composable:**
+
 ```typescript
 // composables/useResourceActions.ts
 export function useResourceActions(resource: string) {
     const handleCreate = (params = {}) => {
-        router.visit(route(`${resource}.create`, params))
-    }
+        router.visit(route(`${resource}.create`, params));
+    };
 
     const handleEdit = (id: number) => {
-        router.visit(route(`${resource}.edit`, id))
-    }
+        router.visit(route(`${resource}.edit`, id));
+    };
 
     const handleDelete = (id: number, onSuccess?: () => void) => {
         // Lógica de confirmação + delete
-    }
+    };
 
     const handleShow = (id: number) => {
-        router.visit(route(`${resource}.show`, id))
-    }
+        router.visit(route(`${resource}.show`, id));
+    };
 
-    return { handleCreate, handleEdit, handleDelete, handleShow }
+    return { handleCreate, handleEdit, handleDelete, handleShow };
 }
 ```
 
 **Uso:**
+
 ```typescript
 // De 20 linhas para 1 linha!
-const { handleCreate, handleEdit, handleDelete } = useResourceActions('entities')
+const { handleCreate, handleEdit, handleDelete } =
+    useResourceActions('entities');
 ```
 
 **Redução:** De ~500 linhas para ~80 linhas (composable) + 36 linhas (uso)  
@@ -373,18 +391,19 @@ const { handleCreate, handleEdit, handleDelete } = useResourceActions('entities'
 **Objetivo:** Encapsular padrão repetido em páginas Index.vue
 
 **Estrutura:**
+
 ```vue
 <!-- components/wrappers/IndexWrapper.vue -->
 <script setup lang="ts">
 interface Props {
-    title: string
-    description: string
-    data: PaginatedData
-    columns: ColumnDef[]
-    filters?: FilterConfig[]
-    searchPlaceholder?: string
-    createRoute?: string
-    createLabel?: string
+    title: string;
+    description: string;
+    data: PaginatedData;
+    columns: ColumnDef[];
+    filters?: FilterConfig[];
+    searchPlaceholder?: string;
+    createRoute?: string;
+    createLabel?: string;
 }
 </script>
 
@@ -418,6 +437,7 @@ interface Props {
 ```
 
 **Uso (ANTES - 330 linhas):**
+
 ```vue
 <!-- entities/Index.vue - ANTES -->
 <template>
@@ -425,16 +445,17 @@ interface Props {
 </template>
 
 <script setup lang="ts">
-    // 150 linhas de lógica
+// 150 linhas de lógica
 </script>
 ```
 
 **Uso (DEPOIS - 50 linhas):**
+
 ```vue
 <!-- entities/Index.vue - DEPOIS -->
 <template>
     <Head :title="type === 'client' ? 'Clientes' : 'Fornecedores'" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <IndexWrapper
             :title="type === 'client' ? 'Clientes' : 'Fornecedores'"
@@ -459,6 +480,7 @@ const breadcrumbs = [...]
 ```
 
 **Impacto:**
+
 - 21 páginas Index.vue
 - De ~330 linhas cada para ~50 linhas cada
 - **Redução: ~5,880 linhas (-84%)**
@@ -472,15 +494,16 @@ const breadcrumbs = [...]
 **Objetivo:** Encapsular padrão repetido em páginas Create/Edit
 
 **Estrutura:**
+
 ```vue
 <!-- components/wrappers/FormWrapper.vue -->
 <script setup lang="ts">
 interface Props {
-    title: string
-    description: string
-    mode: 'create' | 'edit'
-    loading?: boolean
-    backRoute: string
+    title: string;
+    description: string;
+    mode: 'create' | 'edit';
+    loading?: boolean;
+    backRoute: string;
 }
 </script>
 
@@ -496,13 +519,16 @@ interface Props {
         <Card>
             <CardContent class="p-6">
                 <slot name="form" />
-                
-                <div class="flex justify-end gap-3 mt-6">
+
+                <div class="mt-6 flex justify-end gap-3">
                     <Button type="button" variant="outline" @click="goBack">
                         Cancelar
                     </Button>
                     <Button type="submit" :disabled="loading">
-                        <LoaderIcon v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
+                        <LoaderIcon
+                            v-if="loading"
+                            class="mr-2 h-4 w-4 animate-spin"
+                        />
                         {{ mode === 'create' ? 'Criar' : 'Atualizar' }}
                     </Button>
                 </div>
@@ -513,6 +539,7 @@ interface Props {
 ```
 
 **Impacto:**
+
 - ~40 páginas Create/Edit
 - De ~500 linhas cada para ~350 linhas cada
 - **Redução: ~6,000 linhas (-30%)**
@@ -526,16 +553,17 @@ interface Props {
 **Objetivo:** Encapsular padrão em páginas Show
 
 **Estrutura:**
+
 ```vue
 <!-- components/wrappers/ShowWrapper.vue -->
 <script setup lang="ts">
 interface Props {
-    title: string
-    data: any
-    fields: FieldConfig[]
-    editRoute?: string
-    deleteRoute?: string
-    backRoute: string
+    title: string;
+    data: any;
+    fields: FieldConfig[];
+    editRoute?: string;
+    deleteRoute?: string;
+    backRoute: string;
 }
 </script>
 
@@ -551,7 +579,11 @@ interface Props {
                     <PenIcon class="mr-2 h-4 w-4" />
                     Editar
                 </Button>
-                <Button v-if="deleteRoute" variant="destructive" @click="handleDelete">
+                <Button
+                    v-if="deleteRoute"
+                    variant="destructive"
+                    @click="handleDelete"
+                >
                     <TrashIcon class="mr-2 h-4 w-4" />
                     Eliminar
                 </Button>
@@ -570,6 +602,7 @@ interface Props {
 ```
 
 **Impacto:**
+
 - ~16 páginas Show
 - De ~400 linhas cada para ~200 linhas cada
 - **Redução: ~3,200 linhas (-50%)**
@@ -582,15 +615,15 @@ interface Props {
 
 ### Redução de Código
 
-| Componente | Antes | Depois | Economia | % |
-|------------|-------|--------|----------|---|
-| **Paginação** | 1,200 linhas | 180 linhas | 1,020 linhas | -85% |
-| **Filtros** | 2,000 linhas | 300 linhas | 1,700 linhas | -85% |
-| **Ações CRUD** | 500 linhas | 116 linhas | 384 linhas | -77% |
-| **IndexWrapper** | 6,930 linhas | 1,050 linhas | 5,880 linhas | -84% |
-| **FormWrapper** | 20,000 linhas | 14,000 linhas | 6,000 linhas | -30% |
-| **ShowWrapper** | 6,400 linhas | 3,200 linhas | 3,200 linhas | -50% |
-| **TOTAL** | **37,030 linhas** | **18,846 linhas** | **18,184 linhas** | **-49%** |
+| Componente       | Antes             | Depois            | Economia          | %        |
+| ---------------- | ----------------- | ----------------- | ----------------- | -------- |
+| **Paginação**    | 1,200 linhas      | 180 linhas        | 1,020 linhas      | -85%     |
+| **Filtros**      | 2,000 linhas      | 300 linhas        | 1,700 linhas      | -85%     |
+| **Ações CRUD**   | 500 linhas        | 116 linhas        | 384 linhas        | -77%     |
+| **IndexWrapper** | 6,930 linhas      | 1,050 linhas      | 5,880 linhas      | -84%     |
+| **FormWrapper**  | 20,000 linhas     | 14,000 linhas     | 6,000 linhas      | -30%     |
+| **ShowWrapper**  | 6,400 linhas      | 3,200 linhas      | 3,200 linhas      | -50%     |
+| **TOTAL**        | **37,030 linhas** | **18,846 linhas** | **18,184 linhas** | **-49%** |
 
 ### Benefícios
 
@@ -606,17 +639,19 @@ interface Props {
 ## ⏱️ ESTIMATIVA DE TEMPO - FASE 2
 
 ### Quick Wins (1-2 dias)
+
 ```
 1. PaginationControls component     2h
 2. SearchFilters component          3h
 3. useResourceActions composable    2h
-4. Adicionar Head/Breadcrumbs em 
+4. Adicionar Head/Breadcrumbs em
    Create/Edit/Show                 4h
 ────────────────────────────────────────
 SUBTOTAL:                           11h (~1.5 dias)
 ```
 
 ### Componentes Wrapper (3-4 dias)
+
 ```
 5. IndexWrapper component           6h
 6. FormWrapper component            5h
@@ -629,6 +664,7 @@ SUBTOTAL:                           31h (~4 dias)
 ```
 
 ### Polimento Final (1 dia)
+
 ```
 11. Testes dos componentes          3h
 12. Documentação                    2h
@@ -645,6 +681,7 @@ SUBTOTAL:                           8h (1 dia)
 ## 🎯 PLANO DE EXECUÇÃO RECOMENDADO
 
 ### Semana 1: Quick Wins
+
 ```
 Dia 1:
   ✅ PaginationControls component
@@ -656,6 +693,7 @@ Dia 2:
 ```
 
 ### Semana 2: Wrappers
+
 ```
 Dia 3:
   ✅ IndexWrapper component
@@ -670,6 +708,7 @@ Dia 5:
 ```
 
 ### Semana 3: Finalização
+
 ```
 Dia 6:
   ✅ Migrar 20 páginas Create/Edit restantes
@@ -688,12 +727,14 @@ Dia 7:
 ## 🔍 OUTRAS INCONSISTÊNCIAS MENORES
 
 ### 1. Policies não implementadas
+
 ```
 ❌ app/Policies/ProposalsPolicy.php - Todos métodos retornam false
 ❌ Outras policies podem ter o mesmo problema
 ```
 
 ### 2. Testes Feature faltando
+
 ```
 ✅ 66/66 Unit Tests (100%)
 ⚠️  Testes Feature incompletos
@@ -706,6 +747,7 @@ Dia 7:
 ```
 
 ### 3. Documentação técnica
+
 ```
 ⚠️  README.md básico
 ⚠️  Falta documentação de:
@@ -720,6 +762,7 @@ Dia 7:
 ## 📋 CHECKLIST FASE 2
 
 ### Quick Wins
+
 - [ ] Criar PaginationControls component
 - [ ] Criar SearchFilters component
 - [ ] Criar useResourceActions composable
@@ -728,6 +771,7 @@ Dia 7:
 - [ ] Adicionar breadcrumbs em todas Create/Edit/Show (56 páginas)
 
 ### Componentes Wrapper
+
 - [ ] Criar IndexWrapper component
 - [ ] Migrar 21 páginas Index.vue para usar IndexWrapper
 - [ ] Criar FormWrapper component
@@ -736,12 +780,14 @@ Dia 7:
 - [ ] Migrar 16 páginas Show.vue para usar ShowWrapper
 
 ### Polimento
+
 - [ ] Testes para novos componentes
 - [ ] Documentação dos componentes
 - [ ] Code review completo
 - [ ] Correção de bugs encontrados
 
 ### Extras (Opcional)
+
 - [ ] Implementar policies corretamente
 - [ ] Criar testes Feature completos
 - [ ] Melhorar documentação técnica (README, CONTRIBUTING, etc.)
@@ -751,6 +797,7 @@ Dia 7:
 ## 🎉 RESULTADO ESPERADO
 
 **ANTES (Atual):**
+
 ```
 - 21 Index.vue com ~330 linhas cada = 6,930 linhas
 - 40 Create/Edit com ~500 linhas cada = 20,000 linhas
@@ -761,6 +808,7 @@ TOTAL: ~53,330 linhas
 ```
 
 **DEPOIS (Fase 2):**
+
 ```
 - 21 Index.vue com ~50 linhas cada = 1,050 linhas
 - 40 Create/Edit com ~350 linhas cada = 14,000 linhas
@@ -778,6 +826,7 @@ TOTAL: ~19,050 linhas
 ## 💡 RECOMENDAÇÃO FINAL
 
 ### Começar AGORA com Quick Wins
+
 ```
 1. PaginationControls     (2h) ⭐ MÁXIMO IMPACTO
 2. SearchFilters          (3h) ⭐ MÁXIMO IMPACTO
@@ -789,6 +838,7 @@ TOTAL: 7 horas para 50% dos benefícios!
 Esses 3 itens sozinhos já reduzem ~3,100 linhas de código (-8%)!
 
 ### Depois continuar com IndexWrapper
+
 ```
 4. IndexWrapper           (6h) ⭐ MÁXIMO IMPACTO
 5. Migração Index.vue     (6h)
@@ -803,4 +853,3 @@ TOTAL: +12 horas para mais 15% de benefícios!
 **Recomendação:** Começar com Quick Wins para resultados rápidos!
 
 🚀 **Sistema está excelente, mas pode ficar PERFEITO com Fase 2!**
-

@@ -484,9 +484,10 @@ const handleGdprChange = (e) => {
 };
 
 const validateVat = async () => {
-    console.log('validateVat foi chamado');
-    console.log('NIF atual:', form.values.tax_number);
-    if (!form.values.tax_number) return;
+    // Verificar se o NIF tem conteúdo antes de validar
+    if (!form.values.tax_number || form.values.tax_number.trim() === '') {
+        return;
+    }
 
     vatLoading.value = true;
     vatResult.value = null;

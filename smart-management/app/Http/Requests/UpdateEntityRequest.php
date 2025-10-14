@@ -21,8 +21,11 @@ class UpdateEntityRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(Entity $entity): array
+    public function rules(): array
     {
+        // Obter entity da rota
+        $entity = $this->route('entity');
+        
         return [
             'tax_number' => [
                 'required',

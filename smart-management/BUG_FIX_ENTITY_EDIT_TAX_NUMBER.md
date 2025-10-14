@@ -9,6 +9,7 @@
 ## 📋 Descrição do Problema
 
 ### Sintoma
+
 Ao tentar **editar** uma entidade (cliente ou fornecedor) e salvar, o sistema retornava o erro:
 
 ```
@@ -18,12 +19,13 @@ Ao tentar **editar** uma entidade (cliente ou fornecedor) e salvar, o sistema re
 Mesmo **sem alterar o NIF**, o sistema reclamava que o NIF já existia.
 
 ### Logs do Console
+
 ```javascript
-Edit.vue:575 Erros no formulário: 
+Edit.vue:575 Erros no formulário:
   {tax_number: 'The tax number has already been taken.'}
 
 Edit.vue:487 validateVat foi chamado
-Edit.vue:488 NIF atual: 
+Edit.vue:488 NIF atual:
 ```
 
 ---
@@ -52,6 +54,7 @@ public function rules(Entity $entity): array
 ```
 
 **Problema:**
+
 - Laravel **não injeta automaticamente** parâmetros no método `rules()`
 - A variável `$entity` estava `null` ou `undefined`
 - `->ignore(null)` não ignorava nada
@@ -68,10 +71,11 @@ const validateVat = async () => {
     console.log('NIF atual:', form.values.tax_number);
     if (!form.values.tax_number) return;
     // ...
-}
+};
 ```
 
 **Problema:**
+
 - `@blur="validateVat"` chamava a função mesmo quando o campo estava vazio
 - Logs desnecessários no console
 - Pode causar chamadas API desnecessárias
@@ -90,7 +94,7 @@ public function rules(): array
 {
     // Obter entity da rota
     $entity = $this->route('entity');
-    
+
     return [
         'tax_number' => [
             'required',
@@ -105,6 +109,7 @@ public function rules(): array
 ```
 
 **Mudanças:**
+
 1. ✅ Removido parâmetro `Entity $entity` do método
 2. ✅ Adicionada linha `$entity = $this->route('entity')`
 3. ✅ Laravel agora resolve corretamente o ID da entity
@@ -121,10 +126,11 @@ const validateVat = async () => {
         return;
     }
     // ...
-}
+};
 ```
 
 **Mudanças:**
+
 1. ✅ Removidos console.logs desnecessários
 2. ✅ Adicionada verificação de string vazia (`trim()`)
 3. ✅ Return antecipado se campo vazio
@@ -134,6 +140,7 @@ const validateVat = async () => {
 ## 🧪 Como Testar
 
 ### 1. Editar Entity sem alterar NIF
+
 ```
 1. Ir para: /entities?type=client
 2. Clicar em "Editar" em qualquer cliente
@@ -143,6 +150,7 @@ const validateVat = async () => {
 ```
 
 ### 2. Editar Entity alterando NIF
+
 ```
 1. Ir para editar um cliente
 2. Alterar o NIF para um número DIFERENTE
@@ -151,6 +159,7 @@ const validateVat = async () => {
 ```
 
 ### 3. Tentar usar NIF de outra Entity
+
 ```
 1. Ir para editar cliente A
 2. Alterar NIF para o NIF do cliente B (que já existe)
@@ -163,6 +172,7 @@ const validateVat = async () => {
 ## 📊 Impacto da Correção
 
 ### ANTES ❌
+
 ```
 ✅ Criar entity: FUNCIONAVA
 ❌ Editar entity: SEMPRE falhava com "tax_number already taken"
@@ -170,6 +180,7 @@ const validateVat = async () => {
 ```
 
 ### DEPOIS ✅
+
 ```
 ✅ Criar entity: FUNCIONANDO
 ✅ Editar entity: FUNCIONANDO (próprio NIF ignorado)
@@ -205,6 +216,7 @@ public function rules(): array
 ### Alternativas Válidas
 
 **Opção 1:** Usar `$this->route()`
+
 ```php
 public function rules(): array
 {
@@ -214,6 +226,7 @@ public function rules(): array
 ```
 
 **Opção 2:** Usar o ID diretamente da rota
+
 ```php
 public function rules(): array
 {
@@ -228,6 +241,7 @@ public function rules(): array
 ```
 
 **Opção 3:** Usar `sometimes` com callback
+
 ```php
 public function rules(): array
 {
@@ -257,11 +271,12 @@ Deve-se verificar se outros `Update*Request` têm o mesmo problema:
 ```
 
 **Padrão a seguir:**
+
 ```php
 public function rules(): array  // SEM parâmetros!
 {
     $model = $this->route('routeParam');  // Pegar da rota
-    
+
     return [
         'field' => Rule::unique('table')->ignore($model->id)
     ];
@@ -273,6 +288,7 @@ public function rules(): array  // SEM parâmetros!
 ## 📈 Arquivos Modificados
 
 ### Backend
+
 ```
 ✅ app/Http/Requests/UpdateEntityRequest.php
    - Corrigido método rules()
@@ -281,6 +297,7 @@ public function rules(): array  // SEM parâmetros!
 ```
 
 ### Frontend
+
 ```
 ✅ resources/js/pages/entities/Edit.vue
    - Removidos console.logs
@@ -339,4 +356,3 @@ public function rules(): array  // SEM parâmetros!
 **Status:** ✅ **PRODUCTION-READY**
 
 🎉 **Edit de Entities 100% Funcional!**
-

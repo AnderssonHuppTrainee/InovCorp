@@ -85,7 +85,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Refs
 const calendarRef = ref();
 const showEventDialog = ref(false);
 const showFilters = ref(false);
@@ -93,13 +92,11 @@ const isEditMode = ref(false);
 const selectedEventId = ref<number | null>(null);
 const isSubmitting = ref(false);
 
-// Filters
 const userFilter = ref(props.filters.user_id?.toString() || 'all');
 const entityFilter = ref(props.filters.entity_id?.toString() || 'all');
 const typeFilter = ref(props.filters.type_id?.toString() || 'all');
 const statusFilter = ref(props.filters.status || 'all');
 
-// Form
 const form = useForm({
     validationSchema: toTypedSchema(calendarEventSchema),
     initialValues: {
@@ -116,7 +113,6 @@ const form = useForm({
     },
 });
 
-// FullCalendar configuration
 const calendarOptions = computed<CalendarOptions>(() => ({
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
     initialView: 'dayGridMonth',
@@ -159,12 +155,10 @@ const calendarOptions = computed<CalendarOptions>(() => ({
     },
 }));
 
-// Handlers
 const handleDateSelect = (selectInfo: DateSelectArg) => {
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
 
-    // Preencher formulário com data/hora selecionada
     const startDate = new Date(selectInfo.start);
     form.setFieldValue('event_date', selectInfo.startStr.split('T')[0]);
     form.setFieldValue('event_time', startDate.toTimeString().substring(0, 5));
@@ -194,22 +188,18 @@ const handleEventClick = (clickInfo: EventClickArg) => {
     const eventId = parseInt(clickInfo.event.id);
     selectedEventId.value = eventId;
 
-    // Buscar detalhes do evento
     fetch(calendar.show(eventId).url)
         .then((res) => res.json())
         .then((data) => {
             console.log('Event loaded:', data);
             isEditMode.value = true;
 
-            // Convert shared_with array to strings (user IDs)
             const sharedWith = Array.isArray(data.event.shared_with)
                 ? data.event.shared_with.map((id: number) => id.toString())
                 : [];
 
-            // Ensure event_time is in HH:MM format
             let eventTime = data.event.event_time;
             if (eventTime && eventTime.length > 5) {
-                // If it's in HH:MM:SS format, extract only HH:MM
                 eventTime = eventTime.substring(0, 5);
             }
 
@@ -279,7 +269,6 @@ const handleEventResize = (resizeInfo: EventResizeDoneArg) => {
 };
 
 const submitForm = form.handleSubmit((values) => {
-    // Prevent double submission
     if (isSubmitting.value) {
         console.log('Already submitting, ignoring duplicate submit');
         return;
@@ -287,7 +276,6 @@ const submitForm = form.handleSubmit((values) => {
 
     isSubmitting.value = true;
 
-    // Transform shared_with to numbers for backend
     const payload = {
         ...values,
         shared_with: Array.isArray(values.shared_with)
@@ -403,10 +391,8 @@ const handleSharedWithChange = (userId: string, event: Event) => {
     const currentShared = form.values.shared_with || [];
 
     if (checked) {
-        // Add user to shared_with
         form.setFieldValue('shared_with', [...currentShared, userId]);
     } else {
-        // Remove user from shared_with
         form.setFieldValue(
             'shared_with',
             currentShared.filter((id) => id !== userId),
@@ -693,7 +679,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </FormField>
                         </div>
 
-                        <!-- Ação e Entidade -->
                         <div class="grid grid-cols-2 gap-4">
                             <FormField
                                 v-slot="{ componentField }"
@@ -819,7 +804,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </FormItem>
                         </FormField>
 
-                        <!-- Conhecimento -->
                         <div
                             class="flex items-center space-x-3 rounded-lg border p-4"
                         >
@@ -844,7 +828,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </div>
                         </div>
 
-                        <!-- Estado (apenas em edição) -->
                         <FormField
                             v-if="isEditMode"
                             v-slot="{ componentField }"
@@ -906,7 +889,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 </template>
 
 <style>
-/* FullCalendar Styles */
 :root {
     --fc-border-color: hsl(var(--border));
     --fc-button-bg-color: hsl(var(--primary));
@@ -915,9 +897,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     --fc-button-hover-border-color: hsl(var(--primary) / 0.9);
     --fc-button-active-bg-color: hsl(var(--primary) / 0.8);
     --fc-button-active-border-color: hsl(var(--primary) / 0.8);
-    --fc-event-bg-color: hsl(var(--primary));
-    --fc-event-border-color: hsl(var(--primary));
-    --fc-event-text-color: hsl(var(--primary-foreground));
+    /* Removido para permitir cores individuais dos eventos:
+       --fc-event-bg-color
+       --fc-event-border-color
+       --fc-event-text-color
+    */
     --fc-today-bg-color: hsl(var(--accent));
 }
 

@@ -25,7 +25,7 @@ class UpdateEntityRequest extends FormRequest
     {
         // Obter entity da rota
         $entity = $this->route('entity');
-        
+
         return [
             'tax_number' => [
                 'required',

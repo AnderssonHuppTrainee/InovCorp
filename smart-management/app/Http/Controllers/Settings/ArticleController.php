@@ -44,13 +44,32 @@ class ArticleController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('articles', 'public');
+        try {
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = $request->file('photo')->store('articles', 'public');
+            }
+
+            $article = Article::create($validated);
+
+            return redirect()->route('articles.index')->with('success', 'Artigo criado com sucesso!');
+            
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'reference')) {
+                    return back()->withInput()->with('error', 'Esta referência já está registada no sistema.');
+                }
+            }
+            
+            return back()->withInput()->with('error', 'Erro ao criar artigo. Por favor, verifique os dados.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar artigo:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withInput()->with('error', 'Erro inesperado ao criar artigo. Contacte o suporte.');
         }
-
-        $article = Article::create($validated);
-
-        return redirect()->route('articles.index')->with('success', 'Artigo criado!');
     }
 
     public function show(Article $article)
@@ -77,20 +96,60 @@ class ArticleController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        if ($request->hasFile('photo')) {
-            if ($article->photo)
-                Storage::disk('public')->delete($article->photo);
-            $validated['photo'] = $request->file('photo')->store('articles', 'public');
+        try {
+            if ($request->hasFile('photo')) {
+                if ($article->photo)
+                    Storage::disk('public')->delete($article->photo);
+                $validated['photo'] = $request->file('photo')->store('articles', 'public');
+            }
+
+            $article->update($validated);
+
+            return redirect()->route('articles.index')->with('success', 'Artigo atualizado com sucesso!');
+            
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'reference')) {
+                    return back()->withInput()->with('error', 'Esta referência já está registada no sistema.');
+                }
+            }
+            
+            return back()->withInput()->with('error', 'Erro ao atualizar artigo. Por favor, verifique os dados.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar artigo:', [
+                'article_id' => $article->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar artigo. Contacte o suporte.');
         }
-
-        $article->update($validated);
-
-        return redirect()->route('articles.index')->with('success', 'Artigo atualizado!');
     }
 
     public function destroy(Article $article)
     {
-        $article->delete();
-        return redirect()->route('articles.index')->with('success', 'Artigo eliminado!');
+        try {
+            $articleName = $article->name;
+            $article->delete();
+            
+            return redirect()->route('articles.index')->with('success', "Artigo \"{$articleName}\" eliminado com sucesso!");
+            
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este artigo não pode ser eliminado pois está associado a outros registos (propostas, encomendas, etc).');
+            }
+            
+            return back()->with('error', 'Erro ao eliminar artigo. Por favor, tente novamente.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao eliminar artigo:', [
+                'article_id' => $article->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Erro inesperado ao eliminar artigo. Contacte o suporte.');
+        }
     }
 }

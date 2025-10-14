@@ -52,10 +52,32 @@ class CountryController extends Controller
      */
     public function store(StoreCountryRequest $request)
     {
-        Country::create($request->validated());
+        try {
+            Country::create($request->validated());
 
-        return redirect()->route('countries.index')
-            ->with('success', 'País criado com sucesso.');
+            return redirect()->route('countries.index')
+                ->with('success', 'País criado com sucesso!');
+                
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'code')) {
+                    return back()->withInput()->with('error', 'Este código de país já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Este país já está registado no sistema.');
+                }
+            }
+            
+            return back()->withInput()->with('error', 'Erro ao criar país. Por favor, verifique os dados.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar país:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withInput()->with('error', 'Erro inesperado ao criar país. Contacte o suporte.');
+        }
     }
 
     /**
@@ -86,10 +108,33 @@ class CountryController extends Controller
      */
     public function update(UpdateCountryRequest $request, Country $country)
     {
-        $country->update($request->validated());
+        try {
+            $country->update($request->validated());
 
-        return redirect()->route('countries.index')
-            ->with('success', 'País atualizado com sucesso.');
+            return redirect()->route('countries.index')
+                ->with('success', 'País atualizado com sucesso!');
+                
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'code')) {
+                    return back()->withInput()->with('error', 'Este código de país já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Este país já está registado no sistema.');
+                }
+            }
+            
+            return back()->withInput()->with('error', 'Erro ao atualizar país. Por favor, verifique os dados.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar país:', [
+                'country_id' => $country->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar país. Contacte o suporte.');
+        }
     }
 
     /**
@@ -97,15 +142,34 @@ class CountryController extends Controller
      */
     public function destroy(Country $country)
     {
-        if ($country->entities()->exists()) {
-            return redirect()->back()
-                ->with('error', 'Não é possível eliminar este país, pois existem entidades associadas.');
+        try {
+            if ($country->entities()->exists()) {
+                return redirect()->back()
+                    ->with('error', 'Não é possível eliminar este país, pois existem entidades associadas.');
+            }
+
+            $countryName = $country->name;
+            $country->delete();
+
+            return redirect()->route('countries.index')
+                ->with('success', "País \"{$countryName}\" eliminado com sucesso!");
+                
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este país não pode ser eliminado pois está associado a outros registos.');
+            }
+            
+            return back()->with('error', 'Erro ao eliminar país. Por favor, tente novamente.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao eliminar país:', [
+                'country_id' => $country->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Erro inesperado ao eliminar país. Contacte o suporte.');
         }
-
-        $country->delete();
-
-        return redirect()->route('countries.index')
-            ->with('success', 'País eliminado com sucesso.');
     }
 }
 

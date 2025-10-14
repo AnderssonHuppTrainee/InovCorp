@@ -9,9 +9,11 @@
 ## 📋 Descrição do Problema
 
 ### Sintoma
+
 As cores configuradas nos **Calendar Event Types** não estavam sendo exibidas no calendário. Todos os eventos apareciam com a mesma cor (azul primário), independentemente do tipo configurado.
 
 ### Comportamento Esperado
+
 ```
 ✅ Reunião      → Azul (#3b82f6)
 ✅ Chamada      → Verde (#10b981)
@@ -22,6 +24,7 @@ As cores configuradas nos **Calendar Event Types** não estavam sendo exibidas n
 ```
 
 ### Comportamento Atual
+
 ```
 ❌ TODOS os eventos → Azul (cor primária)
 ```
@@ -33,6 +36,7 @@ As cores configuradas nos **Calendar Event Types** não estavam sendo exibidas n
 ### Backend: Cores Corretas ✅
 
 **Verificação feita:**
+
 ```bash
 php test-calendar-colors.php
 
@@ -61,13 +65,16 @@ Event #1:
 ```css
 /* ANTES ❌ - CSS estava sobrescrevendo cores individuais */
 :root {
-    --fc-event-bg-color: hsl(var(--primary));       /* ❌ Forçava azul */
-    --fc-event-border-color: hsl(var(--primary));   /* ❌ Forçava azul */
-    --fc-event-text-color: hsl(var(--primary-foreground)); /* ❌ Forçava cor do tema */
+    --fc-event-bg-color: hsl(var(--primary)); /* ❌ Forçava azul */
+    --fc-event-border-color: hsl(var(--primary)); /* ❌ Forçava azul */
+    --fc-event-text-color: hsl(
+        var(--primary-foreground)
+    ); /* ❌ Forçava cor do tema */
 }
 ```
 
 **Problema:**
+
 - Variáveis CSS `:root` têm **prioridade sobre props inline**
 - FullCalendar recebia `backgroundColor: '#f59e0b'` mas CSS aplicava azul
 - Todas as cores individuais eram ignoradas
@@ -100,6 +107,7 @@ Event #1:
 ```
 
 **Mudanças:**
+
 1. ✅ Removidas 3 variáveis CSS que forçavam cor única
 2. ✅ Mantidas variáveis de botões e bordas (correto)
 3. ✅ Adicionado comentário explicativo
@@ -110,6 +118,7 @@ Event #1:
 ## 🎨 Resultado Esperado
 
 ### ANTES ❌
+
 ```
 Todos os eventos aparecem AZUIS:
 ┌──────────────────────┐
@@ -120,6 +129,7 @@ Todos os eventos aparecem AZUIS:
 ```
 
 ### DEPOIS ✅
+
 ```
 Cada evento com sua cor configurada:
 ┌──────────────────────┐
@@ -135,25 +145,27 @@ Cada evento com sua cor configurada:
 
 ## 📊 Cores Configuradas
 
-| Tipo de Evento | Cor | Código Hexadecimal |
-|----------------|-----|---------------------|
-| **Reunião** | 🔵 Azul | `#3b82f6` |
-| **Chamada** | 🟢 Verde | `#10b981` |
-| **Visita** | 🟠 Laranja | `#f59e0b` |
-| **Apresentação** | 🟣 Roxo | `#8b5cf6` |
-| **Formação** | 🔴 Rosa | `#ec4899` |
-| **Outro** | ⚫ Cinza | `#6b7280` |
+| Tipo de Evento   | Cor        | Código Hexadecimal |
+| ---------------- | ---------- | ------------------ |
+| **Reunião**      | 🔵 Azul    | `#3b82f6`          |
+| **Chamada**      | 🟢 Verde   | `#10b981`          |
+| **Visita**       | 🟠 Laranja | `#f59e0b`          |
+| **Apresentação** | 🟣 Roxo    | `#8b5cf6`          |
+| **Formação**     | 🔴 Rosa    | `#ec4899`          |
+| **Outro**        | ⚫ Cinza   | `#6b7280`          |
 
 ---
 
 ## 🧪 Como Testar
 
 ### 1. Acessar o Calendário
+
 ```
 http://seu-site.test/calendar
 ```
 
 ### 2. Verificar Cores dos Eventos Existentes
+
 ```
 ✅ Eventos de tipo "Reunião" → Azul
 ✅ Eventos de tipo "Chamada" → Verde
@@ -162,6 +174,7 @@ etc.
 ```
 
 ### 3. Criar Novo Evento
+
 ```
 1. Clicar em "Novo Evento"
 2. Selecionar tipo "Chamada" (verde)
@@ -170,6 +183,7 @@ etc.
 ```
 
 ### 4. Verificar em Different Views
+
 ```
 ✅ Vista Mês (dayGridMonth)
 ✅ Vista Semana (timeGridWeek)
@@ -184,6 +198,7 @@ etc.
 ### Como FullCalendar Aplica Cores
 
 **Prioridade (do maior para o menor):**
+
 ```
 1. Variáveis CSS :root (--fc-event-bg-color)      ⬅️ ERA ESTE O PROBLEMA!
 2. Props inline (backgroundColor, borderColor)     ⬅️ Backend enviava isto
@@ -192,6 +207,7 @@ etc.
 ```
 
 ### Solução
+
 - ✅ Remover variáveis CSS globais de eventos
 - ✅ Deixar FullCalendar usar props inline do backend
 - ✅ Cada evento usa `backgroundColor` e `borderColor` do seu tipo
@@ -201,6 +217,7 @@ etc.
 ## 🔧 Fluxo Completo
 
 ### 1. Banco de Dados
+
 ```sql
 SELECT id, name, color FROM calendar_event_types;
 
@@ -212,6 +229,7 @@ id | name         | color
 ```
 
 ### 2. Backend (CalendarEvent Model)
+
 ```php
 // app/Models/System/Calendar/CalendarEvent.php
 public function getFullCalendarEventAttribute()
@@ -232,6 +250,7 @@ public function getFullCalendarEventAttribute()
 ```
 
 ### 3. Controller
+
 ```php
 // app/Http/Controllers/System/CalendarEventController.php
 $events = CalendarEvent::query()
@@ -248,6 +267,7 @@ return Inertia::render('calendar/Index', [
 ```
 
 ### 4. Frontend (Calendar Component)
+
 ```typescript
 // resources/js/pages/calendar/Index.vue
 const calendarOptions = computed<CalendarOptions>(() => ({
@@ -257,21 +277,23 @@ const calendarOptions = computed<CalendarOptions>(() => ({
         title: event.title,
         start: event.start,
         end: event.end,
-        backgroundColor: event.backgroundColor,  // ✅ Aplicado
-        borderColor: event.borderColor,          // ✅ Aplicado
+        backgroundColor: event.backgroundColor, // ✅ Aplicado
+        borderColor: event.borderColor, // ✅ Aplicado
         // ...
     })) as EventInput[],
 }));
 ```
 
 ### 5. CSS (ANTES - Problema)
+
 ```css
 :root {
-    --fc-event-bg-color: hsl(var(--primary));  /* ❌ Sobrescrevia tudo */
+    --fc-event-bg-color: hsl(var(--primary)); /* ❌ Sobrescrevia tudo */
 }
 ```
 
 ### 6. CSS (DEPOIS - Correto)
+
 ```css
 :root {
     /* Variáveis de eventos removidas */
@@ -284,6 +306,7 @@ const calendarOptions = computed<CalendarOptions>(() => ({
 ## 📈 Arquivos Modificados
 
 ### Frontend
+
 ```
 ✅ resources/js/pages/calendar/Index.vue
    - Removidas 3 linhas de variáveis CSS
@@ -292,6 +315,7 @@ const calendarOptions = computed<CalendarOptions>(() => ({
 ```
 
 ### Testes Realizados
+
 ```
 ✅ Verificação no banco: Cores corretas
 ✅ Verificação no backend: Accessor retorna cores
@@ -307,6 +331,7 @@ const calendarOptions = computed<CalendarOptions>(() => ({
 ### Alterar Cores dos Tipos de Evento
 
 **Opção 1: Via Interface (Settings)**
+
 ```
 1. Ir para: /settings/calendar-event-types
 2. Editar tipo desejado
@@ -316,13 +341,15 @@ const calendarOptions = computed<CalendarOptions>(() => ({
 ```
 
 **Opção 2: Via Banco de Dados**
+
 ```sql
-UPDATE calendar_event_types 
-SET color = '#ff0000' 
+UPDATE calendar_event_types
+SET color = '#ff0000'
 WHERE name = 'Reunião';
 ```
 
 **Opção 3: Via Tinker**
+
 ```php
 $type = CalendarEventType::find(1);
 $type->color = '#ff0000';
@@ -382,6 +409,7 @@ $type->save();
 ## 🎨 Preview Visual
 
 ### Vista Mês (Grid)
+
 ```
 SEG    TER    QUA    QUI    SEX    SAB    DOM
 ────────────────────────────────────────────
@@ -392,6 +420,7 @@ SEG    TER    QUA    QUI    SEX    SAB    DOM
 ```
 
 ### Vista Semana (Detalhada)
+
 ```
 10:00 ┌──────────────────────┐
       │ 🔵 Reunião Mensal    │
@@ -413,6 +442,7 @@ SEG    TER    QUA    QUI    SEX    SAB    DOM
 ### ⚠️ Prioridade de CSS no FullCalendar
 
 **Ordem de aplicação:**
+
 ```
 1. CSS :root variables (MAIOR prioridade)
 2. Inline styles / props
@@ -425,6 +455,7 @@ SEG    TER    QUA    QUI    SEX    SAB    DOM
 ### ✅ Boas Práticas
 
 **Manter variáveis CSS globais para:**
+
 ```css
 ✅ --fc-border-color           (bordas gerais)
 ✅ --fc-button-*               (botões da toolbar)
@@ -432,6 +463,7 @@ SEG    TER    QUA    QUI    SEX    SAB    DOM
 ```
 
 **NÃO usar variáveis CSS globais para:**
+
 ```css
 ❌ --fc-event-bg-color         (deixar cores individuais)
 ❌ --fc-event-border-color     (deixar cores individuais)
@@ -443,6 +475,7 @@ SEG    TER    QUA    QUI    SEX    SAB    DOM
 ## 📊 Debugging Realizado
 
 ### 1. Verificação Backend
+
 ```bash
 php test-calendar-colors.php
 
@@ -453,6 +486,7 @@ php test-calendar-colors.php
 ```
 
 ### 2. Verificação Frontend
+
 ```javascript
 console.log(props.events[0])
 
@@ -465,6 +499,7 @@ console.log(props.events[0])
 ```
 
 ### 3. Verificação CSS
+
 ```css
 /* Problema encontrado */
 :root {
@@ -509,6 +544,7 @@ console.log(props.events[0])
 ## 🎯 Outros Componentes que Usam Cores
 
 ### Também foram preservados:
+
 ```
 ✅ Badges de status (scheduled, completed, cancelled)
 ✅ Cores do tema (primary, accent, muted)
@@ -536,6 +572,7 @@ console.log(props.events[0])
 ## 🎉 Resultado Final
 
 **ANTES:**
+
 ```
 ❌ Todos eventos azuis
 ❌ Cores dos tipos ignoradas
@@ -543,6 +580,7 @@ console.log(props.events[0])
 ```
 
 **DEPOIS:**
+
 ```
 ✅ Cada tipo com sua cor
 ✅ Fácil identificação visual
@@ -570,4 +608,3 @@ console.log(props.events[0])
 ```
 
 **As cores agora aparecem corretamente!** ✨
-

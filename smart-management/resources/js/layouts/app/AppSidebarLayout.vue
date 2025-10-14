@@ -4,6 +4,7 @@ import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
 import { Toaster } from '@/components/ui/sonner';
+import { useFlashMessages } from '@/composables/useFlashMessages';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -13,6 +14,9 @@ interface Props {
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
+
+// Integrar flash messages com toast
+useFlashMessages();
 </script>
 
 <template>

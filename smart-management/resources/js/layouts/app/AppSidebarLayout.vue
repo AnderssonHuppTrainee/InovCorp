@@ -15,7 +15,6 @@ withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-// Integrar flash messages com toast
 useFlashMessages();
 </script>
 
@@ -26,10 +25,6 @@ useFlashMessages();
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
         </AppContent>
-        <Toaster
-            position="top-right"
-            :duration="3000"
-            class="fixed top-4 right-4 z-[9999]"
-        />
+        <Toaster position="top-right" class="fixed top-4 right-4 z-[9999]" />
     </AppShell>
 </template>

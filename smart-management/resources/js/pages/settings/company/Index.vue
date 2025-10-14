@@ -1,9 +1,12 @@
 <template>
     <Head title="Configurações da Empresa" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
-            <PageHeader title="Configurações da Empresa" description="Personalizar dados da empresa">
+            <PageHeader
+                title="Configurações da Empresa"
+                description="Personalizar dados da empresa"
+            >
             </PageHeader>
 
             <form @submit.prevent="submitForm">
@@ -13,12 +16,28 @@
                     </CardHeader>
                     <CardContent>
                         <div class="flex items-center gap-6">
-                            <div v-if="logoPreview || company.logo" class="flex-shrink-0">
-                                <img :src="logoPreview || `/storage/${company.logo}`" alt="Logo" class="h-24 w-24 rounded object-contain border" />
+                            <div
+                                v-if="logoPreview || company.logo"
+                                class="flex-shrink-0"
+                            >
+                                <img
+                                    :src="
+                                        logoPreview ||
+                                        `/storage/${company.logo}`
+                                    "
+                                    alt="Logo"
+                                    class="h-24 w-24 rounded border object-contain"
+                                />
                             </div>
                             <div class="flex-1 space-y-2">
-                                <Input type="file" accept="image/*" @change="handleLogoChange" />
-                                <p class="text-sm text-muted-foreground">Formato: PNG, JPG (máx. 2MB)</p>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    @change="handleLogoChange"
+                                />
+                                <p class="text-sm text-muted-foreground">
+                                    Formato: PNG, JPG (máx. 2MB)
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -31,32 +50,48 @@
                     <CardContent>
                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Nome *</label>
+                                <label class="text-sm font-medium"
+                                    >Nome *</label
+                                >
                                 <Input v-model="formData.name" required />
                             </div>
 
                             <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Morada *</label>
+                                <label class="text-sm font-medium"
+                                    >Morada *</label
+                                >
                                 <Input v-model="formData.address" required />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Código Postal *</label>
-                                <Input v-model="formData.postal_code" placeholder="0000-000" required />
+                                <label class="text-sm font-medium"
+                                    >Código Postal *</label
+                                >
+                                <Input
+                                    v-model="formData.postal_code"
+                                    placeholder="0000-000"
+                                    required
+                                />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Localidade *</label>
+                                <label class="text-sm font-medium"
+                                    >Localidade *</label
+                                >
                                 <Input v-model="formData.city" required />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Número Contribuinte *</label>
+                                <label class="text-sm font-medium"
+                                    >Número Contribuinte *</label
+                                >
                                 <Input v-model="formData.tax_number" required />
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Telefone</label>
+                                <label class="text-sm font-medium"
+                                    >Telefone</label
+                                >
                                 <Input v-model="formData.phone" />
                             </div>
 
@@ -66,8 +101,13 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium">Website</label>
-                                <Input v-model="formData.website" placeholder="https://" />
+                                <label class="text-sm font-medium"
+                                    >Website</label
+                                >
+                                <Input
+                                    v-model="formData.website"
+                                    placeholder="https://"
+                                />
                             </div>
                         </div>
                     </CardContent>
@@ -77,7 +117,9 @@
                     <Button type="submit" :disabled="isSubmitting">
                         <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
                         <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ isSubmitting ? 'A guardar...' : 'Guardar Alterações' }}
+                        {{
+                            isSubmitting ? 'A guardar...' : 'Guardar Alterações'
+                        }}
                     </Button>
                 </div>
             </form>
@@ -90,6 +132,7 @@ import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -102,7 +145,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Breadcrumbs
+const { showSuccess, showInfo, showError, showWarning, showLoading } =
+    useToast();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Configurações da Empresa',
@@ -149,7 +193,3 @@ const submitForm = () => {
     });
 };
 </script>
-
-
-
-

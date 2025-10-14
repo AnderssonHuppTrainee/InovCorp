@@ -74,7 +74,7 @@ class EntityController extends Controller
         $validated = $request->validated();
 
         try {
-            DB::transaction(function () use ($validated) {
+            DB::transaction(function () use (&$validated) {
                 //chama a função de gerar num incremental
                 $validated['number'] = Entity::nextNumber();
                 Entity::create($validated);
@@ -86,10 +86,35 @@ class EntityController extends Controller
                 ->route('entities.index', ['type' => $redirectType])
                 ->with('success', 'Entidade criada com sucesso!');
 
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Tratamento específico para erros de banco de dados
+            if ($e->getCode() === '23000') {
+                // Constraint violation (duplicate entry)
+                if (str_contains($e->getMessage(), 'tax_number')) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Este NIF já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Este email já está registado no sistema.');
+                }
+            }
+            
             return back()
                 ->withInput()
-                ->with('error', 'Erro ao criar entidade: ' . $e->getMessage());
+                ->with('error', 'Erro ao criar entidade. Por favor, verifique os dados e tente novamente.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar entidade:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Erro inesperado ao criar entidade. Contacte o suporte.');
         }
     }
 
@@ -132,10 +157,36 @@ class EntityController extends Controller
                 ->route('entities.index', ['type' => $redirectType])
                 ->with('success', 'Entidade atualizada com sucesso!');
 
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Tratamento específico para erros de banco de dados
+            if ($e->getCode() === '23000') {
+                // Constraint violation (duplicate entry)
+                if (str_contains($e->getMessage(), 'tax_number')) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Este NIF já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Este email já está registado no sistema.');
+                }
+            }
+            
             return back()
                 ->withInput()
-                ->with('error', 'Erro ao atualizar entidade: ' . $e->getMessage());
+                ->with('error', 'Erro ao atualizar entidade. Por favor, verifique os dados e tente novamente.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar entidade:', [
+                'entity_id' => $entity->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Erro inesperado ao atualizar entidade. Contacte o suporte.');
         }
     }
 
@@ -145,15 +196,29 @@ class EntityController extends Controller
     public function destroy(Entity $entity)
     {
         try {
-
+            $entityName = $entity->name;
             $entity->delete();
 
             return redirect()
                 ->route('entities.index')
-                ->with('success', 'Entidade eliminada com sucesso!');
+                ->with('success', "Entidade \"{$entityName}\" eliminada com sucesso!");
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Constraint violation (foreign key)
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta entidade não pode ser eliminada pois está associada a outros registos (propostas, encomendas, etc).');
+            }
+            
+            return back()->with('error', 'Erro ao eliminar entidade. Por favor, tente novamente.');
+            
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar entidade: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar entidade:', [
+                'entity_id' => $entity->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Erro inesperado ao eliminar entidade. Contacte o suporte.');
         }
     }
 

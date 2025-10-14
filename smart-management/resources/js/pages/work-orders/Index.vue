@@ -1,6 +1,6 @@
 <template>
     <Head title="Ordens de Trabalho" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
@@ -15,12 +15,14 @@
 
             <Card>
                 <CardHeader>
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <div class="flex flex-1 gap-2 flex-wrap">
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center"
+                    >
+                        <div class="flex flex-1 flex-wrap gap-2">
                             <!-- Busca -->
-                            <div class="relative flex-1 min-w-[200px]">
+                            <div class="relative min-w-[200px] flex-1">
                                 <SearchIcon
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                                    class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     type="search"
@@ -41,10 +43,18 @@
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
-                                    <SelectItem value="pending">Pendente</SelectItem>
-                                    <SelectItem value="in_progress">Em Progresso</SelectItem>
-                                    <SelectItem value="completed">Concluído</SelectItem>
-                                    <SelectItem value="cancelled">Cancelado</SelectItem>
+                                    <SelectItem value="pending"
+                                        >Pendente</SelectItem
+                                    >
+                                    <SelectItem value="in_progress"
+                                        >Em Progresso</SelectItem
+                                    >
+                                    <SelectItem value="completed"
+                                        >Concluído</SelectItem
+                                    >
+                                    <SelectItem value="cancelled"
+                                        >Cancelado</SelectItem
+                                    >
                                 </SelectContent>
                             </Select>
 
@@ -59,9 +69,13 @@
                                 <SelectContent>
                                     <SelectItem value="all">Todas</SelectItem>
                                     <SelectItem value="low">Baixa</SelectItem>
-                                    <SelectItem value="medium">Média</SelectItem>
+                                    <SelectItem value="medium"
+                                        >Média</SelectItem
+                                    >
                                     <SelectItem value="high">Alta</SelectItem>
-                                    <SelectItem value="urgent">Urgente</SelectItem>
+                                    <SelectItem value="urgent"
+                                        >Urgente</SelectItem
+                                    >
                                 </SelectContent>
                             </Select>
 
@@ -182,10 +196,10 @@
 </template>
 
 <script setup lang="ts">
-import DataTable from '@/components/ui/data-table/DataTable.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -194,6 +208,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -243,7 +258,9 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Breadcrumbs
+const { showSuccess, showInfo, showError, showWarning, showLoading } =
+    useToast();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Ordens de Trabalho',
@@ -251,14 +268,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Filtros
 const searchQuery = ref(props.filters.search || '');
 const statusFilter = ref(props.filters.status || 'all');
 const priorityFilter = ref(props.filters.priority || 'all');
 const clientFilter = ref(props.filters.client_id || 'all');
 const userFilter = ref(props.filters.assigned_to || 'all');
 
-// Computed
 const hasFilters = computed(() => {
     return (
         searchQuery.value !== '' ||
@@ -298,7 +313,6 @@ const visiblePages = computed(() => {
     return pages.filter((v, i, a) => a.indexOf(v) === i);
 });
 
-// Methods
 let searchTimeout: ReturnType<typeof setTimeout>;
 
 const handleSearch = () => {
@@ -338,10 +352,14 @@ const clearFilters = () => {
     clientFilter.value = 'all';
     userFilter.value = 'all';
 
-    router.get('/work-orders', {}, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.get(
+        '/work-orders',
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 };
 
 const goToPage = (page: number) => {
@@ -367,8 +385,3 @@ const handleCreate = () => {
     router.get('/work-orders/create');
 };
 </script>
-
-
-
-
-

@@ -28,7 +28,6 @@ import {
     Truck,
     Users,
 } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
 
 interface Stats {
     entities: {
@@ -101,14 +100,6 @@ const { showSuccess, showError, showInfo, showWarning } = useToast();
 const profit =
     (props.stats.financials.revenue.total || 0) -
     (props.stats.financials.expenses.total || 0);
-
-// Função de teste do Toast
-const testToast = () => {
-    showSuccess('Toast funcionando!', 'Sistema de notificações configurado corretamente.');
-    setTimeout(() => showError('Teste de erro', 'Este é um erro de teste'), 500);
-    setTimeout(() => showInfo('Teste de info', 'Esta é uma informação'), 1000);
-    setTimeout(() => showWarning('Teste de aviso', 'Este é um aviso'), 1500);
-};
 </script>
 
 <template>
@@ -119,13 +110,10 @@ const testToast = () => {
             <div class="flex items-center justify-between">
                 <div class="flex flex-col gap-2">
                     <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <p class="text-muted-foreground">Visão geral do seu negócio</p>
+                    <p class="text-muted-foreground">
+                        Visão geral do seu negócio
+                    </p>
                 </div>
-                
-                <!-- Botão de teste do Toast -->
-                <Button variant="outline" size="sm" @click="testToast">
-                    🎉 Testar Toast
-                </Button>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -534,8 +522,8 @@ const testToast = () => {
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma encomenda ainda
-                </div>
-                <div
+                            </div>
+                            <div
                                 v-for="order in recent_activities.orders"
                                 :key="order.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -589,8 +577,8 @@ const testToast = () => {
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma work order ainda
-                </div>
-                <div
+                            </div>
+                            <div
                                 v-for="wo in recent_activities.work_orders"
                                 :key="wo.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -875,8 +863,8 @@ const testToast = () => {
                                         Processar pagamentos urgentemente
                                     </p>
                                 </div>
-                </div>
-            </div>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 

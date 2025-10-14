@@ -28,6 +28,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import calendar from '@/routes/calendar';
 import { calendarEventSchema } from '@/schemas/calendarEventSchema';
@@ -399,6 +400,9 @@ const handleSharedWithChange = (userId: string, event: Event) => {
         );
     }
 };
+
+// Toast
+const { showSuccess, showInfo, showError, showWarning } = useToast();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Calendário',

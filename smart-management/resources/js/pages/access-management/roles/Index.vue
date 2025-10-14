@@ -1,6 +1,6 @@
 <template>
     <Head title="Gestão de Permissões" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
             <PageHeader
@@ -79,6 +79,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -99,7 +100,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Breadcrumbs
+// Toast
+const { showSuccess, showInfo, showError, showWarning } = useToast();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Gestão de Permissões',

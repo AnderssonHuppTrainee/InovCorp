@@ -163,6 +163,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import route from '@/routes/entities';
 import { type BreadcrumbItem } from '@/types';
@@ -206,6 +207,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Toast
+const { showSuccess, showInfo, showError, showWarning } = useToast();
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -297,6 +301,8 @@ const clearFilters = () => {
     searchQuery.value = '';
     statusFilter.value = 'all';
     countryFilter.value = 'all';
+
+    showInfo('Filtros limpos', 'Todos os filtros foram removidos.');
 
     router.get(
         route.index().url,

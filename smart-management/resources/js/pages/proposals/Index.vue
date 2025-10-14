@@ -1,9 +1,12 @@
 <template>
     <Head title="Propostas" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
-            <PageHeader title="Propostas" description="Gerir propostas comerciais">
+            <PageHeader
+                title="Propostas"
+                description="Gerir propostas comerciais"
+            >
                 <Button @click="handleCreate">
                     <PlusIcon class="mr-2 h-4 w-4" />
                     Nova Proposta
@@ -17,9 +20,9 @@
                     >
                         <div class="flex flex-1 gap-2">
                             <!-- Busca -->
-                            <div class="relative flex-1 max-w-sm">
+                            <div class="relative max-w-sm flex-1">
                                 <SearchIcon
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                                    class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     type="search"
@@ -40,8 +43,12 @@
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
-                                    <SelectItem value="draft">Rascunho</SelectItem>
-                                    <SelectItem value="closed">Fechado</SelectItem>
+                                    <SelectItem value="draft"
+                                        >Rascunho</SelectItem
+                                    >
+                                    <SelectItem value="closed"
+                                        >Fechado</SelectItem
+                                    >
                                 </SelectContent>
                             </Select>
 
@@ -144,10 +151,10 @@
 </template>
 
 <script setup lang="ts">
-import DataTable from '@/components/ui/data-table/DataTable.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -156,6 +163,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -196,6 +204,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Toast
+const { showSuccess, showInfo, showError, showWarning, showLoading } =
+    useToast();
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -288,10 +300,16 @@ const clearFilters = () => {
     statusFilter.value = 'all';
     clientFilter.value = 'all';
 
-    router.get('/proposals', {}, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    showInfo('Filtros limpos', 'Todos os filtros foram removidos.');
+
+    router.get(
+        '/proposals',
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 };
 
 const goToPage = (page: number) => {
@@ -319,5 +337,3 @@ const handleCreate = () => {
     router.get('/proposals/create');
 };
 </script>
-
-

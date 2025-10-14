@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { useDateFormatter } from '@/composables/formatters/useDateFormatter';
 import { useMoneyFormatter } from '@/composables/formatters/useMoneyFormatter';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -94,10 +95,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const { format } = useMoneyFormatter();
 const { formatDate } = useDateFormatter();
+const { showSuccess, showError, showInfo, showWarning } = useToast();
 
 const profit =
     (props.stats.financials.revenue.total || 0) -
     (props.stats.financials.expenses.total || 0);
+
+// Exemplo de teste do Toast (remover depois se desejar)
+const testToast = () => {
+    showSuccess('Toast funcionando!', 'Sistema de notificações configurado corretamente.');
+};
 </script>
 
 <template>
@@ -516,8 +523,8 @@ const profit =
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma encomenda ainda
-                            </div>
-                            <div
+                </div>
+                <div
                                 v-for="order in recent_activities.orders"
                                 :key="order.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -571,8 +578,8 @@ const profit =
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Nenhuma work order ainda
-                            </div>
-                            <div
+                </div>
+                <div
                                 v-for="wo in recent_activities.work_orders"
                                 :key="wo.id"
                                 class="flex items-center justify-between border-b pb-2 last:border-0"
@@ -857,8 +864,8 @@ const profit =
                                         Processar pagamentos urgentemente
                                     </p>
                                 </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
                     </CardContent>
                 </Card>
 

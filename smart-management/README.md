@@ -770,28 +770,6 @@ php artisan test --filter EntityTest
 
 ## 🎓 Documentação
 
-### Documentação Técnica Disponível
-
-```
-📄 ANALISE_PROJETO_FASE2.md (857 linhas)
-   → Análise completa de inconsistências e plano de refatoração
-
-📄 TOAST_SETUP.md (500 linhas)
-   → Como configurar e usar o sistema de toasts
-
-📄 TOAST_FLASH_INTEGRATION.md (876 linhas)
-   → Integração de Flash Messages com Toast
-
-📄 TOAST_FUNCIONANDO_CORRETAMENTE.md (281 linhas)
-   → Confirmação e testes do sistema de toast
-
-📄 BUG_FIX_*.md (múltiplos)
-   → Documentação de bugs corrigidos e soluções
-
-📄 RESUMO_DIA_COMPLETO.md (667 linhas)
-   → Resumo de entregas e conquistas
-```
-
 ### Guias de Uso
 
 - [Gestão de Clientes](docs/guides/entities.md)
@@ -1140,16 +1118,6 @@ SOFTWARE.
 
 ---
 
-## 📮 Newsletter
-
-Mantenha-se atualizado com as últimas novidades:
-
-- 📧 [Subscrever Newsletter](https://smartmanagement.com/newsletter)
-- 🐦 [Twitter](https://twitter.com/smartmanagement)
-- 💼 [LinkedIn](https://linkedin.com/company/smartmanagement)
-
----
-
 ## ⭐ Star History
 
 Se este projeto foi útil para você, considere dar uma ⭐!
@@ -1160,7 +1128,7 @@ Se este projeto foi útil para você, considere dar uma ⭐!
 
 <div align="center">
 
-**Desenvolvido com ❤️ por [InovCorp](https://inovcorp.com)**
+**Desenvolvido com ❤️ por Andersson Hupp**
 
 [⬆ Voltar ao topo](#-smartmanagement)
 

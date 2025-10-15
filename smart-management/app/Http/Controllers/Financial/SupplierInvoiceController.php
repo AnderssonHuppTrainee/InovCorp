@@ -107,15 +107,28 @@ class SupplierInvoiceController extends Controller
             return redirect()
                 ->route('supplier-invoices.show', $invoice)
                 ->with('success', 'Fatura criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Log::error('❌ [SUPPLIER INVOICE STORE] Erro de BD:', [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage()
+            ]);
+
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'supplier_id')) {
+                    return back()->withInput()->with('error', 'Fornecedor inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar fatura. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
             \Log::error('❌ [SUPPLIER INVOICE STORE] Erro ao criar fatura:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar fatura: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Erro inesperado ao criar fatura. Contacte o suporte.');
         }
     }
 
@@ -197,10 +210,24 @@ class SupplierInvoiceController extends Controller
             return redirect()
                 ->route('supplier-invoices.show', $supplierInvoice)
                 ->with('success', 'Fatura atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'supplier_id')) {
+                    return back()->withInput()->with('error', 'Fornecedor inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar fatura. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar fatura: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar fatura de fornecedor:', [
+                'invoice_id' => $supplierInvoice->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar fatura. Contacte o suporte.');
         }
     }
 
@@ -210,6 +237,8 @@ class SupplierInvoiceController extends Controller
     public function destroy(SupplierInvoice $supplierInvoice)
     {
         try {
+            $invoiceNumber = $supplierInvoice->number;
+
             // Delete files
             if ($supplierInvoice->document_path) {
                 Storage::delete($supplierInvoice->document_path);
@@ -222,9 +251,23 @@ class SupplierInvoiceController extends Controller
 
             return redirect()
                 ->route('supplier-invoices.index')
-                ->with('success', 'Fatura eliminada com sucesso!');
+                ->with('success', "Fatura \"{$invoiceNumber}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta fatura não pode ser eliminada pois está associada a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar fatura. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar fatura: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar fatura de fornecedor:', [
+                'invoice_id' => $supplierInvoice->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar fatura. Contacte o suporte.');
         }
     }
 
@@ -262,8 +305,14 @@ class SupplierInvoiceController extends Controller
             } else {
                 return back()->with('error', 'Fornecedor não tem email configurado.');
             }
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao enviar email: ' . $e->getMessage());
+            \Log::error('Erro ao enviar email de comprovativo:', [
+                'invoice_id' => $supplierInvoice->id,
+                'message' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Erro ao enviar email. Por favor, tente novamente.');
         }
     }
 }

@@ -98,10 +98,14 @@ class DigitalArchiveController extends Controller
             return redirect()
                 ->route('digital-archive.show', $archive)
                 ->with('success', 'Ficheiro enviado com sucesso!');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao enviar ficheiro: ' . $e->getMessage());
+            \Log::error('Erro ao enviar ficheiro:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro ao enviar ficheiro. Por favor, tente novamente.');
         }
     }
 
@@ -143,10 +147,15 @@ class DigitalArchiveController extends Controller
             return redirect()
                 ->route('digital-archive.show', $digitalArchive)
                 ->with('success', 'Ficheiro atualizado com sucesso!');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar ficheiro: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar ficheiro:', [
+                'archive_id' => $digitalArchive->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro ao atualizar ficheiro. Por favor, tente novamente.');
         }
     }
 
@@ -156,17 +165,30 @@ class DigitalArchiveController extends Controller
     public function destroy(DigitalArchive $digitalArchive)
     {
         try {
+            $archiveName = $digitalArchive->name;
 
             $digitalArchive->deleteFile();
-
-
             $digitalArchive->delete();
 
             return redirect()
                 ->route('digital-archive.index')
-                ->with('success', 'Ficheiro eliminado com sucesso!');
+                ->with('success', "Ficheiro \"{$archiveName}\" eliminado com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este ficheiro não pode ser eliminado pois está associado a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar ficheiro. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar ficheiro: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar ficheiro:', [
+                'archive_id' => $digitalArchive->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar ficheiro. Contacte o suporte.');
         }
     }
 

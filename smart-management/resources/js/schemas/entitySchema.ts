@@ -1,9 +1,12 @@
 import { z } from 'zod'
-
+const euVatRegex = /^[A-Z]{2}[A-Z0-9]{2,12}$/i
 export const entitySchema = z.object({
-  tax_number: z.string()
-    .min(1, 'NIF é obrigatório')
-    .regex(/^PT\d{9}$/, 'NIF deve ter formato PT123456789'),
+tax_number: z.string()
+    .min(1, 'Número de IVA/NIF é obrigatório')
+    .regex(
+      euVatRegex,
+      'O número de IVA deve começar com o código do país (ex: PT, ES, DE) seguido do número fiscal. Exemplo: PT123456789'
+    ),
   
   name: z.string()
     .min(1, 'Nome é obrigatório')

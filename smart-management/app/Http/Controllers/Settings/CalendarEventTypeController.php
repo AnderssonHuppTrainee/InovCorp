@@ -54,22 +54,22 @@ class CalendarEventTypeController extends Controller
 
             return redirect()->route('calendar-event-types.index')
                 ->with('success', 'Tipo de evento criado com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Este tipo de evento já está registado no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao criar tipo de evento. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao criar tipo de evento:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao criar tipo de evento. Contacte o suporte.');
         }
     }
@@ -107,23 +107,23 @@ class CalendarEventTypeController extends Controller
 
             return redirect()->route('calendar-event-types.index')
                 ->with('success', 'Tipo de evento atualizado com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Este tipo de evento já está registado no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao atualizar tipo de evento. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar tipo de evento:', [
                 'type_id' => $calendarEventType->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao atualizar tipo de evento. Contacte o suporte.');
         }
     }
@@ -144,21 +144,21 @@ class CalendarEventTypeController extends Controller
 
             return redirect()->route('calendar-event-types.index')
                 ->with('success', "Tipo de evento \"{$typeName}\" eliminado com sucesso!");
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Este tipo de evento não pode ser eliminado pois está associado a outros registos.');
             }
-            
+
             return back()->with('error', 'Erro ao eliminar tipo de evento. Por favor, tente novamente.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao eliminar tipo de evento:', [
                 'type_id' => $calendarEventType->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Erro inesperado ao eliminar tipo de evento. Contacte o suporte.');
         }
     }

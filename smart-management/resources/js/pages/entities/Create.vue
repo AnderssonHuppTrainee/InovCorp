@@ -22,13 +22,12 @@
                                     name="tax_number"
                                 >
                                     <FormItem>
-                                        <FormLabel>NIF *</FormLabel>
+                                        <FormLabel>NIF/VAT *</FormLabel>
                                         <FormControl>
                                             <div class="flex gap-2">
                                                 <Input
                                                     placeholder="PT123456789"
                                                     v-bind="componentField"
-                                                    @blur="validateVat"
                                                     :class="{
                                                         'border-green-500':
                                                             vatValid,
@@ -58,8 +57,8 @@
                                             </div>
                                         </FormControl>
                                         <FormDescription>
-                                            Introduza o NIF e valide através do
-                                            VIES
+                                            Introduza o NIF/VAT e valide através
+                                            do VIES
                                         </FormDescription>
                                         <FormMessage />
 
@@ -508,13 +507,12 @@ const validateVat = async () => {
 
             if (response.data.address) {
                 const address = response.data.address
-                    .replace(/\s{2,}/g, ' ') // remove espaços duplos
+                    .replace(/\s{2,}/g, ' ')
                     .trim();
 
                 console.log('Preenchendo morada:', address);
                 form.setFieldValue('address', address);
 
-                // Regex para código postal português
                 const postalRegex = /(\d{4}-\d{3})/;
                 const postalMatch = address.match(postalRegex);
 
@@ -522,20 +520,16 @@ const validateVat = async () => {
                     console.log('Preenchendo código postal:', postalMatch[1]);
                     form.setFieldValue('postal_code', postalMatch[1]);
 
-                    // Agora tentamos pegar a cidade após o código postal
                     const afterPostal = address
                         .split(postalMatch[1])[1]
                         ?.trim();
 
                     if (afterPostal) {
-                        // remove pontos finais e caracteres soltos
                         const cleanedCity = afterPostal
-                            .replace(/\.$/, '') // remove ponto final
-                            .replace(/\s+/g, ' ') // espaços duplos
+                            .replace(/\.$/, '')
+                            .replace(/\s+/g, ' ')
                             .trim();
 
-                        // Muitas vezes vem algo como "CARNAXIDE" ou "LISBOA"
-                        // Se vier "PORTELA CARNAXIDE" pegamos a última palavra (a mais significativa)
                         const cityParts = cleanedCity.split(' ');
                         const city = cityParts[cityParts.length - 1];
                         console.log('Preenchendo cidade:', city);

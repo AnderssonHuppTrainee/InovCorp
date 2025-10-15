@@ -76,10 +76,21 @@ class CalendarEventController extends Controller
             $event = CalendarEvent::create($validated);
 
             return back()->with('success', 'Evento criado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->withInput()->with('error', 'Erro ao criar evento. Verifique se os dados estão corretos.');
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar evento. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar evento: ' . $e->getMessage());
+            \Log::error('Erro ao criar evento de calendário:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar evento. Contacte o suporte.');
         }
     }
 
@@ -120,15 +131,24 @@ class CalendarEventController extends Controller
             \Log::info('Calendar event updated successfully', ['event_id' => $calendarEvent->id]);
 
             return back()->with('success', 'Evento atualizado com sucesso!');
-        } catch (\Exception $e) {
-            \Log::error('Error updating calendar event', [
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Log::error('Erro de BD ao atualizar evento:', [
                 'event_id' => $calendarEvent->id,
-                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'message' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Erro ao atualizar evento. Por favor, verifique os dados.');
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar evento de calendário:', [
+                'event_id' => $calendarEvent->id,
+                'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return back()
-                ->withErrors(['error' => 'Erro ao atualizar evento: ' . $e->getMessage()]);
+            return back()->with('error', 'Erro inesperado ao atualizar evento. Contacte o suporte.');
         }
     }
 
@@ -183,14 +203,15 @@ class CalendarEventController extends Controller
         try {
             $calendarEvent->update($validated);
 
-            return back()->with('success', 'Evento atualizado!');
+            return back()->with('success', 'Evento atualizado com sucesso!');
+
         } catch (\Exception $e) {
-            \Log::error('Error in partial update', [
+            \Log::error('Erro em atualização parcial de evento:', [
                 'event_id' => $calendarEvent->id,
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ]);
 
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return back()->with('error', 'Erro ao atualizar evento. Por favor, tente novamente.');
         }
     }
 
@@ -203,8 +224,22 @@ class CalendarEventController extends Controller
             $calendarEvent->delete();
 
             return back()->with('success', 'Evento eliminado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este evento não pode ser eliminado pois está associado a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar evento. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar evento: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar evento de calendário:', [
+                'event_id' => $calendarEvent->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar evento. Contacte o suporte.');
         }
     }
 }

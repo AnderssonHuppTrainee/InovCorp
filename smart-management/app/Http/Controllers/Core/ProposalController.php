@@ -82,10 +82,23 @@ class ProposalController extends Controller
             return redirect()
                 ->route('proposals.show', $proposal)
                 ->with('success', 'Proposta criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar proposta. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar proposta: ' . $e->getMessage());
+            \Log::error('Erro ao criar proposta:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar proposta. Contacte o suporte.');
         }
     }
 
@@ -148,10 +161,24 @@ class ProposalController extends Controller
             return redirect()
                 ->route('proposals.show', $proposal)
                 ->with('success', 'Proposta atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar proposta. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar proposta: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar proposta:', [
+                'proposal_id' => $proposal->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar proposta. Contacte o suporte.');
         }
     }
 
@@ -161,13 +188,28 @@ class ProposalController extends Controller
     public function destroy(Proposal $proposal)
     {
         try {
+            $proposalNumber = $proposal->number;
             $proposal->delete();
 
             return redirect()
                 ->route('proposals.index')
-                ->with('success', 'Proposta eliminada com sucesso!');
+                ->with('success', "Proposta \"{$proposalNumber}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta proposta não pode ser eliminada pois está associada a outros registos (encomendas, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar proposta. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar proposta: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar proposta:', [
+                'proposal_id' => $proposal->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar proposta. Contacte o suporte.');
         }
     }
 
@@ -182,8 +224,15 @@ class ProposalController extends Controller
             return redirect()
                 ->route('orders.show', $order)
                 ->with('success', 'Proposta convertida em encomenda com sucesso!');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao converter proposta: ' . $e->getMessage());
+            \Log::error('Erro ao converter proposta:', [
+                'proposal_id' => $proposal->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro ao converter proposta. Contacte o suporte.');
         }
     }
 
@@ -200,8 +249,14 @@ class ProposalController extends Controller
             $filename = "proposta-{$proposal->number}.pdf";
 
             return $pdf->download($filename);
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao gerar PDF: ' . $e->getMessage());
+            \Log::error('Erro ao gerar PDF de proposta:', [
+                'proposal_id' => $proposal->id,
+                'message' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Erro ao gerar PDF. Por favor, tente novamente.');
         }
     }
 }

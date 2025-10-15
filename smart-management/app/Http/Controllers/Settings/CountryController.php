@@ -57,7 +57,7 @@ class CountryController extends Controller
 
             return redirect()->route('countries.index')
                 ->with('success', 'País criado com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'code')) {
@@ -67,15 +67,15 @@ class CountryController extends Controller
                     return back()->withInput()->with('error', 'Este país já está registado no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao criar país. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao criar país:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao criar país. Contacte o suporte.');
         }
     }
@@ -113,7 +113,7 @@ class CountryController extends Controller
 
             return redirect()->route('countries.index')
                 ->with('success', 'País atualizado com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'code')) {
@@ -123,16 +123,16 @@ class CountryController extends Controller
                     return back()->withInput()->with('error', 'Este país já está registado no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao atualizar país. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar país:', [
                 'country_id' => $country->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao atualizar país. Contacte o suporte.');
         }
     }
@@ -153,21 +153,21 @@ class CountryController extends Controller
 
             return redirect()->route('countries.index')
                 ->with('success', "País \"{$countryName}\" eliminado com sucesso!");
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Este país não pode ser eliminado pois está associado a outros registos.');
             }
-            
+
             return back()->with('error', 'Erro ao eliminar país. Por favor, tente novamente.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao eliminar país:', [
                 'country_id' => $country->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Erro inesperado ao eliminar país. Contacte o suporte.');
         }
     }

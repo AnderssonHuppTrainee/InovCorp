@@ -83,10 +83,23 @@ class OrderController extends Controller
             return redirect()
                 ->route('orders.show', $order)
                 ->with('success', 'Encomenda criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar encomenda. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar encomenda: ' . $e->getMessage());
+            \Log::error('Erro ao criar encomenda:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar encomenda. Contacte o suporte.');
         }
     }
 
@@ -149,10 +162,24 @@ class OrderController extends Controller
             return redirect()
                 ->route('orders.show', $order)
                 ->with('success', 'Encomenda atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar encomenda. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar encomenda: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar encomenda:', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar encomenda. Contacte o suporte.');
         }
     }
 
@@ -162,13 +189,28 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         try {
+            $orderNumber = $order->number;
             $order->delete();
 
             return redirect()
                 ->route('orders.index')
-                ->with('success', 'Encomenda eliminada com sucesso!');
+                ->with('success', "Encomenda \"{$orderNumber}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta encomenda não pode ser eliminada pois está associada a outros registos (faturas, encomendas de fornecedor, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar encomenda. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar encomenda: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar encomenda:', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar encomenda. Contacte o suporte.');
         }
     }
 
@@ -179,7 +221,7 @@ class OrderController extends Controller
     {
         try {
             if ($order->status !== 'closed') {
-                return back()->with('error', 'Apenas encomendas fechadas podem ser convertidas.');
+                return back()->with('warning', 'Apenas encomendas fechadas podem ser convertidas.');
             }
 
             $supplierOrders = $order->convertToSupplierOrders();
@@ -189,8 +231,15 @@ class OrderController extends Controller
             return redirect()
                 ->route('orders.show', $order)
                 ->with('success', "Criadas {$count} encomenda(s) de fornecedor com sucesso!");
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao converter encomenda: ' . $e->getMessage());
+            \Log::error('Erro ao converter encomenda:', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro ao converter encomenda. Contacte o suporte.');
         }
     }
 
@@ -207,8 +256,14 @@ class OrderController extends Controller
             $filename = "encomenda-{$order->number}.pdf";
 
             return $pdf->download($filename);
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao gerar PDF: ' . $e->getMessage());
+            \Log::error('Erro ao gerar PDF de encomenda:', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Erro ao gerar PDF. Por favor, tente novamente.');
         }
     }
 }

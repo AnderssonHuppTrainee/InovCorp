@@ -72,10 +72,23 @@ class RoleController extends Controller
             return redirect()
                 ->route('roles.show', $role)
                 ->with('success', 'Grupo de permissões criado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Este grupo de permissões já existe no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar grupo. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar grupo: ' . $e->getMessage());
+            \Log::error('Erro ao criar grupo de permissões:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar grupo. Contacte o suporte.');
         }
     }
 
@@ -133,10 +146,24 @@ class RoleController extends Controller
             return redirect()
                 ->route('roles.show', $role)
                 ->with('success', 'Grupo de permissões atualizado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Este grupo de permissões já existe no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar grupo. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar grupo: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar grupo de permissões:', [
+                'role_id' => $role->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar grupo. Contacte o suporte.');
         }
     }
 
@@ -156,8 +183,22 @@ class RoleController extends Controller
             return redirect()
                 ->route('roles.index')
                 ->with('success', 'Grupo de permissões eliminado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este grupo não pode ser eliminado pois está associado a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar grupo. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar grupo: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar grupo de permissões:', [
+                'role_id' => $role->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar grupo. Contacte o suporte.');
         }
     }
 
@@ -182,8 +223,14 @@ class RoleController extends Controller
             }
 
             return back()->with('success', count($permissions) . ' permissões sincronizadas!');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao sincronizar permissões: ' . $e->getMessage());
+            \Log::error('Erro ao sincronizar permissões:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro ao sincronizar permissões. Contacte o suporte.');
         }
     }
 }

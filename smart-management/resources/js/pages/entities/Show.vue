@@ -14,10 +14,7 @@
                         <PencilIcon class="mr-2 h-4 w-4" />
                         Editar
                     </Button>
-                    <Button
-                        variant="destructive"
-                        @click="handleDelete"
-                    >
+                    <Button variant="destructive" @click="handleDelete">
                         <Trash2Icon class="mr-2 h-4 w-4" />
                         Eliminar
                     </Button>
@@ -30,9 +27,7 @@
                     <!-- Informações Principais -->
                     <Card>
                         <CardHeader>
-                            <div
-                                class="flex items-center justify-between"
-                            >
+                            <div class="flex items-center justify-between">
                                 <CardTitle>Informações Principais</CardTitle>
                                 <Badge
                                     :variant="
@@ -53,7 +48,7 @@
                             <!-- NIF -->
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="text-sm text-muted-foreground">
-                                    NIF
+                                    NIF/VAT
                                 </div>
                                 <div class="col-span-2 font-medium">
                                     {{ entity.tax_number }}
@@ -151,7 +146,11 @@
                                                 entity.country.code
                                             }})
                                         </span>
-                                        <span v-else class="text-muted-foreground">-</span>
+                                        <span
+                                            v-else
+                                            class="text-muted-foreground"
+                                            >-</span
+                                        >
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +163,7 @@
                             <CardTitle>Observações</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p class="whitespace-pre-line text-sm">
+                            <p class="text-sm whitespace-pre-line">
                                 {{ entity.observations }}
                             </p>
                         </CardContent>
@@ -195,9 +194,7 @@
                                     >
                                         {{ entity.phone }}
                                     </a>
-                                    <span
-                                        v-else
-                                        class="text-muted-foreground"
+                                    <span v-else class="text-muted-foreground"
                                         >-</span
                                     >
                                 </div>
@@ -221,9 +218,7 @@
                                     >
                                         {{ entity.mobile }}
                                     </a>
-                                    <span
-                                        v-else
-                                        class="text-muted-foreground"
+                                    <span v-else class="text-muted-foreground"
                                         >-</span
                                     >
                                 </div>
@@ -247,9 +242,7 @@
                                     >
                                         {{ entity.email }}
                                     </a>
-                                    <span
-                                        v-else
-                                        class="text-muted-foreground"
+                                    <span v-else class="text-muted-foreground"
                                         >-</span
                                     >
                                 </div>
@@ -278,9 +271,7 @@
                                             class="ml-1 inline h-3 w-3"
                                         />
                                     </a>
-                                    <span
-                                        v-else
-                                        class="text-muted-foreground"
+                                    <span v-else class="text-muted-foreground"
                                         >-</span
                                     >
                                 </div>
@@ -349,15 +340,11 @@
 import PageHeader from '@/components/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/AppLayout.vue';
 import route from '@/routes/entities';
+import { Entity } from '@/types';
 import { router } from '@inertiajs/vue3';
 import {
     ArrowLeftIcon,
@@ -369,32 +356,6 @@ import {
     SmartphoneIcon,
     Trash2Icon,
 } from 'lucide-vue-next';
-
-interface Entity {
-    id: number;
-    number?: string;
-    tax_number: string;
-    name: string;
-    types: string[];
-    address: string;
-    postal_code: string;
-    city: string;
-    country_id: number;
-    country?: {
-        id: number;
-        name: string;
-        code: string;
-    };
-    phone: string | null;
-    mobile: string | null;
-    website: string | null;
-    email: string | null;
-    gdpr_consent: boolean;
-    observations: string | null;
-    status: 'active' | 'inactive';
-    created_at: string;
-    updated_at: string;
-}
 
 interface Props {
     entity: Entity;
@@ -415,7 +376,7 @@ const handleEdit = () => {
 const handleDelete = () => {
     if (
         confirm(
-            `Tem certeza que deseja eliminar "${props.entity.name}"?\n\nEsta ação não pode ser desfeita.`
+            `Tem certeza que deseja eliminar "${props.entity.name}"?\n\nEsta ação não pode ser desfeita.`,
         )
     ) {
         router.delete(route.destroy({ id: props.entity.id }).url, {
@@ -428,7 +389,7 @@ const handleDelete = () => {
 
 const formatDate = (dateString: string) => {
     if (!dateString) return '-';
-    
+
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('pt-PT', {
         year: 'numeric',

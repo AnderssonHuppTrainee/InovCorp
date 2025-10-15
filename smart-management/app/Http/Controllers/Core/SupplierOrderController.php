@@ -79,8 +79,22 @@ class SupplierOrderController extends Controller
             return redirect()
                 ->route('supplier-orders.index')
                 ->with('success', 'Encomenda de fornecedor eliminada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta encomenda não pode ser eliminada pois está associada a outros registos (faturas, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar encomenda. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar encomenda: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar encomenda de fornecedor:', [
+                'supplier_order_id' => $supplierOrder->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar encomenda. Contacte o suporte.');
         }
     }
 }

@@ -77,10 +77,23 @@ class UserController extends Controller
             return redirect()
                 ->route('users.show', $user)
                 ->with('success', 'Utilizador criado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()->withInput()->with('error', 'Este email já está registado no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar utilizador. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar utilizador: ' . $e->getMessage());
+            \Log::error('Erro ao criar utilizador:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar utilizador. Contacte o suporte.');
         }
     }
 
@@ -144,10 +157,24 @@ class UserController extends Controller
             return redirect()
                 ->route('users.show', $user)
                 ->with('success', 'Utilizador atualizado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()->withInput()->with('error', 'Este email já está registado no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar utilizador. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar utilizador: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar utilizador:', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar utilizador. Contacte o suporte.');
         }
     }
 
@@ -167,8 +194,22 @@ class UserController extends Controller
             return redirect()
                 ->route('users.index')
                 ->with('success', 'Utilizador eliminado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este utilizador não pode ser eliminado pois está associado a outros registos (ordens de trabalho, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar utilizador. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar utilizador: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar utilizador:', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar utilizador. Contacte o suporte.');
         }
     }
 }

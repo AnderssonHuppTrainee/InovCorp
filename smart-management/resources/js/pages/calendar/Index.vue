@@ -901,11 +901,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     --fc-button-hover-border-color: hsl(var(--primary) / 0.9);
     --fc-button-active-bg-color: hsl(var(--primary) / 0.8);
     --fc-button-active-border-color: hsl(var(--primary) / 0.8);
-    /* Removido para permitir cores individuais dos eventos:
-       --fc-event-bg-color
-       --fc-event-border-color
-       --fc-event-text-color
-    */
     --fc-today-bg-color: hsl(var(--accent));
 }
 

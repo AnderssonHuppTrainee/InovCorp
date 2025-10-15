@@ -24,13 +24,12 @@
                                     name="tax_number"
                                 >
                                     <FormItem>
-                                        <FormLabel>NIF *</FormLabel>
+                                        <FormLabel>NIF/VAT *</FormLabel>
                                         <FormControl>
                                             <div class="flex gap-2">
                                                 <Input
                                                     placeholder="PT123456789"
                                                     v-bind="componentField"
-                                                    @blur="validateVat"
                                                     :class="{
                                                         'border-green-500':
                                                             vatValid,
@@ -60,8 +59,8 @@
                                             </div>
                                         </FormControl>
                                         <FormDescription>
-                                            Introduza o NIF e valide através do
-                                            VIES
+                                            Introduza o NIF/VAT e valide através
+                                            do VIES
                                         </FormDescription>
                                         <FormMessage />
 

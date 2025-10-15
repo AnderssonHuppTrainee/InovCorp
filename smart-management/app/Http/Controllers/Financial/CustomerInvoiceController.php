@@ -81,10 +81,23 @@ class CustomerInvoiceController extends Controller
             return redirect()
                 ->route('customer-invoices.show', $invoice)
                 ->with('success', 'Fatura de cliente criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'customer_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar fatura. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar fatura: ' . $e->getMessage());
+            \Log::error('Erro ao criar fatura de cliente:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar fatura. Contacte o suporte.');
         }
     }
 
@@ -133,23 +146,52 @@ class CustomerInvoiceController extends Controller
             return redirect()
                 ->route('customer-invoices.show', $customerInvoice)
                 ->with('success', 'Fatura atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'customer_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar fatura. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar fatura: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar fatura de cliente:', [
+                'invoice_id' => $customerInvoice->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar fatura. Contacte o suporte.');
         }
     }
 
     public function destroy(CustomerInvoice $customerInvoice)
     {
         try {
+            $invoiceNumber = $customerInvoice->number;
             $customerInvoice->delete();
 
             return redirect()
                 ->route('customer-invoices.index')
-                ->with('success', 'Fatura eliminada com sucesso!');
+                ->with('success', "Fatura \"{$invoiceNumber}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta fatura não pode ser eliminada pois está associada a outros registos (pagamentos, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar fatura. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar fatura: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar fatura de cliente:', [
+                'invoice_id' => $customerInvoice->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar fatura. Contacte o suporte.');
         }
     }
 
@@ -168,8 +210,15 @@ class CustomerInvoiceController extends Controller
             });
 
             return back()->with('success', 'Pagamento registado com sucesso!');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao registar pagamento: ' . $e->getMessage());
+            \Log::error('Erro ao registar pagamento:', [
+                'invoice_id' => $customerInvoice->id,
+                'amount' => $request->amount,
+                'message' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Erro ao registar pagamento. Por favor, tente novamente.');
         }
     }
 }

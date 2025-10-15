@@ -44,11 +44,30 @@ class TaxRateController extends Controller
 
         $validated['is_active'] = $validated['is_active'] ?? true;
 
-        TaxRate::create($validated);
+        try {
+            TaxRate::create($validated);
 
-        return redirect()
-            ->route('tax-rates.index')
-            ->with('success', 'Taxa de IVA criada com sucesso!');
+            return redirect()
+                ->route('tax-rates.index')
+                ->with('success', 'Taxa de IVA criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Esta taxa de IVA já está registada no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar taxa de IVA. Por favor, verifique os dados.');
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar taxa de IVA:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar taxa de IVA. Contacte o suporte.');
+        }
     }
 
     public function show(TaxRate $taxRate)
@@ -75,24 +94,62 @@ class TaxRateController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $taxRate->update($validated);
+        try {
+            $taxRate->update($validated);
 
-        return redirect()
-            ->route('tax-rates.index')
-            ->with('success', 'Taxa de IVA atualizada com sucesso!');
+            return redirect()
+                ->route('tax-rates.index')
+                ->with('success', 'Taxa de IVA atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'name')) {
+                    return back()->withInput()->with('error', 'Esta taxa de IVA já está registada no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar taxa de IVA. Por favor, verifique os dados.');
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar taxa de IVA:', [
+                'tax_rate_id' => $taxRate->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar taxa de IVA. Contacte o suporte.');
+        }
     }
 
     public function destroy(TaxRate $taxRate)
     {
+        try {
+            if ($taxRate->articles()->count() > 0) {
+                return back()->with('error', 'Não é possível eliminar uma taxa de IVA com artigos associados.');
+            }
 
-        if ($taxRate->articles()->count() > 0) {
-            return back()->with('error', 'Não é possível eliminar uma taxa de IVA com artigos associados.');
+            $taxRateName = $taxRate->name;
+            $taxRate->delete();
+
+            return redirect()
+                ->route('tax-rates.index')
+                ->with('success', "Taxa de IVA \"{$taxRateName}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta taxa de IVA não pode ser eliminada pois está associada a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar taxa de IVA. Por favor, tente novamente.');
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao eliminar taxa de IVA:', [
+                'tax_rate_id' => $taxRate->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar taxa de IVA. Contacte o suporte.');
         }
-
-        $taxRate->delete();
-
-        return redirect()
-            ->route('tax-rates.index')
-            ->with('success', 'Taxa de IVA eliminada com sucesso!');
     }
 }

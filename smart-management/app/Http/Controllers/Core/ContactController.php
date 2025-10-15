@@ -54,7 +54,7 @@ class ContactController extends Controller
         $validated = $request->validated();
 
         try {
-            DB::transaction(function () use ($validated) {
+            DB::transaction(function () use (&$validated) {
                 $validated['number'] = Contact::nextNumber();
                 Contact::create($validated);
             });
@@ -62,10 +62,26 @@ class ContactController extends Controller
             return redirect()
                 ->route('contacts.index')
                 ->with('success', 'Contacto criado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()->withInput()->with('error', 'Este email já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'entity_id')) {
+                    return back()->withInput()->with('error', 'Entidade inválida ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar contacto. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar contacto: ' . $e->getMessage());
+            \Log::error('Erro ao criar contacto:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar contacto. Contacte o suporte.');
         }
     }
 
@@ -107,10 +123,27 @@ class ContactController extends Controller
             return redirect()
                 ->route('contacts.index')
                 ->with('success', 'Contacto atualizado com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'email')) {
+                    return back()->withInput()->with('error', 'Este email já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'entity_id')) {
+                    return back()->withInput()->with('error', 'Entidade inválida ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar contacto. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar contacto: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar contacto:', [
+                'contact_id' => $contact->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar contacto. Contacte o suporte.');
         }
     }
 
@@ -120,13 +153,28 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         try {
+            $contactName = $contact->name;
             $contact->delete();
 
             return redirect()
                 ->route('contacts.index')
-                ->with('success', 'Contacto eliminado com sucesso!');
+                ->with('success', "Contacto \"{$contactName}\" eliminado com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Este contacto não pode ser eliminado pois está associado a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar contacto. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar contacto: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar contacto:', [
+                'contact_id' => $contact->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar contacto. Contacte o suporte.');
         }
     }
 }

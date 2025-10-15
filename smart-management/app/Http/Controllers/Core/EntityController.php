@@ -52,7 +52,7 @@ class EntityController extends Controller
     {
         $type = $request->query('type', 'client');
 
-        // Define os tipos padrão baseado na URL
+
         $defaultTypes = [$type];
 
         return Inertia::render(
@@ -87,9 +87,9 @@ class EntityController extends Controller
                 ->with('success', 'Entidade criada com sucesso!');
 
         } catch (\Illuminate\Database\QueryException $e) {
-            // Tratamento específico para erros de banco de dados
+
             if ($e->getCode() === '23000') {
-                // Constraint violation (duplicate entry)
+
                 if (str_contains($e->getMessage(), 'tax_number')) {
                     return back()
                         ->withInput()
@@ -158,9 +158,9 @@ class EntityController extends Controller
                 ->with('success', 'Entidade atualizada com sucesso!');
 
         } catch (\Illuminate\Database\QueryException $e) {
-            // Tratamento específico para erros de banco de dados
+
             if ($e->getCode() === '23000') {
-                // Constraint violation (duplicate entry)
+
                 if (str_contains($e->getMessage(), 'tax_number')) {
                     return back()
                         ->withInput()
@@ -204,7 +204,7 @@ class EntityController extends Controller
                 ->with('success', "Entidade \"{$entityName}\" eliminada com sucesso!");
 
         } catch (\Illuminate\Database\QueryException $e) {
-            // Constraint violation (foreign key)
+
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Esta entidade não pode ser eliminada pois está associada a outros registos (propostas, encomendas, etc).');
             }
@@ -230,29 +230,67 @@ class EntityController extends Controller
         ]);
 
         try {
-            $vatNumber = $request->vat_number;
+            $vatNumber = strtoupper(trim($request->vat_number));
 
-            // Remover caracteres não numéricos
-            $cleanVat = preg_replace('/[^0-9]/', '', $vatNumber);
+            // Remover espaços e caracteres inválidos
+            $vatNumber = preg_replace('/\s+/', '', $vatNumber);
 
-            // Verificar formato PT
-            if (!preg_match('/^PT\d{9}$/', $vatNumber)) {
-                $vatNumber = 'PT' . $cleanVat;
+            // Extrair prefixo do país (2 primeiras letras)
+            $countryCode = substr($vatNumber, 0, 2);
+            $vatNumberOnly = substr($vatNumber, 2);
+
+            // Lista de países suportados pela UE no VIES
+            $euCountries = [
+                'AT',
+                'BE',
+                'BG',
+                'CY',
+                'CZ',
+                'DE',
+                'DK',
+                'EE',
+                'EL',
+                'ES',
+                'FI',
+                'FR',
+                'HR',
+                'HU',
+                'IE',
+                'IT',
+                'LT',
+                'LU',
+                'LV',
+                'MT',
+                'NL',
+                'PL',
+                'PT',
+                'RO',
+                'SE',
+                'SI',
+                'SK'
+            ];
+
+            // Validar se o prefixo é de um país da UE
+            if (!in_array($countryCode, $euCountries)) {
+                return response()->json([
+                    'valid' => false,
+                    'error' => 'País não suportado pelo VIES. Utilize um NIF da União Europeia (ex: DE123456789).'
+                ], 422);
             }
 
+            // Criar o cliente SOAP
             $client = new \SoapClient(
                 "http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl",
                 ['exceptions' => true]
             );
 
-            $countryCode = substr($vatNumber, 0, 2);
-            $vatNumberOnly = substr($vatNumber, 2);
-
+            // Fazer a chamada ao VIES
             $result = $client->checkVat([
                 'countryCode' => $countryCode,
                 'vatNumber' => $vatNumberOnly
             ]);
 
+            // Retornar o resultado padronizado
             return response()->json([
                 'valid' => $result->valid,
                 'name' => isset($result->name) && trim($result->name) !== '' ? trim($result->name) : null,
@@ -267,10 +305,16 @@ class EntityController extends Controller
                 'error' => 'Serviço VIES indisponível. Tente novamente mais tarde.'
             ], 503);
         } catch (\Exception $e) {
+            \Log::error('Erro ao validar VAT no VIES', [
+                'message' => $e->getMessage(),
+                'input' => $request->vat_number
+            ]);
+
             return response()->json([
                 'valid' => false,
-                'error' => 'Erro ao validar NIF: ' . $e->getMessage()
+                'error' => 'Erro ao validar VAT: ' . $e->getMessage()
             ], 500);
         }
     }
+
 }

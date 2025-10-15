@@ -53,7 +53,7 @@ class WorkOrderController extends Controller
         $validated = $request->validated();
 
         try {
-            DB::transaction(function () use ($validated) {
+            DB::transaction(function () use (&$validated) {
                 $validated['number'] = WorkOrder::nextNumber();
                 WorkOrder::create($validated);
             });
@@ -61,10 +61,26 @@ class WorkOrderController extends Controller
             return redirect()
                 ->route('work-orders.index')
                 ->with('success', 'Ordem de trabalho criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+                if (str_contains($e->getMessage(), 'assigned_to')) {
+                    return back()->withInput()->with('error', 'Utilizador atribuído inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar ordem de trabalho. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar ordem de trabalho: ' . $e->getMessage());
+            \Log::error('Erro ao criar ordem de trabalho:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar ordem de trabalho. Contacte o suporte.');
         }
     }
 
@@ -106,10 +122,27 @@ class WorkOrderController extends Controller
             return redirect()
                 ->route('work-orders.index')
                 ->with('success', 'Ordem de trabalho atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'client_id')) {
+                    return back()->withInput()->with('error', 'Cliente inválido ou inexistente.');
+                }
+                if (str_contains($e->getMessage(), 'assigned_to')) {
+                    return back()->withInput()->with('error', 'Utilizador atribuído inválido ou inexistente.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar ordem de trabalho. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar ordem de trabalho: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar ordem de trabalho:', [
+                'work_order_id' => $workOrder->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar ordem de trabalho. Contacte o suporte.');
         }
     }
 
@@ -119,13 +152,28 @@ class WorkOrderController extends Controller
     public function destroy(WorkOrder $workOrder)
     {
         try {
+            $workOrderNumber = $workOrder->number;
             $workOrder->delete();
 
             return redirect()
                 ->route('work-orders.index')
-                ->with('success', 'Ordem de trabalho eliminada com sucesso!');
+                ->with('success', "Ordem de trabalho \"{$workOrderNumber}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta ordem de trabalho não pode ser eliminada pois está associada a outros registos (faturas, etc).');
+            }
+
+            return back()->with('error', 'Erro ao eliminar ordem de trabalho. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar ordem de trabalho: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar ordem de trabalho:', [
+                'work_order_id' => $workOrder->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar ordem de trabalho. Contacte o suporte.');
         }
     }
 }

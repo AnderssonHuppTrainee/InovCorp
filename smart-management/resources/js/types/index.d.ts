@@ -40,22 +40,31 @@ export interface User {
 export type BreadcrumbItemType = BreadcrumbItem;
 
 export interface Entity {
-  id?: number
-  tax_number?: string
-  name?: string
-  types?: string[]
-  address?: string
-  postal_code?: string
-  city?: string
-  country_id?: number | string
-  phone?: string
-  mobile?: string
-  website?: string
-  email?: string
-  gdpr_consent?: boolean
-  observations?: string
-  status?: 'active' | 'inactive'
+    id: number;
+    number?: string;
+    tax_number: string;
+    name: string;
+    types: string[];
+    address: string;
+    postal_code: string;
+    city: string;
+    country_id: number;
+    country?: {
+        id: number;
+        name: string;
+        code: string;
+    };
+    phone: string | null;
+    mobile: string | null;
+    website: string | null;
+    email: string | null;
+    gdpr_consent: boolean;
+    observations: string | null;
+    status: 'active' | 'inactive';
+    created_at: string;
+    updated_at: string;
 }
+
 
 interface Country {
   id: number

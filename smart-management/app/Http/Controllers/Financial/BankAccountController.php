@@ -47,10 +47,26 @@ class BankAccountController extends Controller
             return redirect()
                 ->route('bank-accounts.show', $account)
                 ->with('success', 'Conta bancária criada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'account_number')) {
+                    return back()->withInput()->with('error', 'Este número de conta já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'iban')) {
+                    return back()->withInput()->with('error', 'Este IBAN já está registado no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao criar conta bancária. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao criar conta bancária: ' . $e->getMessage());
+            \Log::error('Erro ao criar conta bancária:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao criar conta bancária. Contacte o suporte.');
         }
     }
 
@@ -87,10 +103,27 @@ class BankAccountController extends Controller
             return redirect()
                 ->route('bank-accounts.show', $bankAccount)
                 ->with('success', 'Conta bancária atualizada com sucesso!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                if (str_contains($e->getMessage(), 'account_number')) {
+                    return back()->withInput()->with('error', 'Este número de conta já está registado no sistema.');
+                }
+                if (str_contains($e->getMessage(), 'iban')) {
+                    return back()->withInput()->with('error', 'Este IBAN já está registado no sistema.');
+                }
+            }
+
+            return back()->withInput()->with('error', 'Erro ao atualizar conta bancária. Por favor, verifique os dados.');
+
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->with('error', 'Erro ao atualizar conta bancária: ' . $e->getMessage());
+            \Log::error('Erro ao atualizar conta bancária:', [
+                'account_id' => $bankAccount->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()->with('error', 'Erro inesperado ao atualizar conta bancária. Contacte o suporte.');
         }
     }
 
@@ -100,6 +133,8 @@ class BankAccountController extends Controller
     public function destroy(BankAccount $bankAccount)
     {
         try {
+            $accountName = $bankAccount->name;
+
             // Check if account has transactions
             if ($bankAccount->transactions()->count() > 0) {
                 return back()->with('error', 'Não é possível eliminar uma conta com transações associadas.');
@@ -109,9 +144,23 @@ class BankAccountController extends Controller
 
             return redirect()
                 ->route('bank-accounts.index')
-                ->with('success', 'Conta bancária eliminada com sucesso!');
+                ->with('success', "Conta bancária \"{$accountName}\" eliminada com sucesso!");
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Esta conta bancária não pode ser eliminada pois está associada a outros registos.');
+            }
+
+            return back()->with('error', 'Erro ao eliminar conta bancária. Por favor, tente novamente.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Erro ao eliminar conta bancária: ' . $e->getMessage());
+            \Log::error('Erro ao eliminar conta bancária:', [
+                'account_id' => $bankAccount->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Erro inesperado ao eliminar conta bancária. Contacte o suporte.');
         }
     }
 }

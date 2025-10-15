@@ -56,22 +56,22 @@ class CalendarActionController extends Controller
 
             return redirect()->route('calendar-actions.index')
                 ->with('success', 'Ação criada com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Esta ação já está registada no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao criar ação. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao criar ação de calendário:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao criar ação. Contacte o suporte.');
         }
     }
@@ -109,23 +109,23 @@ class CalendarActionController extends Controller
 
             return redirect()->route('calendar-actions.index')
                 ->with('success', 'Ação atualizada com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Esta ação já está registada no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao atualizar ação. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar ação de calendário:', [
                 'action_id' => $calendarAction->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao atualizar ação. Contacte o suporte.');
         }
     }
@@ -146,21 +146,21 @@ class CalendarActionController extends Controller
 
             return redirect()->route('calendar-actions.index')
                 ->with('success', "Ação \"{$actionName}\" eliminada com sucesso!");
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Esta ação não pode ser eliminada pois está associada a outros registos.');
             }
-            
+
             return back()->with('error', 'Erro ao eliminar ação. Por favor, tente novamente.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao eliminar ação de calendário:', [
                 'action_id' => $calendarAction->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Erro inesperado ao eliminar ação. Contacte o suporte.');
         }
     }

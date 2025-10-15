@@ -56,22 +56,22 @@ class ContactRoleController extends Controller
 
             return redirect()->route('contact-roles.index')
                 ->with('success', 'Função criada com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Esta função já está registada no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao criar função. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao criar função de contacto:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao criar função. Contacte o suporte.');
         }
     }
@@ -109,23 +109,23 @@ class ContactRoleController extends Controller
 
             return redirect()->route('contact-roles.index')
                 ->with('success', 'Função atualizada com sucesso!');
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'name')) {
                     return back()->withInput()->with('error', 'Esta função já está registada no sistema.');
                 }
             }
-            
+
             return back()->withInput()->with('error', 'Erro ao atualizar função. Por favor, verifique os dados.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar função de contacto:', [
                 'role_id' => $contactRole->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->withInput()->with('error', 'Erro inesperado ao atualizar função. Contacte o suporte.');
         }
     }
@@ -146,21 +146,21 @@ class ContactRoleController extends Controller
 
             return redirect()->route('contact-roles.index')
                 ->with('success', "Função \"{$roleName}\" eliminada com sucesso!");
-                
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Esta função não pode ser eliminada pois está associada a outros registos.');
             }
-            
+
             return back()->with('error', 'Erro ao eliminar função. Por favor, tente novamente.');
-            
+
         } catch (\Exception $e) {
             \Log::error('Erro ao eliminar função de contacto:', [
                 'role_id' => $contactRole->id,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Erro inesperado ao eliminar função. Contacte o suporte.');
         }
     }

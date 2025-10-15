@@ -66,10 +66,27 @@ export interface Entity {
 }
 
 
-interface Country {
+export interface Country {
   id: number
   name: string
   code: string
   phone_code: string
   is_active : boolean
+}
+
+export interface CalendarEvent {
+    id: string | number;
+    title: string;
+    start: string;
+    end: string;
+    backgroundColor?: string;
+    borderColor?: string;
+    extendedProps?: {
+        entity_id: number | null;
+        entity_name: string | null;
+        type_name: string | null;
+        action_name: string | null;
+        status: string;
+        knowledge: boolean;
+    };
 }

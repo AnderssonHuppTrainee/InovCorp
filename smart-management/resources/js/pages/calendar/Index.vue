@@ -32,7 +32,7 @@ import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import calendar from '@/routes/calendar';
 import { calendarEventSchema } from '@/schemas/calendarEventSchema';
-import { type BreadcrumbItem } from '@/types';
+import { CalendarEvent, type BreadcrumbItem } from '@/types';
 import type {
     CalendarOptions,
     DateSelectArg,
@@ -52,23 +52,6 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { FilterIcon, Loader2Icon, PlusIcon, XIcon } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
-
-interface CalendarEvent {
-    id: string | number;
-    title: string;
-    start: string;
-    end: string;
-    backgroundColor?: string;
-    borderColor?: string;
-    extendedProps?: {
-        entity_id: number | null;
-        entity_name: string | null;
-        type_name: string | null;
-        action_name: string | null;
-        status: string;
-        knowledge: boolean;
-    };
-}
 
 interface Props {
     events: CalendarEvent[];
@@ -114,80 +97,15 @@ const form = useForm({
     },
 });
 
-const calendarOptions = computed<CalendarOptions>(() => ({
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
-    initialView: 'dayGridMonth',
-    locale: ptLocale,
-    headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
-    },
-    buttonText: {
-        today: 'Hoje',
-        month: 'Mês',
-        week: 'Semana',
-        day: 'Dia',
-        list: 'Lista',
-    },
-    height: 'auto',
-    events: props.events.map((event) => ({
-        id: String(event.id),
-        title: event.title,
-        start: event.start,
-        end: event.end,
-        backgroundColor: event.backgroundColor,
-        borderColor: event.borderColor,
-        extendedProps: event.extendedProps,
-    })) as EventInput[],
-    editable: true,
-    selectable: true,
-    selectMirror: true,
-    dayMaxEvents: true,
-    weekends: true,
-    select: handleDateSelect,
-    eventClick: handleEventClick,
-    eventDrop: handleEventDrop,
-    eventResize: handleEventResize,
-    eventTimeFormat: {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-    },
-}));
-
-const handleDateSelect = (selectInfo: DateSelectArg) => {
-    const calendarApi = selectInfo.view.calendar;
-    calendarApi.unselect();
-
-    const startDate = new Date(selectInfo.start);
-    form.setFieldValue('event_date', selectInfo.startStr.split('T')[0]);
-    form.setFieldValue('event_time', startDate.toTimeString().substring(0, 5));
-
-    isEditMode.value = false;
-    selectedEventId.value = null;
-    form.resetForm({
-        values: {
-            event_date: selectInfo.startStr.split('T')[0],
-            event_time:
-                startDate.getHours().toString().padStart(2, '0') + ':00',
-            duration: 60,
-            shared_with: [],
-            knowledge: false,
-            entity_id: undefined,
-            calendar_event_type_id: '',
-            calendar_action_id: '',
-            description: '',
-            status: 'scheduled',
-        },
-    });
-
-    showEventDialog.value = true;
-};
+let currentFetchController: AbortController | null = null;
 
 const handleEventClick = (clickInfo: EventClickArg) => {
     const eventId = parseInt(clickInfo.event.id);
     selectedEventId.value = eventId;
+
+    // abort previous fetch if any
+    if (currentFetchController) currentFetchController.abort();
+    currentFetchController = new AbortController();
 
     fetch(calendar.show(eventId).url)
         .then((res) => res.json())
@@ -224,10 +142,41 @@ const handleEventClick = (clickInfo: EventClickArg) => {
             showEventDialog.value = true;
         })
         .catch((err) => {
-            console.error('Error loading event:', err);
+            if (err.name !== 'AbortError')
+                console.error('Error loading event:', err);
+        })
+        .finally(() => {
+            currentFetchController = null;
         });
 };
+const handleDateSelect = (selectInfo: DateSelectArg) => {
+    const calendarApi = selectInfo.view.calendar;
+    calendarApi.unselect();
 
+    const startDate = new Date(selectInfo.start);
+    form.setFieldValue('event_date', selectInfo.startStr.split('T')[0]);
+    form.setFieldValue('event_time', startDate.toTimeString().substring(0, 5));
+
+    isEditMode.value = false;
+    selectedEventId.value = null;
+    form.resetForm({
+        values: {
+            event_date: selectInfo.startStr.split('T')[0],
+            event_time:
+                startDate.getHours().toString().padStart(2, '0') + ':00',
+            duration: 60,
+            shared_with: [],
+            knowledge: false,
+            entity_id: undefined,
+            calendar_event_type_id: '',
+            calendar_action_id: '',
+            description: '',
+            status: 'scheduled',
+        },
+    });
+
+    showEventDialog.value = true;
+};
 const handleEventDrop = (dropInfo: EventDropArg) => {
     const eventId = parseInt(dropInfo.event.id);
     const newStart = dropInfo.event.start!;
@@ -268,13 +217,26 @@ const handleEventResize = (resizeInfo: EventResizeDoneArg) => {
         },
     );
 };
+const resetFormToDefaults = () => {
+    form.resetForm({
+        values: {
+            event_date: '',
+            event_time: '',
+            duration: 60,
+            shared_with: [],
+            knowledge: false,
+            entity_id: undefined,
+            calendar_event_type_id: '',
+            calendar_action_id: '',
+            description: '',
+            status: 'scheduled',
+        },
+    });
+    selectedEventId.value = null;
+    isEditMode.value = false;
+};
 
-const submitForm = form.handleSubmit((values) => {
-    if (isSubmitting.value) {
-        console.log('Already submitting, ignoring duplicate submit');
-        return;
-    }
-
+const submitForm = form.handleSubmit(async (values) => {
     isSubmitting.value = true;
 
     const payload = {
@@ -329,6 +291,11 @@ const submitForm = form.handleSubmit((values) => {
     }
 });
 
+const closeDialog = () => {
+    resetFormToDefaults();
+    showEventDialog.value = false;
+};
+
 const deleteEvent = () => {
     if (
         selectedEventId.value &&
@@ -343,6 +310,47 @@ const deleteEvent = () => {
     }
 };
 
+const calendarOptions = computed<CalendarOptions>(() => ({
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
+    initialView: 'dayGridMonth',
+    locale: ptLocale,
+    headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+    },
+    buttonText: {
+        today: 'Hoje',
+        month: 'Mês',
+        week: 'Semana',
+        day: 'Dia',
+        list: 'Lista',
+    },
+    height: 'auto',
+    events: props.events.map((event) => ({
+        id: String(event.id),
+        title: event.title,
+        start: event.start,
+        end: event.end,
+        backgroundColor: event.backgroundColor,
+        borderColor: event.borderColor,
+        extendedProps: event.extendedProps,
+    })) as EventInput[],
+    editable: true,
+    selectable: true,
+    selectMirror: true,
+    dayMaxEvents: true,
+    weekends: true,
+    select: handleDateSelect,
+    eventClick: handleEventClick,
+    eventDrop: handleEventDrop,
+    eventResize: handleEventResize,
+    eventTimeFormat: {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    },
+}));
 const applyFilters = () => {
     router.get(
         calendar.index().url,
@@ -429,9 +437,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </Button>
                     <Button
                         @click="
-                            showEventDialog = true;
-                            isEditMode = false;
-                            form.resetForm();
+                            () => {
+                                resetFormToDefaults();
+                                showEventDialog = true;
+                            }
                         "
                     >
                         <PlusIcon class="mr-2 h-4 w-4" />
@@ -873,7 +882,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <Button
                                 type="button"
                                 variant="outline"
-                                @click="showEventDialog = false"
+                                @click="closeDialog"
                             >
                                 Cancelar
                             </Button>

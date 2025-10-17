@@ -38,7 +38,7 @@
                                                 <Button
                                                     type="button"
                                                     variant="outline"
-                                                    @click="validateVat"
+                                                    @click="handleValidateVat"
                                                     :disabled="vatLoading"
                                                     class="whitespace-nowrap"
                                                 >
@@ -416,12 +416,12 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useViesValidation } from '@/composables/useViesValidation';
 import AppLayout from '@/layouts/AppLayout.vue';
 import route from '@/routes/entities';
 import { entitySchema } from '@/schemas/entitySchema';
 import { router } from '@inertiajs/vue3';
 import { toTypedSchema } from '@vee-validate/zod';
-import axios from 'axios';
 import {
     ArrowLeftIcon,
     CheckCircleIcon,
@@ -441,10 +441,8 @@ const props = defineProps({
 });
 
 // Refs
-const vatLoading = ref(false);
-const vatValid = ref(false);
-const vatResult = ref(null);
-const error = ref(null);
+const { vatLoading, vatValid, vatResult, error, validateVat } =
+    useViesValidation();
 const isSubmitting = ref(false);
 
 // Form with vee-validate + Zod - Preenchido com dados da entidade
@@ -482,81 +480,18 @@ const handleGdprChange = (e) => {
     form.setFieldValue('gdpr_consent', checked);
 };
 
-const validateVat = async () => {
-    // Verificar se o NIF tem conteúdo antes de validar
-    if (!form.values.tax_number || form.values.tax_number.trim() === '') {
-        return;
-    }
+const handleValidateVat = async () => {
+    const vatNumber = form.values.tax_number?.trim();
+    if (!vatNumber) return;
 
-    vatLoading.value = true;
-    vatResult.value = null;
-    error.value = null;
-
-    try {
-        // Axios já está configurado com CSRF token no app.ts
-        const response = await axios.post('/entities/vies-check', {
-            vat_number: form.values.tax_number,
-        });
-
-        vatResult.value = response.data;
-
-        if (response.data.valid) {
-            vatValid.value = true;
-
-            // Preenche automaticamente os campos usando setFieldValue
-            if (response.data.name) {
-                console.log('Preenchendo nome:', response.data.name);
-                form.setFieldValue('name', response.data.name);
-            }
-
-            if (response.data.address) {
-                const address = response.data.address
-                    .replace(/\s{2,}/g, ' ') // remove espaços duplos
-                    .trim();
-
-                console.log('Preenchendo morada:', address);
-                form.setFieldValue('address', address);
-
-                // Regex para código postal português
-                const postalRegex = /(\d{4}-\d{3})/;
-                const postalMatch = address.match(postalRegex);
-
-                if (postalMatch) {
-                    console.log('Preenchendo código postal:', postalMatch[1]);
-                    form.setFieldValue('postal_code', postalMatch[1]);
-
-                    // Agora tentamos pegar a cidade após o código postal
-                    const afterPostal = address
-                        .split(postalMatch[1])[1]
-                        ?.trim();
-
-                    if (afterPostal) {
-                        // remove pontos finais e caracteres soltos
-                        const cleanedCity = afterPostal
-                            .replace(/\.$/, '') // remove ponto final
-                            .replace(/\s+/g, ' ') // espaços duplos
-                            .trim();
-
-                        // Muitas vezes vem algo como "CARNAXIDE" ou "LISBOA"
-                        // Se vier "PORTELA CARNAXIDE" pegamos a última palavra (a mais significativa)
-                        const cityParts = cleanedCity.split(' ');
-                        const city = cityParts[cityParts.length - 1];
-                        console.log('Preenchendo cidade:', city);
-                        form.setFieldValue('city', city);
-                    }
-                }
-            }
-        } else {
-            vatValid.value = false;
-            error.value = response.data.error || 'Número VAT inválido';
-        }
-    } catch (err) {
-        error.value =
-            err.response?.data?.error ||
-            'Erro ao validar o VAT. Tente novamente.';
-        vatResult.value = { valid: false };
-    } finally {
-        vatLoading.value = false;
+    const result = await validateVat(vatNumber);
+    if (result?.valid) {
+        // preenche os campos automaticamente
+        if (result.name) form.setFieldValue('name', result.name);
+        if (result.address) form.setFieldValue('address', result.address);
+        if (result.postal_code)
+            form.setFieldValue('postal_code', result.postal_code);
+        if (result.city) form.setFieldValue('city', result.city);
     }
 };
 

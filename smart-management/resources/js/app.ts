@@ -6,6 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
 import axios from 'axios';
+import { Toaster, toast } from 'vue-sonner';
 
 // Configurar axios para incluir CSRF token automaticamente
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -28,9 +29,15 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+      const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .mount(el);
+            .component('Toaster', Toaster);
+        
+        app.mount(el);
+           // Debug: verificar se as flash messages estão chegando
+        console.log('🔍 Props iniciais:', props.initialPage.props);
+        console.log('💬 Flash messages iniciais:', props.initialPage.props.flash); 
+     
     },
     progress: {
         color: '#4B5563',

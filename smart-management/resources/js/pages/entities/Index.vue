@@ -209,7 +209,7 @@ interface Props {
 const props = defineProps<Props>();
 
 // Toast
-const { showSuccess, showInfo, showError, showWarning } = useToast();
+const { showInfo } = useToast();
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [

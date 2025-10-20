@@ -123,6 +123,9 @@ class EntityController extends Controller
      */
     public function show(Entity $entity)
     {
+        //load antes do render para garatir q venha
+        $entity->load('country');
+
         return Inertia::render('entities/Show', [
             'entity' => $entity,
             'type' => $entity->types[0] ?? 'client'

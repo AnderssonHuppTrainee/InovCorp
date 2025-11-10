@@ -1,214 +1,77 @@
 <template>
-    <Head title="Gestão de Utilizadores" />
-
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Utilizadores"
-                description="Gerir utilizadores do sistema"
-            >
-                <Button @click="handleCreate">
-                    <PlusIcon class="mr-2 h-4 w-4" />
-                    Novo Utilizador
-                </Button>
-            </PageHeader>
-
-            <Card>
-                <CardHeader>
-                    <div
-                        class="flex flex-col gap-4 sm:flex-row sm:items-center"
-                    >
-                        <div class="flex flex-1 gap-2">
-                            <div class="relative max-w-sm flex-1">
-                                <SearchIcon
-                                    class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground"
-                                />
-                                <Input
-                                    type="search"
-                                    placeholder="Buscar utilizador..."
-                                    class="pl-8"
-                                    v-model="searchQuery"
-                                    @input="handleSearch"
-                                />
-                            </div>
-
-                            <Select
-                                v-model="statusFilter"
-                                @update:modelValue="handleFilterChange"
-                            >
-                                <SelectTrigger class="w-[150px]">
-                                    <SelectValue placeholder="Estado" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todos</SelectItem>
-                                    <SelectItem value="1">Ativos</SelectItem>
-                                    <SelectItem value="0">Inativos</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <Select
-                                v-model="roleFilter"
-                                @update:modelValue="handleFilterChange"
-                            >
-                                <SelectTrigger class="w-[200px]">
-                                    <SelectValue placeholder="Grupo" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todos</SelectItem>
-                                    <SelectItem
-                                        v-for="role in roles"
-                                        :key="role.id"
-                                        :value="role.name"
-                                    >
-                                        {{ role.name }}
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <Button
-                                variant="ghost"
-                                @click="clearFilters"
-                                v-if="hasFilters"
-                            >
-                                <XIcon class="mr-2 h-4 w-4" />
-                                Limpar
-                            </Button>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <DataTable :columns="columns" :data="users.data" />
-
-                    <div
-                        class="flex items-center justify-between px-2 py-4"
-                        v-if="users.data.length > 0"
-                    >
-                        <div class="text-sm text-muted-foreground">
-                            Mostrando <strong>{{ users.from }}</strong> a
-                            <strong>{{ users.to }}</strong> de
-                            <strong>{{ users.total }}</strong> resultados
-                        </div>
-
-                        <div class="flex items-center space-x-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                :disabled="!users.prev_page_url"
-                                @click="goToPage(users.current_page - 1)"
-                            >
-                                <ChevronLeftIcon class="h-4 w-4" />
-                                Anterior
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                :disabled="!users.next_page_url"
-                                @click="goToPage(users.current_page + 1)"
-                            >
-                                Próxima
-                                <ChevronRightIcon class="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    </AppLayout>
+    <IndexWrapper
+        title="Utilizadores"
+        description="Gerir utilizadores do sistema"
+        :columns="columns"
+        :data="users"
+        :breadcrumbs="breadcrumbs"
+        create-button-text="Novo Utilizador"
+        :search-config="{
+            enabled: true,
+            placeholder: 'Buscar utilizador...',
+        }"
+        :filters-config="filterConfigs"
+        :base-url="route.index().url"
+        :current-filters="filters"
+        :on-create="handleCreate"
+    />
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import DataTable from '@/components/ui/data-table/DataTable.vue';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { useToast } from '@/composables/useToast';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
-import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    PlusIcon,
-    SearchIcon,
-    XIcon,
-} from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import IndexWrapper from '@/components/common/IndexWrapper.vue';
+import route from '@/routes/users';
+import type { BreadcrumbItem, PaginatedData, User } from '@/types';
+import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { columns } from './columns';
 
+interface Role {
+    id: number;
+    name: string;
+}
+
 interface Props {
-    users: any;
-    filters: { search?: string; is_active?: string; role?: string };
-    roles: Array<{ id: number; name: string }>;
+    users: PaginatedData<User>;
+    filters: { search?: string; role_id?: string; status?: string };
+    roles: Role[];
 }
 
 const props = defineProps<Props>();
 
-// Toast
-const { showSuccess, showInfo, showError, showWarning } = useToast();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestão de Utilizadores',
-        href: '/access-management/users',
+        title: 'Utilizadores',
+        href: route.index().url,
     },
 ];
 
-const searchQuery = ref(props.filters.search || '');
-const statusFilter = ref(props.filters.is_active || 'all');
-const roleFilter = ref(props.filters.role || 'all');
+// Filter configurations
+const filterConfigs = computed(() => [
+    {
+        key: 'role_id',
+        placeholder: 'Função',
+        allValue: 'all',
+        allLabel: 'Todas',
+        widthClass: 'w-[150px]',
+        options: props.roles.map((role) => ({
+            value: role.id,
+            label: role.name,
+        })),
+    },
+    {
+        key: 'status',
+        placeholder: 'Estado',
+        allValue: 'all',
+        allLabel: 'Todos',
+        widthClass: 'w-[150px]',
+        options: [
+            { value: 'active', label: 'Ativos' },
+            { value: 'inactive', label: 'Inativos' },
+        ],
+    },
+]);
 
-const hasFilters = computed(() => {
-    return (
-        searchQuery.value !== '' ||
-        statusFilter.value !== 'all' ||
-        roleFilter.value !== 'all'
-    );
-});
-
-let searchTimeout: ReturnType<typeof setTimeout>;
-
-const handleSearch = () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => applyFilters(), 300);
+const handleCreate = () => {
+    router.get(route.create().url);
 };
-
-const handleFilterChange = () => applyFilters();
-
-const applyFilters = () => {
-    const params: any = {};
-    if (searchQuery.value) params.search = searchQuery.value;
-    if (statusFilter.value && statusFilter.value !== 'all')
-        params.is_active = statusFilter.value;
-    if (roleFilter.value && roleFilter.value !== 'all')
-        params.role = roleFilter.value;
-
-    router.get('/users', params, { preserveState: true, preserveScroll: true });
-};
-
-const clearFilters = () => {
-    searchQuery.value = '';
-    statusFilter.value = 'all';
-    roleFilter.value = 'all';
-    router.get('/users', {}, { preserveState: true, preserveScroll: true });
-};
-
-const goToPage = (page: number) => {
-    const params: any = { page };
-    if (searchQuery.value) params.search = searchQuery.value;
-    if (statusFilter.value && statusFilter.value !== 'all')
-        params.is_active = statusFilter.value;
-    if (roleFilter.value && roleFilter.value !== 'all')
-        params.role = roleFilter.value;
-
-    router.get('/users', params, { preserveState: true, preserveScroll: true });
-};
-
-const handleCreate = () => router.get('/users/create');
 </script>

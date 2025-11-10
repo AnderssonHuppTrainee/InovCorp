@@ -12,6 +12,7 @@ export const bankAccountSchema = z.object({
     bank_name: z.string().min(1, 'Nome do banco é obrigatório'),
 
     balance: z
+        .coerce
         .number()
         .min(0, 'Saldo deve ser maior ou igual a zero')
         .optional()
@@ -23,6 +24,12 @@ export const bankAccountSchema = z.object({
 })
 
 export type BankAccountFormData = z.infer<typeof bankAccountSchema>
+
+
+
+
+
+
 
 
 

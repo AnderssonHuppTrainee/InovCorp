@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Settings;
+namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
-use App\Models\Catalog\Country;
+use App\Models\System\Country;
 use App\Http\Requests\StoreCountryRequest;
 use App\Http\Requests\UpdateCountryRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use Illuminate\Database\QueryException;
 class CountryController extends Controller
 {
     /**
@@ -34,7 +34,7 @@ class CountryController extends Controller
         $countries = $query->orderBy('name')->paginate(10);
 
         return Inertia::render('settings/countries/Index', [
-            'countriesData' => $countries,
+            'countries' => $countries,
             'filters' => $request->only(['search', 'status']),
         ]);
     }
@@ -58,7 +58,7 @@ class CountryController extends Controller
             return redirect()->route('countries.index')
                 ->with('success', 'País criado com sucesso!');
 
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'code')) {
                     return back()->withInput()->with('error', 'Este código de país já está registado no sistema.');
@@ -114,7 +114,7 @@ class CountryController extends Controller
             return redirect()->route('countries.index')
                 ->with('success', 'País atualizado com sucesso!');
 
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() === '23000') {
                 if (str_contains($e->getMessage(), 'code')) {
                     return back()->withInput()->with('error', 'Este código de país já está registado no sistema.');
@@ -154,7 +154,7 @@ class CountryController extends Controller
             return redirect()->route('countries.index')
                 ->with('success', "País \"{$countryName}\" eliminado com sucesso!");
 
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() === '23000') {
                 return back()->with('error', 'Este país não pode ser eliminado pois está associado a outros registos.');
             }

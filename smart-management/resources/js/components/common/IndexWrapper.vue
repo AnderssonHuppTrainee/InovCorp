@@ -5,24 +5,29 @@
         <div class="space-y-6 p-4">
             <!-- Header com título, descrição e botão criar -->
             <PageHeader :title="title" :description="description">
-                <template #actions>
-                    <slot name="header-actions">
-                        <Button @click="handleCreate">
-                            <PlusIcon class="mr-2 h-4 w-4" />
-                            {{ createButtonText }}
-                        </Button>
-                    </slot>
-                </template>
+                <slot name="header-actions">
+                    <Button @click="handleCreate">
+                        <PlusIcon class="mr-2 h-4 w-4" />
+                        {{ createButtonText }}
+                    </Button>
+                </slot>
             </PageHeader>
 
             <!-- Card principal com filtros e tabela -->
             <Card>
                 <CardHeader>
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div class="flex flex-1 gap-2">
                             <!-- Busca global -->
-                            <div v-if="searchConfig.enabled" class="relative max-w-sm flex-1">
-                                <SearchIcon class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
+                            <div
+                                v-if="searchConfig.enabled"
+                                class="relative max-w-sm flex-1"
+                            >
+                                <SearchIcon
+                                    class="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground"
+                                />
                                 <Input
                                     type="search"
                                     :placeholder="searchConfig.placeholder"
@@ -33,13 +38,27 @@
                             </div>
 
                             <!-- Filtros dinâmicos -->
-                            <template v-for="filter in filtersConfig" :key="filter.key">
-                                <Select v-model="filterValues[filter.key]" @update:modelValue="handleFilterChange">
-                                    <SelectTrigger :class="filter.widthClass || 'w-[150px]'">
-                                        <SelectValue :placeholder="filter.placeholder" />
+                            <template
+                                v-for="filter in filtersConfig"
+                                :key="filter.key"
+                            >
+                                <Select
+                                    v-model="filterValues[filter.key]"
+                                    @update:modelValue="handleFilterChange"
+                                >
+                                    <SelectTrigger
+                                        :class="
+                                            filter.widthClass || 'w-[150px]'
+                                        "
+                                    >
+                                        <SelectValue
+                                            :placeholder="filter.placeholder"
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem :value="filter.allValue || 'all'">
+                                        <SelectItem
+                                            :value="filter.allValue || 'all'"
+                                        >
                                             {{ filter.allLabel || 'Todos' }}
                                         </SelectItem>
                                         <SelectItem
@@ -100,7 +119,11 @@
                                 <Button
                                     v-for="page in visiblePages"
                                     :key="page"
-                                    :variant="page === data.current_page ? 'default' : 'outline'"
+                                    :variant="
+                                        page === data.current_page
+                                            ? 'default'
+                                            : 'outline'
+                                    "
                                     size="sm"
                                     @click="goToPage(page)"
                                     class="w-9"
@@ -130,20 +153,31 @@
 </template>
 
 <script setup lang="ts">
+import { Head, router } from '@inertiajs/vue3';
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    PlusIcon,
+    SearchIcon,
+    XIcon,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import { Head } from '@inertiajs/vue3';
-import { PlusIcon, SearchIcon, XIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next';
 
 // Components
-import AppLayout from '@/layouts/AppLayout.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/composables/useToast';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 // Types
 interface FilterConfig {
@@ -193,6 +227,18 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
     currentFilters: () => ({}),
     onCreate: () => {},
+    // Provide a safe default for paginated data to avoid runtime errors
+    data: () =>
+        ({
+            data: [],
+            current_page: 1,
+            from: 0,
+            to: 0,
+            total: 0,
+            last_page: 1,
+            prev_page_url: null,
+            next_page_url: null,
+        }) as PaginatedData<any>,
 });
 
 // Toast
@@ -203,15 +249,16 @@ const searchQuery = ref(props.currentFilters.search || '');
 const filterValues = ref<Record<string, string>>({});
 
 // Initialize filter values
-props.filtersConfig.forEach(filter => {
-    filterValues.value[filter.key] = props.currentFilters[filter.key] || (filter.allValue || 'all');
+props.filtersConfig.forEach((filter) => {
+    filterValues.value[filter.key] =
+        props.currentFilters[filter.key] || filter.allValue || 'all';
 });
 
 // Computed
 const hasFilters = computed(() => {
     const hasSearch = props.searchConfig.enabled && searchQuery.value !== '';
-    const hasFilterValues = Object.values(filterValues.value).some(value => 
-        value !== 'all' && value !== ''
+    const hasFilterValues = Object.values(filterValues.value).some(
+        (value) => value !== 'all' && value !== '',
     );
     return hasSearch || hasFilterValues;
 });
@@ -270,7 +317,7 @@ const applyFilters = () => {
     }
 
     // Add filters
-    props.filtersConfig.forEach(filter => {
+    props.filtersConfig.forEach((filter) => {
         const value = filterValues.value[filter.key];
         if (value && value !== (filter.allValue || 'all')) {
             params[filter.key] = value;
@@ -287,7 +334,7 @@ const applyFilters = () => {
 
 const clearFilters = () => {
     searchQuery.value = '';
-    props.filtersConfig.forEach(filter => {
+    props.filtersConfig.forEach((filter) => {
         filterValues.value[filter.key] = filter.allValue || 'all';
     });
 
@@ -295,7 +342,7 @@ const clearFilters = () => {
 
     const cleanParams = { ...props.currentFilters };
     delete cleanParams.search;
-    props.filtersConfig.forEach(filter => {
+    props.filtersConfig.forEach((filter) => {
         delete cleanParams[filter.key];
     });
 
@@ -312,7 +359,7 @@ const goToPage = (page: number) => {
         params.search = searchQuery.value;
     }
 
-    props.filtersConfig.forEach(filter => {
+    props.filtersConfig.forEach((filter) => {
         const value = filterValues.value[filter.key];
         if (value && value !== (filter.allValue || 'all')) {
             params[filter.key] = value;
@@ -329,5 +376,3 @@ const handleCreate = () => {
     props.onCreate();
 };
 </script>
-
-

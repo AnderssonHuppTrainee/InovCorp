@@ -211,37 +211,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import supplierOrders from '@/routes/supplier-orders/index';
+import type { SupplierOrder } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { ArrowLeftIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
-    supplierOrder: {
-        id: number;
-        number: string;
-        order_date: string;
-        supplier: {
-            id: number;
-            name: string;
-        };
-        order?: {
-            id: number;
-            number: string;
-            items?: Array<{
-                id: number;
-                article: {
-                    reference: string;
-                    name: string;
-                };
-                quantity: number;
-                unit_price: number;
-            }>;
-        };
-        total_amount: number;
-        status: string;
-        invoices?: Array<any>;
-        created_at: string;
-        updated_at: string;
-    };
+    supplierOrder: SupplierOrder;
 }
 
 const props = defineProps<Props>();

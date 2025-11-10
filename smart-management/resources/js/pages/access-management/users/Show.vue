@@ -1,89 +1,162 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader :title="user.name" :description="user.email">
-                <div class="flex gap-2">
-                    <Button variant="outline" @click="goBack"><ArrowLeftIcon class="mr-2 h-4 w-4" />Voltar</Button>
-                    <Button @click="handleEdit"><PencilIcon class="mr-2 h-4 w-4" />Editar</Button>
-                    <Button variant="destructive" @click="handleDelete"><Trash2Icon class="mr-2 h-4 w-4" />Eliminar</Button>
-                </div>
-            </PageHeader>
+    <ShowWrapper
+        :title="user.name"
+        :description="user.email"
+        :edit-url="`/users/${user.id}/edit`"
+        :delete-url="`/users/${user.id}`"
+        :back-url="'/users'"
+        :item-name="user.name"
+    >
+        <template #main-content>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Detalhes do Utilizador</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Nome</div>
+                        <div class="col-span-2 font-medium">
+                            {{ user.name }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Email</div>
+                        <div class="col-span-2 text-sm">
+                            <a
+                                :href="`mailto:${user.email}`"
+                                class="text-blue-600 hover:underline"
+                            >
+                                {{ user.email }}
+                            </a>
+                        </div>
+                    </div>
 
-            <div class="grid gap-6 lg:grid-cols-3">
-                <div class="space-y-6 lg:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <div class="flex items-center justify-between">
-                                <CardTitle>Informações Pessoais</CardTitle>
-                                <Badge :variant="user.is_active ? 'default' : 'secondary'">{{ user.is_active ? 'Ativo' : 'Inativo' }}</Badge>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Estado</div>
+                        <div class="col-span-2">
+                            <Badge
+                                :variant="
+                                    user.is_active ? 'default' : 'secondary'
+                                "
+                            >
+                                {{ user.is_active ? 'Ativo' : 'Inativo' }}
+                            </Badge>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Permissões</CardTitle></CardHeader>
+                <CardContent>
+                    <div v-if="user.roles.length > 0" class="space-y-2">
+                        <div class="text-sm text-muted-foreground">Função</div>
+                        <div class="flex flex-wrap gap-2">
+                            <Badge
+                                v-for="role in user.roles"
+                                :key="role.id"
+                                variant="outline"
+                                >{{ role.name }}</Badge
+                            >
+                        </div>
+                        <Separator class="my-4" />
+                        <div class="text-sm text-muted-foreground">
+                            Permissões Totais: {{ permissions.length }}
+                        </div>
+                    </div>
+                    <p v-else class="text-sm text-muted-foreground">
+                        Sem grupos atribuídos
+                    </p>
+                </CardContent>
+            </Card>
+        </template>
+        <template #sidebar>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Informações</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">ID</div>
+                        <div class="col-span-2 font-mono text-sm">
+                            {{ user.id }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Criado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(user.created_at) }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Atualizado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(user.updated_at) }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-1">
+                            <div class="text-sm text-muted-foreground">
+                                Ordens de Trabalho
                             </div>
-                        </CardHeader>
-                        <CardContent class="space-y-4">
-                            <div class="grid grid-cols-3 gap-4"><div class="text-sm text-muted-foreground">Nome</div><div class="col-span-2 font-medium">{{ user.name }}</div></div>
-                            <Separator />
-                            <div class="grid grid-cols-3 gap-4"><div class="text-sm text-muted-foreground">Email</div><div class="col-span-2">{{ user.email }}</div></div>
-                            <Separator />
-                            <div class="grid grid-cols-3 gap-4"><div class="text-sm text-muted-foreground">Telemóvel</div><div class="col-span-2">{{ user.mobile || '-' }}</div></div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader><CardTitle>Permissões</CardTitle></CardHeader>
-                        <CardContent>
-                            <div v-if="user.roles.length > 0" class="space-y-2">
-                                <div class="flex flex-wrap gap-2">
-                                    <Badge v-for="role in user.roles" :key="role.id" variant="outline">{{ role.name }}</Badge>
-                                </div>
-                                <Separator class="my-4" />
-                                <div class="text-sm text-muted-foreground">Permissões Totais: {{ permissions.length }}</div>
+                            <div class="text-2xl font-bold">
+                                {{ user.work_orders?.length || 0 }}
                             </div>
-                            <p v-else class="text-sm text-muted-foreground">Sem grupos atribuídos</p>
-                        </CardContent>
-                    </Card>
-                </div>
+                        </div>
 
-                <div class="space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>Estatísticas</CardTitle></CardHeader>
-                        <CardContent class="space-y-4">
-                            <div class="space-y-1"><div class="text-sm text-muted-foreground">Ordens de Trabalho</div><div class="text-2xl font-bold">{{ user.work_orders?.length || 0 }}</div></div>
-                            <Separator />
-                            <div class="space-y-1"><div class="text-sm text-muted-foreground">Eventos de Calendário</div><div class="text-2xl font-bold">{{ user.calendar_events?.length || 0 }}</div></div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    </AppLayout>
+                        <div class="space-y-1">
+                            <div class="text-sm text-muted-foreground">
+                                Eventos de Calendário
+                            </div>
+                            <div class="text-2xl font-bold">
+                                {{ user.calendar_events?.length || 0 }}
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+    </ShowWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
+import ShowWrapper from '@/components/common/ShowWrapper.vue';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
-    user: any;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+        is_active: boolean;
+        created_at: string;
+        updated_at: string;
+        roles: any;
+        calendar_events: any;
+        work_orders: any;
+    };
     permissions: string[];
 }
 
 const props = defineProps<Props>();
 
-const goBack = () => router.get('/users');
-const handleEdit = () => router.get(`/users/${props.user.id}/edit`);
-const handleDelete = () => {
-    if (confirm(`Eliminar utilizador "${props.user.name}"?`)) {
-        router.delete(`/users/${props.user.id}`, { onSuccess: () => router.get('/users') });
-    }
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('pt-PT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 };
 </script>
-
-
-
-
-

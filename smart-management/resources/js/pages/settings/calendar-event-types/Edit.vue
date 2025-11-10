@@ -1,93 +1,53 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Editar Tipo de Evento"
-                :description="`Editar ${calendarEventType.name}`"
-            >
-                <Button variant="outline" @click="goBack">
-                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                    Voltar
-                </Button>
-            </PageHeader>
-
-            <Card>
-                <CardContent class="pt-6">
-                    <form @submit="onSubmit" class="space-y-6">
-                        <FormField v-slot="{ componentField }" name="name">
-                            <FormItem>
-                                <FormLabel>Nome</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="text"
-                                        placeholder="Reunião"
-                                        v-bind="componentField"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        </FormField>
-
-                        <FormField v-slot="{ componentField }" name="color">
-                            <FormItem>
-                                <FormLabel>Cor</FormLabel>
-                                <FormControl>
-                                    <div class="flex gap-2">
-                                        <Input
-                                            type="color"
-                                            v-bind="componentField"
-                                            class="h-10 w-20"
-                                        />
-                                        <Input
-                                            type="text"
-                                            v-bind="componentField"
-                                            placeholder="#3B82F6"
-                                            class="font-mono"
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormDescription>
-                                    Cor que será exibida no calendário (formato
-                                    hexadecimal)
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        </FormField>
-
-                        <CheckboxField
-                            name="is_active"
-                            label="Tipo Ativo"
-                            description="Este tipo estará disponível para seleção"
+    <FormWrapper
+        title="Editar Tipo de Evento"
+        :description="`Editar ${calendarEventType.name}`"
+        :schema="calendarEventTypeSchema"
+        :initial-values="initialValues"
+        :submit-url="`/calendar-event-types/${calendarEventType.id}`"
+        submit-method="put"
+        submit-text="Atualizar Tipo de Evento"
+    >
+        <template #form-fields>
+            <FormField v-slot="{ componentField }" name="name">
+                <FormItem>
+                    <FormLabel>Nome</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="text"
+                            placeholder="Reunião"
+                            v-bind="componentField"
                         />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                        <div class="flex justify-end gap-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                @click="handleCancel"
-                            >
-                                Cancelar
-                            </Button>
-                            <Button type="submit" :disabled="isSubmitting">
-                                <LoaderCircleIcon
-                                    v-if="isSubmitting"
-                                    class="mr-2 h-4 w-4 animate-spin"
-                                />
-                                Atualizar Tipo
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    </AppLayout>
+            <FormField v-slot="{ componentField }" name="color">
+                <FormItem>
+                    <FormLabel>Cor</FormLabel>
+                    <FormControl>
+                        <Input type="color" v-bind="componentField" />
+                    </FormControl>
+                    <FormDescription>
+                        Cor para identificar este tipo de evento
+                    </FormDescription>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+
+            <CheckboxField
+                name="is_active"
+                label="Tipo Ativo"
+                description="Este tipo de evento estará disponível para seleção"
+            />
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
 import CheckboxField from '@/components/common/CheckboxField.vue';
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import FormWrapper from '@/components/common/FormWrapper.vue';
 import {
     FormControl,
     FormDescription,
@@ -97,17 +57,8 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/AppLayout.vue';
-import calendarEventTypes from '@/routes/calendar-event-types';
-import {
-    calendarEventTypeSchema,
-    type CalendarEventTypeFormData,
-} from '@/schemas/calendarEventTypeSchema';
-import { router } from '@inertiajs/vue3';
-import { toTypedSchema } from '@vee-validate/zod';
-import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-vue-next';
-import { useForm } from 'vee-validate';
-import { ref } from 'vue';
+import { calendarEventTypeSchema } from '@/schemas/calendarEventTypeSchema';
+import { computed } from 'vue';
 
 interface Props {
     calendarEventType: {
@@ -120,34 +71,9 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
-
-const form = useForm<CalendarEventTypeFormData>({
-    validationSchema: toTypedSchema(calendarEventTypeSchema),
-    initialValues: {
-        name: props.calendarEventType.name,
-        color: props.calendarEventType.color,
-        is_active: props.calendarEventType.is_active,
-    },
-});
-
-const onSubmit = form.handleSubmit((values) => {
-    isSubmitting.value = true;
-
-    router.put(
-        calendarEventTypes.update({
-            calendar_event_type: props.calendarEventType.id,
-        }).url,
-        values,
-        {
-            onFinish: () => {
-                isSubmitting.value = false;
-            },
-        },
-    );
-});
-const goBack = () => router.get('/calendar-event-types');
-const handleCancel = () => {
-    router.visit(calendarEventTypes.index().url);
-};
+const initialValues = computed(() => ({
+    name: props.calendarEventType.name,
+    color: props.calendarEventType.color,
+    is_active: props.calendarEventType.is_active,
+}));
 </script>

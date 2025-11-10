@@ -4,7 +4,10 @@
         :description="`${entity.types.includes('client') ? 'Cliente' : ''}${entity.types.includes('client') && entity.types.includes('supplier') ? ' e ' : ''}${entity.types.includes('supplier') ? 'Fornecedor' : ''} #${entity.number || entity.id}`"
         :edit-url="route.edit({ id: entity.id }).url"
         :delete-url="route.destroy({ id: entity.id }).url"
-        :back-url="route.index().url"
+        :back-url="
+            route.index().url +
+            `?type=${entity.types.includes('client') ? 'client' : 'supplier'}`
+        "
         :item-name="entity.name"
     >
         <template #main-content>

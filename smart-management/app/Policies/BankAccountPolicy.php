@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\BankAccount;
-use App\Models\User;
+use App\Models\System\User;
 use Illuminate\Auth\Access\Response;
 
 class BankAccountPolicy

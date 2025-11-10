@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\Settings\CalendarActionController;
-use App\Http\Controllers\Settings\CalendarEventTypeController;
-use App\Http\Controllers\Settings\ContactRoleController;
-use App\Http\Controllers\Settings\CountryController;
+
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -30,9 +27,5 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
 
-    // Configurações
-    Route::resource('countries', CountryController::class);
-    Route::resource('contact-roles', ContactRoleController::class);
-    Route::resource('calendar-event-types', CalendarEventTypeController::class);
-    Route::resource('calendar-actions', CalendarActionController::class);
+
 });

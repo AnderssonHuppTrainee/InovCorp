@@ -3,6 +3,8 @@
 **Status:** ✅ **PRONTO PARA TESTES**  
 **Data:** 10 de Outubro de 2025
 
+> ℹ️ Execute `php artisan migrate:fresh --seed` antes de seguir: as credenciais e dados abaixo são criados automaticamente pelos seeders (`UserSeeder`, `DemoDataSeeder`).
+
 ---
 
 ## 🔑 CREDENCIAIS DE ACESSO

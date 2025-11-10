@@ -1,144 +1,175 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Editar Artigo"
-                :description="`${article.reference} - ${article.name}`"
+    <FormWrapper
+        title="Editar Artigo"
+        :description="`${article.reference} - ${article.name}`"
+        :schema="articleSchema"
+        :initial-values="initialValues"
+        :submit-url="`/articles/${article.id}`"
+        submit-method="put"
+        submit-text="Atualizar Artigo"
+        :on-submit="handleSubmit"
+    >
+        <template #form-fields>
+            <FormField v-slot="{ componentField }" name="reference">
+                <FormItem>
+                    <FormLabel>Referência *</FormLabel>
+                    <FormControl>
+                        <Input v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="name">
+                <FormItem>
+                    <FormLabel>Nome *</FormLabel>
+                    <FormControl>
+                        <Input v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="price">
+                <FormItem>
+                    <FormLabel>Preço *</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            v-bind="componentField"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="tax_rate_id">
+                <FormItem>
+                    <FormLabel>IVA *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue
+                                    placeholder="Selecione a taxa de IVA"
+                                />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem
+                                v-for="tax in taxRates"
+                                :key="tax.id"
+                                :value="String(tax.id)"
+                            >
+                                {{ tax.name }} ({{ tax.rate }}%)
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+
+            <FormField
+                v-slot="{ componentField }"
+                name="description"
+                class="lg:col-span-2"
             >
-                <Button variant="outline" @click="goBack">
-                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                    Voltar</Button
-                >
-            </PageHeader>
+                <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                        <Textarea v-bind="componentField" rows="3" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-            <form @submit.prevent="submitForm">
-                <Card class="mb-6">
-                    <CardContent class="p-6">
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium"
-                                    >Referência *</label
-                                >
-                                <Input v-model="formData.reference" required />
-                            </div>
+            <FormField v-slot="{ componentField }" name="photo">
+                <FormItem>
+                    <FormLabel>Foto</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            @change="handlePhotoChange"
+                        />
+                    </FormControl>
+                    <FormDescription>
+                        JPG, PNG ou GIF (máx. 5MB)
+                    </FormDescription>
+                    <div class="mt-2">
+                        <img
+                            v-if="photoPreview"
+                            :src="photoPreview"
+                            class="h-32 w-32 rounded object-cover"
+                        />
+                        <img
+                            v-else-if="article.photo"
+                            :src="`/storage/${article.photo}`"
+                            class="h-32 w-32 rounded object-cover"
+                        />
+                    </div>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium"
-                                    >Nome *</label
-                                >
-                                <Input v-model="formData.name" required />
-                            </div>
+            <FormField v-slot="{ componentField }" name="status">
+                <FormItem>
+                    <FormLabel>Estado *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione o estado" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="active">Ativo</SelectItem>
+                            <SelectItem value="inactive">Inativo</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium"
-                                    >Preço *</label
-                                >
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    v-model.number="formData.price"
-                                    required
-                                />
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">IVA *</label>
-                                <select
-                                    v-model="formData.tax_rate_id"
-                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    required
-                                >
-                                    <option
-                                        v-for="tax in taxRates"
-                                        :key="tax.id"
-                                        :value="tax.id"
-                                    >
-                                        {{ tax.name }} ({{ tax.rate }}%)
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium"
-                                    >Descrição</label
-                                >
-                                <Textarea
-                                    v-model="formData.description"
-                                    rows="3"
-                                />
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Foto</label>
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    @change="handlePhotoChange"
-                                />
-                                <img
-                                    v-if="photoPreview"
-                                    :src="photoPreview"
-                                    class="mt-2 h-32 w-32 rounded object-cover"
-                                />
-                                <img
-                                    v-else-if="article.photo"
-                                    :src="`/storage/${article.photo}`"
-                                    class="mt-2 h-32 w-32 rounded object-cover"
-                                />
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium"
-                                    >Estado *</label
-                                >
-                                <select
-                                    v-model="formData.status"
-                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                >
-                                    <option value="active">Ativo</option>
-                                    <option value="inactive">Inativo</option>
-                                </select>
-                            </div>
-
-                            <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium"
-                                    >Observações</label
-                                >
-                                <Textarea
-                                    v-model="formData.observations"
-                                    rows="3"
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline" @click="goBack"
-                        >Cancelar</Button
-                    >
-                    <Button type="submit" :disabled="isSubmitting">
-                        <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
-                        <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ isSubmitting ? 'A atualizar...' : 'Atualizar' }}
-                    </Button>
-                </div>
-            </form>
-        </div>
-    </AppLayout>
+            <FormField
+                v-slot="{ componentField }"
+                name="observations"
+                class="lg:col-span-2"
+            >
+                <FormItem>
+                    <FormLabel>Observações</FormLabel>
+                    <FormControl>
+                        <Textarea v-bind="componentField" rows="3" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import FormWrapper from '@/components/common/FormWrapper.vue';
+import {
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { articleSchema } from '@/schemas/articleSchema';
 import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, LoaderIcon, SaveIcon } from 'lucide-vue-next';
-import { reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Props {
     article: any;
@@ -147,11 +178,10 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
 const photoFile = ref<File | null>(null);
 const photoPreview = ref<string | null>(null);
 
-const formData = reactive({
+const initialValues = computed(() => ({
     reference: props.article.reference,
     name: props.article.name,
     description: props.article.description || '',
@@ -159,7 +189,7 @@ const formData = reactive({
     tax_rate_id: props.article.tax_rate_id,
     observations: props.article.observations || '',
     status: props.article.status,
-});
+}));
 
 const handlePhotoChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -169,26 +199,20 @@ const handlePhotoChange = (event: Event) => {
     }
 };
 
-const submitForm = () => {
-    isSubmitting.value = true;
-
+const handleSubmit = (values: any) => {
     const data = new FormData();
-    data.append('reference', formData.reference);
-    data.append('name', formData.name);
-    if (formData.description) data.append('description', formData.description);
-    data.append('price', String(formData.price));
-    data.append('tax_rate_id', String(formData.tax_rate_id));
-    if (formData.observations)
-        data.append('observations', formData.observations);
-    data.append('status', formData.status);
+    data.append('reference', values.reference);
+    data.append('name', values.name);
+    if (values.description) data.append('description', values.description);
+    data.append('price', String(values.price));
+    data.append('tax_rate_id', String(values.tax_rate_id));
+    if (values.observations) data.append('observations', values.observations);
+    data.append('status', values.status);
     if (photoFile.value) data.append('photo', photoFile.value);
     data.append('_method', 'PUT');
 
     router.post(`/articles/${props.article.id}`, data, {
         preserveScroll: true,
-        onFinish: () => (isSubmitting.value = false),
     });
 };
-
-const goBack = () => router.get('/articles');
 </script>

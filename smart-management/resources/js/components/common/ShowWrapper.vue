@@ -9,6 +9,7 @@
                             <ArrowLeftIcon class="mr-2 h-4 w-4" />
                             Voltar
                         </Button>
+                        <slot name="button"></slot>
                         <Button @click="handleEdit">
                             <PencilIcon class="mr-2 h-4 w-4" />
                             Editar
@@ -107,4 +108,3 @@ const handleDelete = () => {
     }
 };
 </script>
-

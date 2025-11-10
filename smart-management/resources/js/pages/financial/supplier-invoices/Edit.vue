@@ -1,221 +1,306 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader title="Editar Fatura" :description="`Fatura #${invoice.number}`">
-                <Button variant="outline" @click="goBack">
-                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                    Voltar
-                </Button>
-            </PageHeader>
+    <FormWrapper
+        ref="formWrapper"
+        title="Editar Fatura de Fornecedor"
+        :description="`Fatura #${invoice.number}`"
+        :schema="supplierInvoiceSchema"
+        :initial-values="initialValues"
+        :submit-url="`/supplier-invoices/${invoice.id}`"
+        submit-method="put"
+        submit-text="Atualizar Fatura"
+        :on-submit="handleSubmit"
+    >
+        <template #form-fields>
+            <FormField v-slot="{ componentField }" name="invoice_date">
+                <FormItem>
+                    <FormLabel>Data da Fatura *</FormLabel>
+                    <FormControl>
+                        <DatePicker v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-            <form @submit.prevent="submitForm">
-                <Card class="mb-6">
-                    <CardContent class="p-6">
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <div class="space-y-6">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="space-y-2">
-                                        <label class="text-sm font-medium">Data *</label>
-                                        <DatePicker v-model="formData.invoice_date" />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label class="text-sm font-medium">Vencimento *</label>
-                                        <DatePicker v-model="formData.due_date" />
-                                    </div>
-                                </div>
+            <FormField v-slot="{ componentField }" name="due_date">
+                <FormItem>
+                    <FormLabel>Data de Vencimento *</FormLabel>
+                    <FormControl>
+                        <DatePicker v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Fornecedor *</label>
-                                    <select v-model="formData.supplier_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
-                                        <option value="">Selecione</option>
-                                        <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-                                            {{ supplier.name }}
-                                        </option>
-                                    </select>
-                                </div>
+            <FormField v-slot="{ componentField }" name="supplier_id">
+                <FormItem>
+                    <FormLabel>Fornecedor *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue
+                                    placeholder="Selecione o fornecedor"
+                                />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem
+                                v-for="supplier in suppliers"
+                                :key="supplier.id"
+                                :value="String(supplier.id)"
+                            >
+                                {{ supplier.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Encomenda</label>
-                                    <select v-model="formData.supplier_order_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                        <option value="">Sem encomenda</option>
-                                        <option v-for="order in filteredOrders" :key="order.id" :value="order.id">
-                                            {{ order.number }}
-                                        </option>
-                                    </select>
-                                </div>
+            <FormField v-slot="{ componentField }" name="supplier_order_id">
+                <FormItem>
+                    <FormLabel>Encomenda </FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Sem encomenda" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="none">Sem encomenda</SelectItem>
+                            <SelectItem
+                                v-for="order in filteredOrders"
+                                :key="order.id"
+                                :value="String(order.id)"
+                            >
+                                {{ order.number }} -
+                                {{ formatCurrency(order.total_amount) }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Valor *</label>
-                                    <Input type="number" step="0.01" min="0" v-model.number="formData.total_amount" required />
-                                </div>
-                            </div>
+            <FormField v-slot="{ componentField }" name="total_amount">
+                <FormItem>
+                    <FormLabel>Valor Total *</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            v-bind="componentField"
+                            placeholder="0.00"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-6">
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Documento</label>
-                                    <Input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleDocumentChange" />
-                                    <p v-if="hasDocument" class="text-sm text-green-600">✓ Documento existente</p>
-                                </div>
+            <FormField v-slot="{ componentField }" name="status">
+                <FormItem>
+                    <FormLabel>Estado *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione o estado" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="pending_payment"
+                                >Pendente de Pagamento</SelectItem
+                            >
+                            <SelectItem value="paid">Paga</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Comprovativo</label>
-                                    <Input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handlePaymentProofChange" />
-                                    <p v-if="hasPaymentProof" class="text-sm text-green-600">✓ Comprovativo existente</p>
-                                </div>
+            <FormField name="document" class="lg:col-span-2">
+                <FormItem>
+                    <FormLabel>Documento</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            @change="handleDocumentChange"
+                        />
+                    </FormControl>
+                    <FormDescription>
+                        PDF, DOC ou DOCX (máx. 10MB)
+                    </FormDescription>
+                    <p v-if="hasDocument" class="text-sm text-green-600">
+                        ✓ Comprovativo existente
+                    </p>
+                    <p v-if="documentPreview" class="text-sm text-green-600">
+                        ✓ Documento selecionado
+                    </p>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                                <div class="space-y-2">
-                                    <label class="text-sm font-medium">Estado *</label>
-                                    <select v-model="formData.status" @change="handleStatusChange" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                        <option value="pending_payment">Pendente</option>
-                                        <option value="paid">Paga</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline" @click="goBack">Cancelar</Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
-                        <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ isSubmitting ? 'A atualizar...' : 'Atualizar' }}
-                    </Button>
-                </div>
-            </form>
-        </div>
-
-        <Dialog v-model:open="showEmailDialog">
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Enviar Comprovativo</DialogTitle>
-                    <DialogDescription>Enviar comprovativo ao fornecedor?</DialogDescription>
-                </DialogHeader>
-                <div class="py-4">
-                    <div class="flex items-center space-x-2">
-                        <Checkbox id="send-email-edit" v-model:checked="sendEmailConfirmed" />
-                        <label for="send-email-edit" class="text-sm font-medium cursor-pointer">Sim, enviar por email</label>
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button type="button" variant="outline" @click="showEmailDialog = false">Não</Button>
-                    <Button type="button" @click="confirmEmailAndSubmit">Continuar</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </AppLayout>
+            <FormField name="payment_proof" class="lg:col-span-2">
+                <FormItem>
+                    <FormLabel>Comprovativo de Pagamento</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            @change="handlePaymentProofChange"
+                        />
+                    </FormControl>
+                    <FormDescription>
+                        PDF, JPG ou PNG (máx. 10MB)
+                    </FormDescription>
+                    <p v-if="hasPaymentProof" class="text-sm text-green-600">
+                        ✓ Comprovativo existente
+                    </p>
+                    <p
+                        v-if="paymentProofPreview"
+                        class="text-sm text-green-600"
+                    >
+                        ✓ Comprovativo selecionado
+                    </p>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
+import FormWrapper from '@/components/common/FormWrapper.vue';
 import DatePicker from '@/components/ui/date-picker/DatePicker.vue';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/AppLayout.vue';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { supplierInvoiceSchema } from '@/schemas/supplierInvoiceSchema';
 import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, LoaderIcon, SaveIcon } from 'lucide-vue-next';
-import { computed, reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Props {
-    invoice: any;
-    suppliers: Array<{ id: number; name: string; email: string | null }>;
-    supplierOrders: Array<{ id: number; number: string; supplier_id: number }>;
+    invoice: {
+        id: number;
+        number: string;
+        invoice_date: string;
+        due_date: string;
+        supplier_id: number;
+        supplier_order_id: number | null;
+        total_amount: number;
+        status: string;
+    };
+    suppliers: Array<{ id: number; name: string }>;
+    supplierOrders: Array<{
+        id: number;
+        number: string;
+        total_amount: number;
+        supplier_id: number;
+    }>;
     hasDocument: boolean;
     hasPaymentProof: boolean;
 }
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
 const showEmailDialog = ref(false);
-const sendEmailConfirmed = ref(false);
+const formWrapper = ref<any>(null);
 const documentFile = ref<File | null>(null);
 const paymentProofFile = ref<File | null>(null);
-const previousStatus = ref(props.invoice.status);
-
-const formData = reactive({
-    invoice_date: props.invoice.invoice_date,
-    due_date: props.invoice.due_date,
-    supplier_id: props.invoice.supplier_id,
-    supplier_order_id: props.invoice.supplier_order_id || '',
-    total_amount: props.invoice.total_amount,
-    status: props.invoice.status,
-});
+const documentPreview = ref<string | null>(null);
+const paymentProofPreview = ref<string | null>(null);
 
 const filteredOrders = computed(() => {
-    if (!formData.supplier_id) return [];
-    return props.supplierOrders.filter(order => order.supplier_id === Number(formData.supplier_id));
+    // Usa o supplier_id do formulário ou dos props como fallback
+    const supplierId =
+        formWrapper.value?.form?.values?.supplier_id ||
+        props.invoice.supplier_id;
+
+    if (!supplierId) return [];
+
+    // Filtra as encomendas do fornecedor
+    const orders = props.supplierOrders.filter(
+        (order) => order.supplier_id === Number(supplierId),
+    );
+
+    // Se há uma encomenda associada à fatura, garante que ela está na lista
+    // (caso o fornecedor tenha mudado ou a encomenda não esteja na lista filtrada)
+    if (props.invoice.supplier_order_id) {
+        const currentOrder = props.supplierOrders.find(
+            (order) => order.id === props.invoice.supplier_order_id,
+        );
+        if (currentOrder && !orders.find((o) => o.id === currentOrder.id)) {
+            orders.push(currentOrder);
+        }
+    }
+
+    return orders;
 });
 
-const selectedSupplier = computed(() => {
-    return props.suppliers.find(s => s.id === Number(formData.supplier_id));
-});
-
-const selectedSupplierEmail = computed(() => selectedSupplier.value?.email || null);
-
-const goBack = () => router.get('/supplier-invoices');
+const initialValues = computed(() => ({
+    invoice_date: props.invoice.invoice_date,
+    due_date: props.invoice.due_date,
+    supplier_id: String(props.invoice.supplier_id),
+    supplier_order_id: props.invoice.supplier_order_id
+        ? String(props.invoice.supplier_order_id)
+        : 'none',
+    total_amount: props.invoice.total_amount,
+    status: props.invoice.status,
+}));
 
 const handleDocumentChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if (target.files && target.files[0]) documentFile.value = target.files[0];
+    if (target.files && target.files[0]) {
+        documentFile.value = target.files[0];
+        documentPreview.value = target.files[0].name;
+    }
 };
 
 const handlePaymentProofChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if (target.files && target.files[0]) paymentProofFile.value = target.files[0];
-};
-
-const handleStatusChange = () => {
-    const statusChangedToPaid = previousStatus.value !== 'paid' && formData.status === 'paid';
-    if (statusChangedToPaid && paymentProofFile.value) {
-        showEmailDialog.value = true;
+    if (target.files && target.files[0]) {
+        paymentProofFile.value = target.files[0];
+        paymentProofPreview.value = target.files[0].name;
     }
 };
 
-const confirmEmailAndSubmit = () => {
-    showEmailDialog.value = false;
-    performSubmit();
-};
-
-const submitForm = () => {
-    const statusChangedToPaid = previousStatus.value !== 'paid' && formData.status === 'paid';
-    if (statusChangedToPaid && paymentProofFile.value) {
-        showEmailDialog.value = true;
-        return;
-    }
-    performSubmit();
-};
-
-const performSubmit = () => {
-    isSubmitting.value = true;
-
+const handleSubmit = (values: any) => {
     const data = new FormData();
-    data.append('invoice_date', formData.invoice_date);
-    data.append('due_date', formData.due_date);
-    data.append('supplier_id', String(formData.supplier_id));
-    if (formData.supplier_order_id) data.append('supplier_order_id', String(formData.supplier_order_id));
-    data.append('total_amount', String(formData.total_amount));
-    data.append('status', formData.status);
+    data.append('invoice_date', values.invoice_date);
+    data.append('due_date', values.due_date);
+    data.append('supplier_id', values.supplier_id);
+    if (values.supplier_order_id && values.supplier_order_id !== 'none')
+        data.append('supplier_order_id', values.supplier_order_id);
+    data.append('total_amount', String(values.total_amount));
+    data.append('status', values.status);
     data.append('_method', 'PUT');
 
     if (documentFile.value) data.append('document', documentFile.value);
-    if (paymentProofFile.value) data.append('payment_proof', paymentProofFile.value);
-    if (sendEmailConfirmed.value) data.append('send_email', '1');
-    
+    if (paymentProofFile.value)
+        data.append('payment_proof', paymentProofFile.value);
+
     router.post(`/supplier-invoices/${props.invoice.id}`, data, {
         preserveScroll: true,
-        onFinish: () => {
-            isSubmitting.value = false;
-        },
     });
 };
+
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(value);
+};
 </script>
-
-
-
-
-

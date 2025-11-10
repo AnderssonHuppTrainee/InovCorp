@@ -1,107 +1,59 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Editar País"
-                :description="`Editar ${country.name}`"
-            >
-                <Button variant="outline" @click="goBack">
-                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                    Voltar
-                </Button>
-            </PageHeader>
+    <FormWrapper
+        title="Editar País"
+        :description="`Editar ${country.name}`"
+        :schema="countrySchema"
+        :initial-values="initialValues"
+        :submit-url="`/countries/${country.id}`"
+        submit-method="put"
+        submit-text="Atualizar País"
+    >
+        <template #form-fields>
+            <div class="space-y-6">
+                <FormField v-slot="{ componentField }" name="name">
+                    <FormItem>
+                        <FormLabel>Nome</FormLabel>
+                        <FormControl>
+                            <Input
+                                type="text"
+                                placeholder="Portugal"
+                                v-bind="componentField"
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
 
-            <Card>
-                <CardContent class="pt-6">
-                    <form @submit="onSubmit" class="space-y-6">
-                        <FormField v-slot="{ componentField }" name="name">
-                            <FormItem>
-                                <FormLabel>Nome</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="text"
-                                        placeholder="Portugal"
-                                        v-bind="componentField"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        </FormField>
+                <FormField v-slot="{ componentField }" name="code">
+                    <FormItem>
+                        <FormLabel>Código</FormLabel>
+                        <FormControl>
+                            <Input
+                                type="text"
+                                placeholder="PT"
+                                v-bind="componentField"
+                            />
+                        </FormControl>
+                        <FormDescription>
+                            Código ISO do país (ex: PT, ES, FR)
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
 
-                        <FormField v-slot="{ componentField }" name="code">
-                            <FormItem>
-                                <FormLabel
-                                    >Código (ISO 3166-1 alpha-2)</FormLabel
-                                >
-                                <FormControl>
-                                    <Input
-                                        type="text"
-                                        placeholder="PT"
-                                        v-bind="componentField"
-                                        maxlength="2"
-                                        class="uppercase"
-                                    />
-                                </FormControl>
-                                <FormDescription>
-                                    Código de 2 letras (ex: PT, ES, FR)
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        </FormField>
-
-                        <FormField
-                            v-slot="{ componentField }"
-                            name="phone_code"
-                        >
-                            <FormItem>
-                                <FormLabel>Código Telefónico</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="text"
-                                        placeholder="+351"
-                                        v-bind="componentField"
-                                    />
-                                </FormControl>
-                                <FormDescription>
-                                    Código telefónico internacional (ex: +351)
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        </FormField>
-
-                        <CheckboxField
-                            name="is_active"
-                            label="País Ativo"
-                            description="Este país estará disponível para seleção"
-                        />
-
-                        <div class="flex justify-end gap-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                @click="handleCancel"
-                            >
-                                Cancelar
-                            </Button>
-                            <Button type="submit" :disabled="isSubmitting">
-                                <LoaderCircleIcon
-                                    v-if="isSubmitting"
-                                    class="mr-2 h-4 w-4 animate-spin"
-                                />
-                                Atualizar País
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    </AppLayout>
+                <CheckboxField
+                    name="is_active"
+                    label="País Ativo"
+                    description="Este país estará disponível para seleção"
+                />
+            </div>
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import CheckboxField from '@/components/common/CheckboxField.vue';
+import FormWrapper from '@/components/common/FormWrapper.vue';
 import {
     FormControl,
     FormDescription,
@@ -111,51 +63,23 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/AppLayout.vue';
-import countries from '@/routes/countries';
-import { countrySchema, type CountryFormData } from '@/schemas/countrySchema';
-import { router } from '@inertiajs/vue3';
-import { toTypedSchema } from '@vee-validate/zod';
-import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-vue-next';
-import { useForm } from 'vee-validate';
-import { ref } from 'vue';
+import { countrySchema } from '@/schemas/countrySchema';
+import { computed } from 'vue';
 
 interface Props {
     country: {
         id: number;
         name: string;
         code: string;
-        phone_code: string | null;
         is_active: boolean;
     };
 }
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
-
-const form = useForm<CountryFormData>({
-    validationSchema: toTypedSchema(countrySchema),
-    initialValues: {
-        name: props.country.name,
-        code: props.country.code,
-        phone_code: props.country.phone_code || '',
-        is_active: props.country.is_active,
-    },
-});
-
-const onSubmit = form.handleSubmit((values) => {
-    isSubmitting.value = true;
-
-    router.put(countries.update({ country: props.country.id }).url, values, {
-        onFinish: () => {
-            isSubmitting.value = false;
-        },
-    });
-});
-
-const goBack = () => router.get('/countries');
-const handleCancel = () => {
-    router.visit(countries.index().url);
-};
+const initialValues = computed(() => ({
+    name: props.country.name,
+    code: props.country.code,
+    is_active: props.country.is_active,
+}));
 </script>

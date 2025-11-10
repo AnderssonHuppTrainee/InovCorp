@@ -9,7 +9,7 @@ use App\Models\System\Calendar\CalendarEventType;
 use App\Models\System\Calendar\CalendarAction;
 use App\Models\System\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 class CalendarEvent extends Model
 {

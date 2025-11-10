@@ -2,12 +2,11 @@
 
 namespace App\Models\Core;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Core\Contact;
-use App\Models\Catalog\Country;
+use App\Models\System\Country;
 use App\Models\Core\Proposal\Proposal;
 use App\Models\Core\Order\Order;
 use App\Models\Core\Order\SupplierOrder;

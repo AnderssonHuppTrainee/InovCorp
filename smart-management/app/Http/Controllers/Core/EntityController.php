@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateEntityRequest;
 use App\Models\Core\Entity;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Catalog\Country;
+use App\Models\System\Country;
 use Illuminate\Support\Facades\DB;
 
 class EntityController extends Controller

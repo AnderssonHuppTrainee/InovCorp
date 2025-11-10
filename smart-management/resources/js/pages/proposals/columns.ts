@@ -30,12 +30,15 @@ export interface Proposal {
     number: string
     proposal_date: string
     validity_date: string
-    client: {
+    client_id: number;
+    client?: {
         id: number
         name: string
     }
     total_amount: number
     status: 'draft' | 'closed'
+    created_at: string;
+    updated_at: string;
 }
 
 export const columns: ColumnDef<Proposal>[] = [

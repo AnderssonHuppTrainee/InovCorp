@@ -1,126 +1,136 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader title="Editar Utilizador" :description="`${user.name}`">
-                <Button variant="outline" @click="goBack"><ArrowLeftIcon class="mr-2 h-4 w-4" />Voltar</Button>
-            </PageHeader>
+    <FormWrapper
+        title="Editar Utilizador"
+        :description="`${user.name} (${user.email})`"
+        :schema="userSchema"
+        :initial-values="initialValues"
+        :submit-url="`/users/${user.id}`"
+        submit-method="put"
+        submit-text="Atualizar Utilizador"
+    >
+        <template #form-fields>
+            <FormField v-slot="{ componentField }" name="name">
+                <FormItem>
+                    <FormLabel>Nome *</FormLabel>
+                    <FormControl>
+                        <Input v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-            <form @submit="onSubmit">
-                <Card class="mb-6">
-                    <CardContent class="p-6">
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <FormField v-slot="{ componentField }" name="name">
-                                <FormItem><FormLabel>Nome *</FormLabel><FormControl><Input v-bind="componentField" /></FormControl><FormMessage /></FormItem>
-                            </FormField>
+            <FormField v-slot="{ componentField }" name="email">
+                <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                        <Input type="email" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <FormField v-slot="{ componentField }" name="email">
-                                <FormItem><FormLabel>Email *</FormLabel><FormControl><Input type="email" v-bind="componentField" /></FormControl><FormMessage /></FormItem>
-                            </FormField>
+            <FormField v-slot="{ componentField }" name="password">
+                <FormItem>
+                    <FormLabel>Nova Palavra-passe</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="password"
+                            v-bind="componentField"
+                            placeholder="Deixe em branco para manter a atual"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <FormField v-slot="{ componentField }" name="mobile">
-                                <FormItem><FormLabel>Telemóvel</FormLabel><FormControl><Input v-bind="componentField" /></FormControl><FormMessage /></FormItem>
-                            </FormField>
+            <FormField v-slot="{ componentField }" name="password_confirmation">
+                <FormItem>
+                    <FormLabel>Confirmar Nova Palavra-passe</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="password"
+                            v-bind="componentField"
+                            placeholder="Confirmar nova palavra-passe"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <FormField v-slot="{ componentField }" name="password">
-                                <FormItem><FormLabel>Nova Password</FormLabel><FormControl><Input type="password" v-bind="componentField" /></FormControl><FormDescription>Deixe em branco para manter a password atual</FormDescription><FormMessage /></FormItem>
-                            </FormField>
+            <FormField v-slot="{ componentField }" name="roles">
+                <FormItem>
+                    <FormLabel>Grupos de Permissões</FormLabel>
+                    <Select v-bind="componentField" multiple>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue
+                                    placeholder="Selecione os grupos"
+                                />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem
+                                v-for="role in roles"
+                                :key="role.id"
+                                :value="role.name"
+                            >
+                                {{ role.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <FormField v-slot="{ componentField }" name="password_confirmation">
-                                <FormItem><FormLabel>Confirmar Password</FormLabel><FormControl><Input type="password" v-bind="componentField" /></FormControl><FormMessage /></FormItem>
-                            </FormField>
-
-                            <FormField v-slot="{ value, handleChange }" name="is_active">
-                                <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                    <FormControl><Checkbox :checked="value" @update:checked="(checked: boolean) => handleChange(checked)" /></FormControl>
-                                    <div class="space-y-1 leading-none"><FormLabel>Ativo</FormLabel></div>
-                                </FormItem>
-                            </FormField>
-
-                            <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Grupos de Permissões</label>
-                                <div class="grid grid-cols-2 gap-2 border rounded-md p-4">
-                                    <div v-for="role in roles" :key="role.id" class="flex items-center space-x-2">
-                                        <Checkbox :id="`role-${role.id}`" :checked="form.values.roles?.includes(role.name)" @update:checked="(checked: boolean) => toggleRole(role.name, checked)" />
-                                        <label :for="`role-${role.id}`" class="text-sm cursor-pointer">{{ role.name }}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline" @click="goBack">Cancelar</Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
-                        <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ isSubmitting ? 'A atualizar...' : 'Atualizar' }}
-                    </Button>
-                </div>
-            </form>
-        </div>
-    </AppLayout>
+            <CheckboxField
+                name="is_active"
+                label="Utilizador Ativo"
+                description="Este utilizador pode fazer login no sistema"
+            />
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import CheckboxField from '@/components/common/CheckboxField.vue';
+import FormWrapper from '@/components/common/FormWrapper.vue';
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/AppLayout.vue';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { userSchema } from '@/schemas/userSchema';
-import { toTypedSchema } from '@vee-validate/zod';
-import { router } from '@inertiajs/vue3';
-import { useForm } from 'vee-validate';
-import { ArrowLeftIcon, LoaderIcon, SaveIcon } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed } from 'vue';
 
 interface Props {
-    user: any;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+        is_active: boolean;
+    };
     roles: Array<{ id: number; name: string }>;
     userRoles: string[];
 }
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
-
-const form = useForm({
-    validationSchema: toTypedSchema(userSchema),
-    initialValues: {
-        name: props.user.name,
-        email: props.user.email,
-        mobile: props.user.mobile || '',
-        password: '',
-        password_confirmation: '',
-        roles: props.userRoles,
-        is_active: props.user.is_active,
-    },
-});
-
-const toggleRole = (roleName: string, checked: boolean) => {
-    const currentRoles = form.values.roles || [];
-    if (checked) {
-        form.setFieldValue('roles', [...currentRoles, roleName]);
-    } else {
-        form.setFieldValue('roles', currentRoles.filter((r: string) => r !== roleName));
-    }
-};
-
-const onSubmit = form.handleSubmit((values) => {
-    isSubmitting.value = true;
-    router.put(`/users/${props.user.id}`, values, {
-        preserveScroll: true,
-        onFinish: () => (isSubmitting.value = false),
-    });
-});
-
-const goBack = () => router.get('/users');
+const initialValues = computed(() => ({
+    name: props.user.name,
+    email: props.user.email,
+    password: '',
+    password_confirmation: '',
+    roles: props.userRoles,
+    is_active: props.user.is_active,
+}));
 </script>
-
-
-
-
-

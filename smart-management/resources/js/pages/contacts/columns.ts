@@ -13,22 +13,27 @@ import { MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
 
 export interface Contact {
-    id: number
-    number: string
-    first_name: string
-    last_name: string
-    entity: {
-        id: number
-        name: string
-    }
-    role: {
-        id: number
-        name: string
-    }
-    phone: string | null
-    mobile: string | null
-    email: string | null
-    status: 'active' | 'inactive'
+    id: number;
+    number: string;
+    first_name: string;
+    last_name: string;
+    entity_id: number;
+    entity?: {
+        id: number;
+        name: string;
+    };
+    role?: {
+        id: number;
+        name: string;
+    };
+    phone: string | null;
+    mobile: string | null;
+    email: string | null;
+    gdpr_consent: boolean;
+    observations: string | null;
+    status: 'active' | 'inactive';
+    created_at: string;
+    updated_at: string;
 }
 
 export const columns: ColumnDef<Contact>[] = [

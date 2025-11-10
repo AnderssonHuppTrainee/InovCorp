@@ -1,127 +1,200 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader title="Nova Fatura de Cliente" description="Criar fatura para cliente">
-                <Button variant="outline" @click="goBack">
-                    <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                    Voltar
-                </Button>
-            </PageHeader>
+    <FormWrapper
+        ref="formWrapper"
+        title="Nova Fatura de Cliente"
+        description="Criar fatura para cliente"
+        :schema="customerInvoiceSchema"
+        :initial-values="initialValues"
+        submit-url="/customer-invoices"
+        submit-method="post"
+        submit-text="Guardar Fatura"
+    >
+        <template #form-fields>
+            <FormField v-slot="{ value, handleChange }" name="invoice_date">
+                <FormItem>
+                    <FormLabel>Data da Fatura *</FormLabel>
+                    <FormControl>
+                        <DatePicker
+                            :model-value="value"
+                            @update:model-value="handleChange"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-            <form @submit="onSubmit">
-                <Card class="mb-6">
-                    <CardContent class="p-6">
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Data da Fatura *</label>
-                                <DatePicker v-model="formData.invoice_date" />
-                            </div>
+            <FormField v-slot="{ value, handleChange }" name="due_date">
+                <FormItem>
+                    <FormLabel>Vencimento *</FormLabel>
+                    <FormControl>
+                        <DatePicker
+                            :model-value="value"
+                            @update:model-value="handleChange"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Vencimento *</label>
-                                <DatePicker v-model="formData.due_date" />
-                            </div>
+            <FormField v-slot="{ componentField }" name="customer_id">
+                <FormItem>
+                    <FormLabel>Cliente *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue
+                                    placeholder="Selecione o cliente"
+                                />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem
+                                v-for="customer in customers"
+                                :key="customer.id"
+                                :value="String(customer.id)"
+                            >
+                                {{ customer.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Cliente *</label>
-                                <select v-model="formData.customer_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
-                                    <option value="">Selecione</option>
-                                    <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-                                        {{ customer.name }}
-                                    </option>
-                                </select>
-                            </div>
+            <FormField v-slot="{ componentField }" name="order_id">
+                <FormItem>
+                    <FormLabel>Encomenda</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Sem encomenda" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="none">Sem encomenda</SelectItem>
+                            <SelectItem
+                                v-for="order in filteredOrders"
+                                :key="order.id"
+                                :value="String(order.id)"
+                            >
+                                {{ order.number }} -
+                                {{ formatCurrency(order.total_amount) }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Encomenda</label>
-                                <select v-model="formData.order_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    <option value="">Sem encomenda</option>
-                                    <option v-for="order in filteredOrders" :key="order.id" :value="order.id">
-                                        {{ order.number }} - {{ formatCurrency(order.total_amount) }}
-                                    </option>
-                                </select>
-                            </div>
+            <FormField v-slot="{ componentField }" name="total_amount">
+                <FormItem>
+                    <FormLabel>Valor Total *</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            v-bind="componentField"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Valor Total *</label>
-                                <Input type="number" step="0.01" min="0" v-model.number="formData.total_amount" required />
-                            </div>
+            <FormField v-slot="{ componentField }" name="status">
+                <FormItem>
+                    <FormLabel>Estado *</FormLabel>
+                    <Select v-bind="componentField">
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione o estado" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="draft">Rascunho</SelectItem>
+                            <SelectItem value="sent">Enviada</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
 
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">Estado *</label>
-                                <select v-model="formData.status" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    <option value="draft">Rascunho</option>
-                                    <option value="sent">Enviada</option>
-                                </select>
-                            </div>
-
-                            <div class="space-y-2 lg:col-span-2">
-                                <label class="text-sm font-medium">Observações</label>
-                                <Textarea v-model="formData.notes" placeholder="Notas adicionais..." rows="4" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div class="flex justify-end gap-3">
-                    <Button type="button" variant="outline" @click="goBack">Cancelar</Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
-                        <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
-                        {{ isSubmitting ? 'A guardar...' : 'Guardar Fatura' }}
-                    </Button>
-                </div>
-            </form>
-        </div>
-    </AppLayout>
+            <FormField
+                v-slot="{ componentField }"
+                name="notes"
+                class="lg:col-span-2"
+            >
+                <FormItem>
+                    <FormLabel>Observações</FormLabel>
+                    <FormControl>
+                        <Textarea
+                            placeholder="Notas adicionais..."
+                            rows="4"
+                            v-bind="componentField"
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+        </template>
+    </FormWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import FormWrapper from '@/components/common/FormWrapper.vue';
 import DatePicker from '@/components/ui/date-picker/DatePicker.vue';
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, LoaderIcon, SaveIcon } from 'lucide-vue-next';
-import { computed, reactive, ref } from 'vue';
+import { customerInvoiceSchema } from '@/schemas/customerInvoiceSchema';
+import { computed, ref } from 'vue';
 
 interface Props {
     customers: Array<{ id: number; name: string }>;
-    orders: Array<{ id: number; number: string; client_id: number; total_amount: number }>;
+    orders: Array<{
+        id: number;
+        number: string;
+        client_id: number;
+        total_amount: number;
+    }>;
 }
 
 const props = defineProps<Props>();
 
-const isSubmitting = ref(false);
+const formWrapper = ref<any>(null);
 
-const formData = reactive({
+const initialValues = computed(() => ({
     invoice_date: new Date().toISOString().split('T')[0],
-    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
     customer_id: '',
     order_id: '',
     total_amount: 0,
     notes: '',
-    status: 'draft' as 'draft' | 'sent',
-});
+    status: 'draft',
+}));
 
 const filteredOrders = computed(() => {
-    if (!formData.customer_id) return [];
-    return props.orders.filter(order => order.client_id === Number(formData.customer_id));
+    const customerId = formWrapper.value?.form?.values?.customer_id;
+    if (!customerId || !formWrapper.value?.form) return [];
+    return props.orders.filter(
+        (order) => order.client_id === Number(customerId),
+    );
 });
-
-const onSubmit = (e: Event) => {
-    e.preventDefault();
-    isSubmitting.value = true;
-    router.post('/customer-invoices', formData, {
-        preserveScroll: true,
-        onFinish: () => (isSubmitting.value = false),
-    });
-};
-
-const goBack = () => router.get('/customer-invoices');
 
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -130,12 +203,3 @@ const formatCurrency = (value: number) => {
     }).format(value);
 };
 </script>
-
-
-
-
-
-
-
-
-

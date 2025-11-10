@@ -5,9 +5,19 @@ export const customerInvoiceSchema = z.object({
 
     due_date: z.string().min(1, 'Data de vencimento é obrigatória'),
 
-    customer_id: z.string().min(1, 'Cliente é obrigatório'),
+    customer_id: z.coerce.string().min(1, 'Cliente é obrigatório'),
 
-    order_id: z.string().optional().or(z.literal('')),
+    order_id: z
+        .union([
+            z.coerce.string(),
+            z.literal('none'),
+            z.literal(''),
+        ])
+        .optional()
+        .transform((val) => {
+            if (!val || val === 'none' || val === '') return '';
+            return String(val);
+        }),
 
     total_amount: z
         .number()
@@ -38,6 +48,12 @@ export const paymentSchema = z.object({
 })
 
 export type PaymentFormData = z.infer<typeof paymentSchema>
+
+
+
+
+
+
 
 
 

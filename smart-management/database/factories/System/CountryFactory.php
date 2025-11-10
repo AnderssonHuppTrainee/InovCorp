@@ -6,7 +6,7 @@ use App\Models\Catalog\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Catalog\Country>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\System\Country>
  */
 class CountryFactory extends Factory
 {

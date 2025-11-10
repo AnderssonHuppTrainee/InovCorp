@@ -4,7 +4,7 @@ namespace App\Models\Core;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Catalog\ContactRole;
+use App\Models\System\ContactRole;
 use App\Models\Core\Entity;
 
 class Contact extends Model

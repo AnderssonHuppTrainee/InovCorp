@@ -1,143 +1,97 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader title="Detalhes do País" :description="country.name">
-                <div class="flex gap-2">
-                    <Button variant="outline" @click="goBack">
-                        <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                        Voltar
-                    </Button>
-                    <Button variant="outline" @click="handleEdit">
-                        <PencilIcon class="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
-                    <Button variant="destructive" @click="handleDelete">
-                        <Trash2Icon class="mr-2 h-4 w-4" />
-                        Eliminar
-                    </Button>
-                </div>
-            </PageHeader>
-
-            <div class="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Informações Gerais</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Nome
-                            </div>
-                            <div class="mt-1 text-sm">{{ country.name }}</div>
+    <ShowWrapper
+        :title="country.name"
+        :description="`${country.name} (${country.code})`"
+        :edit-url="`/countries/${country.id}/edit`"
+        :delete-url="`/countries/${country.id}`"
+        :back-url="'/countries'"
+        :item-name="country.name"
+    >
+        <template #main-content>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Detalhes do País</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Nome</div>
+                        <div class="col-span-2 font-medium">
+                            {{ country.name }}
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Código
-                            </div>
-                            <div class="mt-1 font-mono text-sm font-semibold">
-                                {{ country.code }}
-                            </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Código</div>
+                        <div class="col-span-2 font-mono font-medium">
+                            {{ country.code }}
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Estado</div>
+                        <div class="col-span-2">
+                            <Badge
+                                :variant="
+                                    country.is_active ? 'default' : 'secondary'
+                                "
                             >
-                                Código Telefónico
-                            </div>
-                            <div class="mt-1 font-mono text-sm">
-                                {{ country.phone_code || '-' }}
-                            </div>
+                                {{ country.is_active ? 'Ativo' : 'Inativo' }}
+                            </Badge>
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Estado
-                            </div>
-                            <div class="mt-1">
-                                <Badge
-                                    :variant="
-                                        country.is_active
-                                            ? 'default'
-                                            : 'secondary'
-                                    "
-                                >
-                                    {{
-                                        country.is_active ? 'Ativo' : 'Inativo'
-                                    }}
-                                </Badge>
-                            </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+        <template #sidebar>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Informações</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm font-medium text-muted-foreground">
+                            Entidades Associadas
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Estatísticas</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Entidades Associadas
-                            </div>
-                            <div class="mt-1 text-2xl font-bold">
-                                {{ entitiesCount }}
-                            </div>
+                        <div class="mt-1 text-2xl font-bold">
+                            {{ entitiesCount }}
                         </div>
-
-                        <div class="pt-4">
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Criado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(country.created_at) }}
-                            </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Criado em
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Atualizado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(country.updated_at) }}
-                            </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(country.created_at) }}
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    </AppLayout>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Atualizado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(country.updated_at) }}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+    </ShowWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
+import ShowWrapper from '@/components/common/ShowWrapper.vue';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/AppLayout.vue';
-import countries from '@/routes/countries';
+import { Separator } from '@/components/ui/separator';
 import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
     country: {
         id: number;
         name: string;
         code: string;
-        phone_code: string | null;
         is_active: boolean;
         created_at: string;
         updated_at: string;
@@ -147,25 +101,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-PT', {
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('pt-PT', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
     });
-};
-
-const handleEdit = () => {
-    router.visit(countries.edit({ country: props.country.id }).url);
-};
-
-const goBack = () => router.get('/countries');
-
-const handleDelete = () => {
-    if (confirm('Tem certeza que deseja eliminar este país?')) {
-        router.delete(countries.destroy({ country: props.country.id }).url);
-    }
 };
 </script>

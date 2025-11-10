@@ -5,9 +5,19 @@ export const supplierInvoiceSchema = z.object({
 
     due_date: z.string().min(1, 'Data de vencimento é obrigatória'),
 
-    supplier_id: z.string().min(1, 'Fornecedor é obrigatório'),
+    supplier_id: z.coerce.string().min(1, 'Fornecedor é obrigatório'),
 
-    supplier_order_id: z.string().optional().or(z.literal('')),
+    supplier_order_id: z
+        .union([
+            z.coerce.string(),
+            z.literal('none'),
+            z.literal(''),
+        ])
+        .optional()
+        .transform((val) => {
+            if (!val || val === 'none' || val === '') return '';
+            return String(val);
+        }),
 
     total_amount: z
         .number()
@@ -20,6 +30,12 @@ export const supplierInvoiceSchema = z.object({
 })
 
 export type SupplierInvoiceFormData = z.infer<typeof supplierInvoiceSchema>
+
+
+
+
+
+
 
 
 

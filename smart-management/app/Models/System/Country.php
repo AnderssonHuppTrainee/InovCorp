@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Catalog;
+namespace App\Models\System;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Core\Entity;

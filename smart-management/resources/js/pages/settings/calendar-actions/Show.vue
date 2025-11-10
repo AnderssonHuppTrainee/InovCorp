@@ -1,132 +1,99 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Detalhes da Ação"
-                :description="calendarAction.name"
-            >
-                <div class="flex gap-2">
-                    <Button variant="outline" @click="goBack">
-                        <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                        Voltar
-                    </Button>
-                    <Button variant="outline" @click="handleEdit">
-                        <PencilIcon class="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
-                    <Button variant="destructive" @click="handleDelete">
-                        <Trash2Icon class="mr-2 h-4 w-4" />
-                        Eliminar
-                    </Button>
-                </div>
-            </PageHeader>
-
-            <div class="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Informações Gerais</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Nome
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ calendarAction.name }}
-                            </div>
+    <ShowWrapper
+        :title="calendarAction.name"
+        :description="calendarAction.description || 'Ação de calendário'"
+        :edit-url="`/calendar-actions/${calendarAction.id}/edit`"
+        :delete-url="`/calendar-actions/${calendarAction.id}`"
+        :back-url="'/calendar-actions'"
+        :item-name="calendarAction.name"
+    >
+        <template #main-content>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Detalhes da Ação</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Nome</div>
+                        <div class="col-span-2 font-medium">
+                            {{ calendarAction.name }}
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Descrição
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ calendarAction.description || '-' }}
-                            </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Descrição
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Estado
-                            </div>
-                            <div class="mt-1">
-                                <Badge
-                                    :variant="
-                                        calendarAction.is_active
-                                            ? 'default'
-                                            : 'secondary'
-                                    "
-                                >
-                                    {{
-                                        calendarAction.is_active
-                                            ? 'Ativa'
-                                            : 'Inativa'
-                                    }}
-                                </Badge>
-                            </div>
+                        <div class="col-span-2 text-sm">
+                            {{ calendarAction.description || 'Sem descrição' }}
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Estatísticas</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Estado</div>
+                        <div class="col-span-2">
+                            <Badge
+                                :variant="
+                                    calendarAction.is_active
+                                        ? 'default'
+                                        : 'secondary'
+                                "
                             >
-                                Eventos Associados
-                            </div>
-                            <div class="mt-1 text-2xl font-bold">
-                                {{ eventsCount }}
-                            </div>
+                                {{
+                                    calendarAction.is_active
+                                        ? 'Ativa'
+                                        : 'Inativa'
+                                }}
+                            </Badge>
                         </div>
-
-                        <div class="pt-4">
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Criado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(calendarAction.created_at) }}
-                            </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+        <template #sidebar>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Informações</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm font-medium text-muted-foreground">
+                            Eventos Associados
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Atualizado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(calendarAction.updated_at) }}
-                            </div>
+                        <div class="mt-1 text-2xl font-bold">
+                            {{ eventsCount }}
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    </AppLayout>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Criado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(calendarAction.created_at) }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Atualizado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(calendarAction.updated_at) }}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+    </ShowWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
+import ShowWrapper from '@/components/common/ShowWrapper.vue';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/AppLayout.vue';
-import calendarActions from '@/routes/calendar-actions';
+import { Separator } from '@/components/ui/separator';
 import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
     calendarAction: {
@@ -142,31 +109,23 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const goBack = () => router.get('/calendar-actions');
+const handleEdit = () =>
+    router.get(`/calendar-actions/${props.calendarAction.id}/edit`);
+const handleDelete = () => {
+    if (confirm(`Eliminar ação "${props.calendarAction.name}"?`)) {
+        router.delete(`/calendar-actions/${props.calendarAction.id}`, {
+            onSuccess: () => router.get('/calendar-actions'),
+        });
+    }
+};
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-PT', {
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('pt-PT', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
     });
-};
-
-const handleEdit = () => {
-    router.visit(
-        calendarActions.edit({ calendar_action: props.calendarAction.id }).url,
-    );
-};
-
-const handleDelete = () => {
-    if (confirm('Tem certeza que deseja eliminar esta ação?')) {
-        router.delete(
-            calendarActions.destroy({
-                calendar_action: props.calendarAction.id,
-            }).url,
-        );
-    }
 };
 </script>

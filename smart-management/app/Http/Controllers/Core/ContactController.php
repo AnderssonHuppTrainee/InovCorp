@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Core;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UpdateContactRequest;
-use App\Models\Catalog\ContactRole;
+use App\Models\System\ContactRole;
 use App\Models\Core\Contact;
 use App\Models\Core\Entity;
 use Illuminate\Http\Request;

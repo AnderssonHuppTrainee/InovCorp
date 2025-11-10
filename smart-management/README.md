@@ -12,7 +12,7 @@
 
 **Solução completa para gestão de clientes, vendas, trabalho e finanças**
 
-[🌐 Demo](#) • [📖 Documentação](#documentação) • [🐛 Reportar Bug](#) • [💡 Solicitar Feature](#)
+[📖 Documentação](#-documentação) • [🐛 Reportar Bug](#-suporte)
 
 </div>
 
@@ -47,7 +47,7 @@
 - 📱 **Responsivo**: Totalmente adaptável a mobile, tablet e desktop
 - 🔐 **Seguro**: Autenticação robusta, criptografia de dados sensíveis
 - 🌍 **Multilíngue**: Preparado para internacionalização
-- ✅ **Testado**: Suite completa de testes unitários e de integração
+- ✅ **Testes Automatizados**: Suites Pest cobrindo cenários críticos (em evolução)
 
 ---
 
@@ -447,8 +447,8 @@ URL: http://localhost:8000
 ou
 URL: http://smart-management.test (com Herd)
 
-Credenciais padrão:
-Email: admin@example.com
+Credenciais seed (após `php artisan migrate --seed`):
+Email: admin@smartmanagement.pt
 Password: password
 ```
 
@@ -697,22 +697,11 @@ php artisan test --testsuite=Unit
 php artisan test --filter EntityTest
 ```
 
-### Cobertura Atual
+### Estado Atual
 
-```
-✅ 66/66 Unit Tests passando (100%)
-✅ Cobertura de Models: 90%
-✅ Cobertura de Controllers: 85%
-✅ Cobertura de Requests: 100%
-```
-
-### Testes Implementados
-
-- ✅ Models (Entity, Order, Proposal, etc.)
-- ✅ Controllers (CRUD operations)
-- ✅ Form Requests (validações)
-- ✅ Policies (autorizações)
-- ✅ Commands (comandos Artisan)
+- As medições de outubro/2025 indicaram progresso nas suites Pest, mas os relatórios estáticos foram removidos.  
+- Execute os comandos acima (ou `vendor/bin/pest`) para obter o estado real antes de fazer deploys ou aprovar releases.  
+- Caso necessite de cobertura, configure a geração automática (ex.: `php artisan test --coverage --min=...`) e publique o relatório no pipeline de CI.
 
 ---
 
@@ -736,10 +725,10 @@ php artisan test --filter EntityTest
 - [x] Análise completa do projeto
 - [x] Toast system com flash messages
 - [x] Tratamento de erros amigável
-- [ ] Componentes wrapper (IndexWrapper, FormWrapper, ShowWrapper)
+- [x] Componentes wrapper (IndexWrapper, FormWrapper, ShowWrapper) — concluído em out/2025
 - [ ] Composables de ações (useResourceActions)
-- [ ] Componentes de paginação e filtros reutilizáveis
-- [ ] Padronização completa de todas as páginas
+- [ ] Componentes de paginação e filtros reutilizáveis adicionais
+- [ ] Padronização final de todas as páginas restantes
 
 **Redução Estimada:** -34,280 linhas de código (-64%)
 
@@ -770,14 +759,11 @@ php artisan test --filter EntityTest
 
 ## 🎓 Documentação
 
-### Guias de Uso
+- [`README_TESTE.md`](README_TESTE.md): preparação do ambiente e dados seed para QA.
+- [`SUMARIO_EXECUTIVO.md`](SUMARIO_EXECUTIVO.md): visão executiva e prioridades identificadas na análise de outubro/2025.
+- [`docs/archive/2025-10/analysis-summary.md`](docs/archive/2025-10/analysis-summary.md): histórico consolidado da análise conduzida em outubro/2025.
 
-- [Gestão de Clientes](docs/guides/entities.md)
-- [Criação de Propostas](docs/guides/proposals.md)
-- [Ordens de Trabalho](docs/guides/work-orders.md)
-- [Faturação](docs/guides/invoicing.md)
-- [Arquivo Digital](docs/guides/digital-archive.md)
-- [Calendário](docs/guides/calendar.md)
+> ⚠️ Guias detalhados antigos foram arquivados. Consulte o histórico do Git caso precise recuperar um roteiro específico.
 
 ---
 
@@ -1066,31 +1052,7 @@ Use [GitHub Discussions](https://github.com/your-company/smart-management/discus
 
 ## 📜 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-```
-MIT License
-
-Copyright (c) 2025 InovCorp
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+A licença pública ainda não foi definida. Entre em contacto com a InovCorp para esclarecer direitos de uso e distribuição antes de publicar ou distribuir o código.
 
 ---
 

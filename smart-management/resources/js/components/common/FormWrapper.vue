@@ -14,15 +14,19 @@
             </PageHeader>
 
             <!-- Formulário -->
-            <form @submit="handleSubmit">
+            <form @submit.prevent="handleSubmit">
                 <!-- Card principal do formulário -->
                 <Card class="mb-6">
+                    <CardHeader v-if="cardTitle">
+                        <CardTitle>{{ cardTitle }}</CardTitle>
+                    </CardHeader>
                     <CardContent class="p-6">
                         <!-- Grid responsivo para campos -->
                         <div :class="gridClass">
                             <!-- Slot para campos do formulário -->
                             <slot name="form-fields" />
                         </div>
+                        <slot name="articles-fields" />
                     </CardContent>
                 </Card>
 
@@ -36,10 +40,7 @@
                     >
                         Cancelar
                     </Button>
-                    <Button
-                        type="submit"
-                        :disabled="isSubmitting"
-                    >
+                    <Button type="submit" :disabled="isSubmitting">
                         <SaveIcon v-if="!isSubmitting" class="mr-2 h-4 w-4" />
                         <LoaderIcon v-else class="mr-2 h-4 w-4 animate-spin" />
                         {{ submitText }}
@@ -51,22 +52,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { ArrowLeftIcon, LoaderIcon, SaveIcon } from 'lucide-vue-next';
+import { useForm } from 'vee-validate';
+import { computed, ref } from 'vue';
 
 // Components
-import AppLayout from '@/layouts/AppLayout.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
+import CardHeader from '../ui/card/CardHeader.vue';
+import CardTitle from '../ui/card/CardTitle.vue';
 
 // Types
 interface Props {
     title: string;
     description?: string;
+    cardTitle?: string; // Optional card title inside the form card
     schema: any; // Zod schema
     initialValues?: Record<string, any>;
     submitUrl: string;
@@ -76,6 +80,7 @@ interface Props {
     gridCols?: 1 | 2; // Grid columns (default: 2)
     onSuccess?: () => void;
     onError?: (errors: any) => void;
+    onSubmit?: (values: any) => void; // Custom submit handler
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -98,7 +103,7 @@ const form = useForm({
 
 // Computed
 const gridClass = computed(() => {
-    return props.gridCols === 1 
+    return props.gridCols === 1
         ? 'grid grid-cols-1 gap-6'
         : 'grid grid-cols-1 gap-6 lg:grid-cols-2';
 });
@@ -110,10 +115,18 @@ const cancelUrl = computed(() => {
 // Methods
 const handleSubmit = form.handleSubmit((values) => {
     isSubmitting.value = true;
-    
+
+    // Use custom submit handler if provided
+    if (props.onSubmit) {
+        props.onSubmit(values);
+        isSubmitting.value = false;
+        return;
+    }
+
+    // Default submit behavior
     const method = props.submitMethod;
     const url = props.submitUrl;
-    
+
     router[method](url, values, {
         preserveScroll: true,
         onSuccess: () => {

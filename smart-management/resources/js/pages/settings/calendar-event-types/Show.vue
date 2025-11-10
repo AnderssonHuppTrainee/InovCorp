@@ -1,146 +1,122 @@
 <template>
-    <AppLayout>
-        <div class="space-y-6 p-4">
-            <PageHeader
-                title="Detalhes do Tipo de Evento"
-                :description="calendarEventType.name"
-            >
-                <div class="flex gap-2">
-                    <Button variant="outline" @click="goBack">
-                        <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                        Voltar
-                    </Button>
-                    <Button variant="outline" @click="handleEdit">
-                        <PencilIcon class="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
-                    <Button variant="destructive" @click="handleDelete">
-                        <Trash2Icon class="mr-2 h-4 w-4" />
-                        Eliminar
-                    </Button>
-                </div>
-            </PageHeader>
-
-            <div class="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Informações Gerais</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Nome
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ calendarEventType.name }}
-                            </div>
+    <ShowWrapper
+        :title="calendarEventType.name"
+        :description="calendarEventType.description || 'Tipo de evento'"
+        :edit-url="`/calendar-event-types/${calendarEventType.id}/edit`"
+        :delete-url="`/calendar-event-types/${calendarEventType.id}`"
+        :back-url="'/calendar-event-types'"
+        :item-name="calendarEventType.name"
+    >
+        <template #main-content>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Detalhes do Tipo de Evento</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Nome</div>
+                        <div class="col-span-2 font-medium">
+                            {{ calendarEventType.name }}
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Cor
-                            </div>
-                            <div class="mt-1 flex items-center gap-2">
-                                <div
-                                    class="h-8 w-8 rounded border"
-                                    :style="{
-                                        backgroundColor:
-                                            calendarEventType.color,
-                                    }"
-                                ></div>
-                                <span class="font-mono text-sm">{{
-                                    calendarEventType.color
-                                }}</span>
-                            </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Descrição
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Estado
-                            </div>
-                            <div class="mt-1">
-                                <Badge
-                                    :variant="
-                                        calendarEventType.is_active
-                                            ? 'default'
-                                            : 'secondary'
-                                    "
-                                >
-                                    {{
-                                        calendarEventType.is_active
-                                            ? 'Ativo'
-                                            : 'Inativo'
-                                    }}
-                                </Badge>
-                            </div>
+                        <div class="col-span-2 text-sm">
+                            {{
+                                calendarEventType.description || 'Sem descrição'
+                            }}
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Estatísticas</CardTitle>
-                    </CardHeader>
-                    <CardContent class="space-y-4">
-                        <div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Cor</div>
+                        <div class="col-span-2 flex items-center gap-2">
                             <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Eventos Associados
-                            </div>
-                            <div class="mt-1 text-2xl font-bold">
-                                {{ eventsCount }}
-                            </div>
+                                class="h-4 w-4 rounded"
+                                :style="{
+                                    backgroundColor: calendarEventType.color,
+                                }"
+                            ></div>
+                            <span class="font-mono text-sm">{{
+                                calendarEventType.color
+                            }}</span>
                         </div>
-
-                        <div class="pt-4">
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">Estado</div>
+                        <div class="col-span-2">
+                            <Badge
+                                :variant="
+                                    calendarEventType.is_active
+                                        ? 'default'
+                                        : 'secondary'
+                                "
                             >
-                                Criado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(calendarEventType.created_at) }}
-                            </div>
+                                {{
+                                    calendarEventType.is_active
+                                        ? 'Ativo'
+                                        : 'Inativo'
+                                }}
+                            </Badge>
                         </div>
-
-                        <div>
-                            <div
-                                class="text-sm font-medium text-muted-foreground"
-                            >
-                                Atualizado em
-                            </div>
-                            <div class="mt-1 text-sm">
-                                {{ formatDate(calendarEventType.updated_at) }}
-                            </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+        <template #sidebar>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Informações</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm font-medium text-muted-foreground">
+                            Eventos Associados
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    </AppLayout>
+                        <div class="mt-1 text-2xl font-bold">
+                            {{ eventsCount }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Criado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(calendarEventType.created_at) }}
+                        </div>
+                    </div>
+                    <Separator />
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            Atualizado em
+                        </div>
+                        <div class="col-span-2 text-sm">
+                            {{ formatDate(calendarEventType.updated_at) }}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </template>
+    </ShowWrapper>
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/components/PageHeader.vue';
+import ShowWrapper from '@/components/common/ShowWrapper.vue';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/AppLayout.vue';
-import calendarEventTypes from '@/routes/calendar-event-types';
+import { Separator } from '@/components/ui/separator';
 import { router } from '@inertiajs/vue3';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next';
 
 interface Props {
     calendarEventType: {
         id: number;
         name: string;
+        description: string | null;
         color: string;
         is_active: boolean;
         created_at: string;
@@ -151,31 +127,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-PT', {
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('pt-PT', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
     });
-};
-const goBack = () => router.get('/calendar-event-types');
-const handleEdit = () => {
-    router.visit(
-        calendarEventTypes.edit({
-            calendar_event_type: props.calendarEventType.id,
-        }).url,
-    );
-};
-
-const handleDelete = () => {
-    if (confirm('Tem certeza que deseja eliminar este tipo de evento?')) {
-        router.delete(
-            calendarEventTypes.destroy({
-                calendar_event_type: props.calendarEventType.id,
-            }).url,
-        );
-    }
 };
 </script>

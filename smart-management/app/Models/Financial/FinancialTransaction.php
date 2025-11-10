@@ -8,7 +8,7 @@ use App\Models\Financial\BankAccount;
 
 class FinancialTransaction extends Model
 {
-    /** @use HasFactory<\Dataabase\Factories\FinancialTransactionFactory> */
+    /** @use HasFactory<\Database\Factories\FinancialTransactionFactory> */
     use HasFactory;
 
 

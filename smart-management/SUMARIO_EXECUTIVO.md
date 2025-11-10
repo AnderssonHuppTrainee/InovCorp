@@ -6,13 +6,15 @@
 
 ---
 
+> ℹ️ Este sumário reflete o diagnóstico realizado em **10/10/2025**. Desde então algumas ações (formatadores monetários, wrappers, padronizações) já foram aplicadas. Use `docs/archive/2025-10/analysis-summary.md` para contexto histórico e valide o estado atual do código antes de tomar decisões.
+
 ## 🎯 OBJETIVO DA ANÁLISE
 
 Identificar oportunidades de melhoria, eliminar código duplicado e estabelecer padrões de desenvolvimento que acelerem a entrega de novas features mantendo alta qualidade.
 
 ---
 
-## 📈 MÉTRICAS ATUAIS
+## 📈 Métricas levantadas em 10/10/2025
 
 | Métrica                   | Valor         | Status           |
 | ------------------------- | ------------- | ---------------- |
@@ -24,27 +26,32 @@ Identificar oportunidades de melhoria, eliminar código duplicado e estabelecer 
 | **Bugs conhecidos**       | 2 críticos    | ⚠️ Corrigir      |
 | **Cobertura de testes**   | 0%            | ❌ Inexistente   |
 
+> Situação atual: boa parte das recomendações já foi implementada (por exemplo `useMoneyFormatter`, `CheckboxField`, wrappers). Revise rapidamente o código antes de reutilizar números históricos.
+
 ---
 
-## 🚨 PROBLEMAS CRÍTICOS IDENTIFICADOS
+## 🚨 Problemas críticos (estado em 10/10/2025)
 
 ### 1. Bug de Formatação Monetária (14+ arquivos)
 
-**Impacto:** ⚠️ ALTO - Pode causar crashes ao visualizar tabelas  
-**Status:** Parcialmente corrigido (1 de 15 arquivos)  
-**Tempo para corrigir:** 30 minutos
+**Impacto em 2025-10:** ⚠️ ALTO - Pode causar crashes ao visualizar tabelas  
+**Status em 2025-10:** Parcialmente corrigido (1 de 15 arquivos)  
+**Tempo estimado:** 30 minutos  
+**Situação após refatorações:** `useMoneyFormatter` foi criado e aplicado nas principais tabelas.
 
 ### 2. Código Duplicado Excessivo
 
-**Impacto:** ⚠️ ALTO - Dificulta manutenção, aumenta bugs  
-**Volume:** ~1.500 linhas duplicadas  
-**Tempo para corrigir:** 5 semanas
+**Impacto em 2025-10:** ⚠️ ALTO - Dificulta manutenção, aumenta bugs  
+**Volume estimado:** ~1.500 linhas duplicadas  
+**Plano sugerido:** 5 semanas de refatoração em fases com wrappers e composables  
+**Situação após refatorações:** Wrappers principais foram publicados; continue monitorando duplicações.
 
 ### 3. Inconsistência de Padrões
 
-**Impacto:** 🟡 MÉDIO - Confusão para desenvolvedores  
+**Impacto em 2025-10:** 🟡 MÉDIO - Confusão para desenvolvedores  
 **Áreas afetadas:** Checkboxes, formatação, navegação  
-**Tempo para corrigir:** 2 semanas
+**Tempo estimado:** 2 semanas  
+**Situação após refatorações:** `CheckboxField` encapsulado com `FormField`; navegação padronizada via wrappers.
 
 ---
 

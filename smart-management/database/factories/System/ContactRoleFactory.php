@@ -6,7 +6,7 @@ use App\Models\Catalog\ContactRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Catalog\ContactRole>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\System\ContactRole>
  */
 class ContactRoleFactory extends Factory
 {

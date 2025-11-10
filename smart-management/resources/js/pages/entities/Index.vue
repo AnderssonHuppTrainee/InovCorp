@@ -1,39 +1,40 @@
 <template>
     <IndexWrapper
-                :title="type === 'client' ? 'Clientes' : 'Fornecedores'"
-                :description="`Gerir ${type === 'client' ? 'clientes' : 'fornecedores'} do sistema`"
+        :title="type === 'client' ? 'Clientes' : 'Fornecedores'"
+        :description="`Gerir ${type === 'client' ? 'clientes' : 'fornecedores'} do sistema`"
         :columns="columns"
         :data="entities"
         :breadcrumbs="breadcrumbs"
-        :create-button-text="type === 'client' ? 'Novo Cliente' : 'Novo Fornecedor'"
+        :create-button-text="
+            type === 'client' ? 'Novo Cliente' : 'Novo Fornecedor'
+        "
         :search-config="{
             enabled: true,
-            placeholder: 'Buscar por nome ou NIF...'
+            placeholder: 'Buscar por nome ou NIF...',
         }"
         :filters-config="filterConfigs"
         :base-url="route.index().url"
         :current-filters="filters"
-        @create="handleCreate"
+        :on-create="handleCreate"
     />
 </template>
 
 <script setup lang="ts">
 import IndexWrapper from '@/components/common/IndexWrapper.vue';
 import route from '@/routes/entities';
-import { type BreadcrumbItem } from '@/types';
+import {
+    type BreadcrumbItem,
+    type Country,
+    type Entity,
+    type PaginatedData,
+} from '@/types';
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { columns } from './columns';
 
-interface Country {
-    id: number;
-    name: string;
-    code: string;
-}
-
 interface Props {
     type: 'client' | 'supplier';
-    entities: any;
+    entities: PaginatedData<Entity>;
     filters: {
         search?: string;
         status?: string;
@@ -48,7 +49,7 @@ const props = defineProps<Props>();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: props.type === 'client' ? 'Clientes' : 'Fornecedores',
-        href: route.index({ type: props.type }).url,
+        href: `${route.index().url}?type=${props.type}`,
     },
 ];
 
@@ -71,7 +72,7 @@ const filterConfigs = computed(() => [
         allValue: 'all',
         allLabel: 'Todos os países',
         widthClass: 'w-[180px]',
-        options: props.countries.map(country => ({
+        options: props.countries.map((country) => ({
             value: country.id,
             label: country.name,
         })),

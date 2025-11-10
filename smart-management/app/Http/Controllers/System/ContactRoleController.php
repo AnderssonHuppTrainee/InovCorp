@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Settings;
+namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
-use App\Models\Catalog\ContactRole;
+use App\Models\System\ContactRole;
 use App\Http\Requests\StoreContactRoleRequest;
 use App\Http\Requests\UpdateContactRoleRequest;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class ContactRoleController extends Controller
         $contactRoles = $query->orderBy('name')->paginate(10);
 
         return Inertia::render('settings/contact-roles/Index', [
-            'contactRolesData' => $contactRoles,
+            'contactRoles' => $contactRoles,
             'filters' => $request->only(['search', 'status']),
         ]);
     }

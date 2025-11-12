@@ -18,3 +18,4 @@ Para decisões executivas e preparação de QA, consulte também:
 
 > ⚠️ Checklists diários, relatórios de bugs isolados e roteiros já executados foram arquivados ou removidos para evitar contradições. Caso precise recuperar um artefato específico, utilize o histórico do Git.
 
+

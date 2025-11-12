@@ -1,5 +1,7 @@
 ## Task Flow (Laravel + Inertia + Vue 3)
 
+> 📚 **Documentação Completa**: Para uma documentação detalhada e completa do projeto, consulte [DOCUMENTACAO.md](./DOCUMENTACAO.md)
+
 ### Visão Geral
 
 - **Stack**: Laravel 11, Inertia.js, Vue 3 (TypeScript), Vite, Laravel Fortify, SQLite, Tailwind (via app.css), `vue-sonner` para toasts.
